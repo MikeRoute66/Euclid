@@ -14,12 +14,12 @@ const BookOneLogic=(()=>{
  }
  function parse(s){
   let text=readableLegacy(s).trim().replace(/\.$/,'').replace(/\btriangles?\b/gi,'').replace(/[\u25b3\u0394]/g,'').toUpperCase().trim(),m;
-  if((m=text.match(/^([A-Z]{2})\s+IS\s+(PARALLEL|PERPENDICULAR)\s+TO\s+([A-Z]{2})$/)))return {kind:m[2].toLowerCase(),a:m[1],b:m[3]};
+  if((m=text.match(/^([A-Z]{2})\s+IS\s+(PARALLEL|PERPENDICULAR)\s+TO\s+([A-Z]{2})$/)))return m[1][0]!==m[1][1]&&m[3][0]!==m[3][1]?{kind:m[2].toLowerCase(),a:m[1],b:m[3]}:null;
   if((m=text.match(/^([A-Z]{3,26})\s+(?:ARE|IS)\s+COLLINEAR$/)))return {kind:'collinear',points:m[1]};
   if((m=text.match(/^([A-Z])\s+AND\s+([A-Z])\s+ARE\s+ON\s+THE\s+SAME\s+SIDE\s+OF\s+([A-Z]{2})$/)))return {kind:'sameSide',a:m[1],b:m[2],line:m[3]};
   if((m=text.match(/^([A-Z])\s+IS\s+INSIDE\s+([A-Z]{3})$/)))return {kind:'inside',point:m[1],triangle:m[2]};
   if((m=text.match(/^(?:ANGLE\s*|\u2220)([A-Z]{3})\s+IS\s+(?:A\s+)?RIGHT(?:\s+ANGLE)?$/)))return {kind:'right',angle:m[1]};
-  if((m=text.match(/^([A-Z]{3,4})\s+IS\s+(?:A\s+)?(PARALLELOGRAM|SQUARE|EQUILATERAL|ISOSCELES|SCALENE)$/)))return {kind:'shape',polygon:m[1],property:m[2].toLowerCase()};
+  if((m=text.match(/^([A-Z]{3,4})\s+IS\s+(?:A\s+)?(PARALLELOGRAM|SQUARE|EQUILATERAL|ISOSCELES|SCALENE)$/)))return new Set(m[1]).size===m[1].length&&m[1].length===(['SQUARE','PARALLELOGRAM'].includes(m[2])?4:3)?{kind:'shape',polygon:m[1],property:m[2].toLowerCase()}:null;
   if((m=text.match(/^([A-Z]{3})\s+IS\s+(CONGRUENT\s+TO|SUPERPOSED\s+ON)\s+([A-Z]{3})$/)))return {kind:'congruence',a:m[1],b:m[3],superposed:m[2].startsWith('SUPERPOSED')};
   if((m=text.match(/^([A-Z])\s*=\s*([A-Z])$/)))return {kind:'pointEqual',a:m[1],b:m[2]};
   let sides=text.split(/(=|>|<)/);if(sides.length!==3)return null;let left=expression(sides[0]),right=expression(sides[2]);if(!left||!right||(left[0].kind==='square'?'area':left[0].kind)!==(right[0].kind==='square'?'area':right[0].kind))return null;
@@ -71,6 +71,20 @@ const BookOneLogic=(()=>{
   function uniqueness(t){if(t.kind!=='pointEqual'||t.a===t.b)return false;for(let a of d.names)for(let b of d.names)if(a!==b&&![t.a,t.b].includes(a)&&![t.a,t.b].includes(b)&&sameSide(t.a,t.b,a+b)&&equal(a+t.a,a+t.b)&&equal(b+t.a,b+t.b))return true;return false}
   function twoAnglesLess(t){if(t.kind!=='gt'||t.left.length!==1||t.left[0].term!=='RIGHT'||t.left[0].coefficient!==2||t.right.length!==2||t.right.some(v=>v.kind!=='angle'||v.term==='RIGHT'))return false;let a=t.right[0].term.slice(1),b=t.right[1].term.slice(1);return sort(a)===sort(b)&&a[1]!==b[1]&&d.proper(a)}
   function linear(t){if(t.kind!=='eq')return false;let terms=[...scalarTerms(t),...facts.flatMap(scalarTerms)],equations=facts.filter(f=>f.kind==='eq').map(f=>subtract(expr(f.left),expr(f.right),1));let plain=terms.filter(v=>v.startsWith(A)||/^[A-Z]{2}$/.test(v));for(let id of d.identities(plain)){let row=new Map();for(let [k,v] of id){if(k===A+'STRAIGHT'){k='RIGHT';v*=2}row.set(k,(row.get(k)||0)+v)}equations.push(row)}return span(subtract(expr(t.left),expr(t.right),1),equations)}
+  function commonNotion(t,rule){
+   if(t.kind!=='eq')return false;
+   let eqs=facts.filter(f=>f.kind==='eq');if(!eqs.length)return false;
+   let all=[...scalarTerms(t),...eqs.flatMap(scalarTerms)],identities=d.identities(all.filter(s=>s.startsWith(A)||/^[A-Z]{2}$/.test(s))).map(row=>{let out=new Map();for(let [k,v] of row){if(k===A+'STRAIGHT'){k='RIGHT';v*=2}out.set(k,(out.get(k)||0)+v)}return out}),hasAreas=all.some(s=>s.startsWith('AREA(')),cache=new Map();
+   const sum=(x,y)=>subtract(x,y,-1),items=x=>[...x].map(([term,coefficient])=>({term,coefficient,kind:term.startsWith('AREA(')?'area':term.endsWith('^2')?'square':term==='RIGHT'||term.startsWith(A)?'angle':'length'}));
+   function structural(x,y){let delta=subtract(x,y),key=JSON.stringify([...delta].sort());if(!delta.size||span(delta,identities))return true;if(!hasAreas)return false;if(!cache.has(key))cache.set(key,symbolicConsequence({kind:'eq',left:items(x),right:items(y)},{d,facts:[],certificateClaims:()=>[],parallel:()=>false,equal:()=>false,isParallelogram:()=>false}));return cache.get(key)}
+   let pairs=eqs.flatMap(f=>[[expr(f.left),expr(f.right)],[expr(f.right),expr(f.left)]]),target=[expr(t.left),expr(t.right)],common=[...new Set(all.map(canonical))].map(k=>{let v=new Map([[k,1]]);return [v,v]});for(let v of [...target,...pairs.flat()])common.push([v,v]);
+   for(let [left,right] of pairs)for(let [partLeft,partRight] of [...pairs,...common]){
+    if(rule==='CN2'&&structural(target[0],sum(left,partLeft))&&structural(target[1],sum(right,partRight)))return true;
+    if(rule==='CN3'&&(structural(sum(target[0],partLeft),left)&&structural(sum(target[1],partRight),right)||structural(sum(target[1],partLeft),left)&&structural(sum(target[0],partRight),right)))return true;
+   }
+   if(rule==='CN3')for(let [whole] of common)for(let [partLeft,partRight] of pairs)if(structural(sum(target[0],partLeft),whole)&&structural(sum(target[1],partRight),whole))return true;
+   return false;
+  }
   function geometricAlgebra(t){return symbolicConsequence(t,{d,facts,certificateClaims,parallel,equal,isParallelogram})}
   function check(t,reference){
    derivations.length=0;
@@ -82,11 +96,12 @@ const BookOneLogic=(()=>{
    else if(certificate(t,reference)){ok=true;reason='Certified construction using '+reference+'.'}
    else if(reference==='D15'){ok=circleEquality(t);reason='Both endpoints must be recorded on the same constructed circle. Mark the circle endpoint or intersection explicitly with D1; P3 records the endpoint used to define the circle.'}
    else if(reference==='CN1'){ok=t.kind==='eq'&&equalExpression(t)||t.kind==='parallel'&&parallel(t.a,t.b);reason='Transitivity of established equalities or parallel directions.'}
-   else if(reference==='CN2'||reference==='CN3'){ok=t.kind==='eq'&&(linear(t)||geometricAlgebra(t));reason='Addition/subtraction of established magnitudes and a symbolic decomposition of the figures.'}
-   else if(reference==='D10'||reference==='P4'){ok=t.kind==='eq'&&adjacentStraight(t)||straightFromSum(t)||t.kind==='perpendicular'&&(perpendicularByAdjacent(t)||perpendicular(t.a,t.b))||t.kind==='right'&&right(t.angle);reason='Equal adjacent angles define perpendicular lines; a straight angle is two right angles.'}
+   else if(reference==='CN2'||reference==='CN3'){ok=commonNotion(t,reference);reason=reference==='CN2'?'Add established equal magnitudes to equal magnitudes.':'Subtract established equal parts from equal wholes.'}
+   else if(reference==='P4'){ok=atomic(t)&&t.left[0].kind==='angle'&&t.right[0].kind==='angle'&&[t.left[0].term,t.right[0].term].every(s=>s==='RIGHT'||right(s.slice(1)));reason='Postulate 4 equates angles already established as right angles.'}
+   else if(reference==='D10'){ok=t.kind==='eq'&&adjacentStraight(t)||straightFromSum(t)||t.kind==='perpendicular'&&(perpendicularByAdjacent(t)||perpendicular(t.a,t.b))||t.kind==='right'&&right(t.angle);reason='Equal adjacent angles define perpendicular lines; a straight angle is two right angles.'}
    else if(reference==='D22'){ok=quadrilateralPart(t)||t.kind==='shape'&&(t.property==='parallelogram'&&isParallelogram(t.polygon)||t.property==='square'&&isParallelogram(t.polygon)&&(()=>{let [a,b,c,e]=t.polygon;return equal(a+b,a+e)&&perpendicular(a+b,a+e)})());reason='Definition of a parallelogram or square from established parallels, sides, and right angles.'}
    else if(reference==='D23'){ok=t.kind==='parallel'&&parallel(t.a,t.b);reason='Parallelism established by the construction or earlier premises.'}
-   else if(reference==='D20'){ok=equilateral(t);reason='Definition of an equilateral triangle.'}
+   else if(reference==='D20'){ok=equilateral(t);let witness=certificateClaims().find(c=>c.claim.kind==='shape'&&c.claim.property==='equilateral'&&namesIn(t).every(n=>c.claim.polygon.includes(n)));reason=witness?'D20 uses the equilateral triangle '+witness.claim.polygon+' established by the E.1 construction record. Its sides are equal even without a separate equilateral statement.':'D20 uses an earlier established equilateral triangle, or establishes one from its proved equal sides.'}
    else if(reference==='CN4'){ok=t.kind==='congruence'&&(sas(t.a,t.b)||supported([7])&&sss(t.a,t.b)||supported([3,4,16])&&asa(t.a,t.b));reason='Superposition with established SAS, SSS, or two-angle-and-side constraints.';if(ok)argument('Rigid superposition',sas(t.a,t.b)?[4]:sss(t.a,t.b)?[7]:[3,4,16],['Match corresponding vertices.','Equal side and angle constraints force coincidence.'])}
    else if(reference==='P5'||reference==='I29'){ok=parallelAngleConsequence(t);reason='Angles of a transversal across established parallels (parallel postulate).'}
    else if(reference==='I4'||reference==='I8'||reference==='I26'){ok=t.kind==='congruence'&&(reference==='I4'?sas(t.a,t.b):reference==='I8'?sss(t.a,t.b):asa(t.a,t.b))||facts.some(f=>f.kind==='congruence'&&parts(t,f));reason='Triangle congruence and corresponding parts.'}
@@ -95,7 +110,7 @@ const BookOneLogic=(()=>{
    else if(reference==='I7'){ok=uniqueness(t);reason='Uniqueness of an apex on a specified side of a base.'}
    else if(reference==='I13'){ok=adjacentStraight(t);reason='Angles on a straight line sum to two right angles.'}
    else if(reference==='I14'){ok=straightFromSum(t);reason='Supplementary adjacent angles determine a straight line.'}
-   else if(reference==='I15'){ok=atomic(t)&&t.left[0].kind==='angle'&&(equal(t.left[0].term,t.right[0].term)||vertical(t.left[0].term.slice(1),t.right[0].term.slice(1))||facts.some(f=>atomic(f)&&f.left[0].kind==='angle'&&[f.left[0].term,f.right[0].term].some((u,i)=>vertical(t.left[0].term.slice(1),u.slice(1))&&equal([f.left[0].term,f.right[0].term][1-i],t.right[0].term))));reason='Vertical angles, with substitution of established equal angles.'}
+   else if(reference==='I15'){ok=atomic(t)&&t.left[0].kind==='angle'&&(vertical(t.left[0].term.slice(1),t.right[0].term.slice(1))||facts.some(f=>atomic(f)&&f.left[0].kind==='angle'&&[f.left[0].term,f.right[0].term].some((u,i)=>vertical(t.left[0].term.slice(1),u.slice(1))&&equal([f.left[0].term,f.right[0].term][1-i],t.right[0].term))));reason='Vertical angles, with substitution of established equal angles.'}
    else if(reference==='I16'){ok=exteriorTarget(t);reason='An exterior angle exceeds either opposite interior angle.'}
    else if(reference==='I17'){ok=twoAnglesLess(t);reason='Any two angles of a triangle total less than two right angles.'}
    else if(reference==='I18'||reference==='I19'){ok=sideAngleOrder(t,reference==='I19');reason='Correspondence between the order of sides and opposite angles.'}

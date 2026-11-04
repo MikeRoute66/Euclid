@@ -107,7 +107,7 @@ const EuclidLogic=(()=>{
    let ok=false,explanation='';
    if(rule==='Given'){ok=hypotheses.some(h=>sameFact(ast,h));explanation='Hypothesis of the proposition.'}
    else if(rule==='D15'){ok=radiusEquality(ast);explanation='Both endpoints must be recorded on the same constructed circle. Mark the circle endpoint or intersection explicitly with D1; P3 records the endpoint used to define the circle.'}
-   else if(rule==='D20'){ok=definition20(ast);explanation='Definition of an equilateral triangle and established side equalities.'}
+   else if(rule==='D20'){ok=definition20(ast);explanation='D20 uses an equilateral triangle established by a construction record or an earlier proof line. An E.1 construction already establishes that property; a separate equilateral statement is not required.'}
    else if(rule==='CN1'){ok=transitiveEquality(ast);explanation='Equality follows from earlier established equalities.'}
    else if(rule==='CN2'||rule==='CN3'){ok=linearRule(ast,rule);explanation=rule==='CN2'?'Add equal magnitudes to equal magnitudes.':'Subtract equal parts from equal wholes.'}
    else if(rule==='CN5'){ok=ast.kind==='inequality'&&ast.left.length===1&&ast.right.length===1&&ast.left[0].coefficient===1&&ast.right[0].coefficient===1&&(()=>{let big=ast.left[0].term,small=ast.right[0].term;if(big.startsWith(ANG)||small.startsWith(ANG))return false;return [...big].some(v=>small.includes(v)&&d.between(v,small.replace(v,''),big.replace(v,'')))})();explanation='A proper part of a segment is smaller than the whole.'}

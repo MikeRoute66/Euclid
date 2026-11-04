@@ -77,7 +77,15 @@ function bookOneIntersections(){
  }
  return output.filter(v=>v.every(Number.isFinite)&&!Object.values(state.points).some(q=>distance(v,q)<.01));
 }
-function bookOneMark(coordinate){let candidates=bookOneIntersections().sort((a,b)=>distance(a,coordinate)-distance(b,coordinate)),point=candidates[0]&&distance(candidates[0],coordinate)<30?candidates[0]:coordinate;let name=nextPointName();if(!name)return;snapshot();state.points[name]=point;EuclidConstruction.point(state,name);if(point===candidates[0])EuclidConstruction.intersection(state,name);render()}
+function bookOneMark(coordinate){
+ const candidates=bookOneIntersections().sort((a,b)=>distance(a,coordinate)-distance(b,coordinate)),scale=Math.hypot($('#canvas').getScreenCTM().a,$('#canvas').getScreenCTM().b),snapped=!!candidates[0]&&distance(candidates[0],coordinate)*scale<=20,point=snapped?candidates[0]:coordinate;
+ let name=nextPointName();const onCircle=(a,b)=>state.points[a]&&state.points[b]&&state.circles.some(c=>c.a===a&&c.b===b)&&Math.abs(distance(point,state.points[a])-distance(state.points[a],state.points[b]))<1e-6;
+ const onExtension=(a,b)=>{let u=state.points[a],v=state.points[b];return u&&v&&state.rays.includes(a+b)&&Math.abs((v[0]-u[0])*(point[1]-u[1])-(v[1]-u[1])*(point[0]-u[0]))<.001&&distance(u,point)>distance(u,v)};
+ if(index===1&&snapped){if(!state.points.G&&onCircle('B','C')&&onExtension('D','B'))name='G';else if(!state.points.L&&onCircle('D','G')&&onExtension('D','A'))name='L'}
+ if(index===2&&snapped&&!state.points.F&&onCircle('A','E')){let [a,b]=[state.points.A,state.points.B];if(Math.abs((b[0]-a[0])*(point[1]-a[1])-(b[1]-a[1])*(point[0]-a[0]))<.001&&distance(point,a)<distance(a,b)&&distance(point,b)<distance(a,b))name='F'}
+ if(!name){$('#instruction').textContent='All 26 point names are in use. Undo an unnecessary point.';return}
+ snapshot();state.points[name]=point;EuclidConstruction.point(state,name);if(snapped)EuclidConstruction.intersection(state,name);render();
+}
 function bookOneHint(){
  const lesson=LESSONS[index];for(let task of lesson.construction||[]){if(task.outputs.length&&task.outputs.every(n=>state.points[n]))continue;let done=task.ref==='D1'&&task.inputs.length&&task.inputs.every(n=>state.circles.some(c=>EuclidConstruction.radius(state,c,n)))||task.ref==='P1'&&has('edge:'+task.inputs.join(''))||task.ref==='P2'&&state.rays.includes(task.inputs.join(''))||task.ref==='P3'&&has('circle:'+task.inputs.join(':'));if(done)continue;if(task.ref==='D1'&&task.inputs.length)return 'Select D1, then click '+task.inputs.join(', ')+'. '+task.text;if(!task.outputs.length&&['P1','P2','P3'].includes(task.ref))return 'Select '+task.ref+'. '+task.text;if(task.outputs.length)return 'Select '+task.ref+'. '+task.text+' '+(task.inputs.length?'Click '+task.inputs.join(', ')+', in that order.':'Use the point tool on the stated intersection.');}
  const result=EuclidLogic.grade(state,lesson);if(result.complete)return 'This proposition is complete. Continue when you are ready.';

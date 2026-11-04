@@ -2,7 +2,7 @@
 function canvasPointAt(event,radius=18){
  const label=event.target.closest?.('[data-label]');if(label)return label.dataset.label;
  const matrix=$('#canvas').getScreenCTM();if(!matrix)return null;
- let best=null,nearest=radius;for(let [name,p] of Object.entries(state.points)){let q=$('#canvas').createSVGPoint();q.x=p[0];q.y=p[1];q=q.matrixTransform(matrix);let d=Math.hypot(q.x-event.clientX,q.y-event.clientY);if(d<nearest){best=name;nearest=d}}return best;
+ let best=null,nearest=radius;for(let [name,p] of Object.entries(state.points)){let q=$('#canvas').createSVGPoint();q.x=p[0];q.y=p[1];q=q.matrixTransform(matrix);let d=Math.hypot(q.x-event.clientX,q.y-event.clientY);if(d<nearest){best=name;nearest=d}}if(tool?.[3]==='point'){let position=coords(event);for(let p of bookOneIntersections())if(distance(p,position)*Math.hypot(matrix.a,matrix.b)<Math.min(12,nearest))return null}return best;
 }
 function superposeTriangles(){
  if(index!==3||tool?.[1]!=='CN4')return;

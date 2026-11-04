@@ -45,3 +45,8 @@ Undo, autosave, named saves, and file export/import retain construction provenan
 
 
 Canvas input uses screen-sized point targets and pointer capture with window-level move/release handling. Two-point construction tools accept either two clicks or a drag; E.4 superposition accepts dragging A onto D or clicking A then D. Drag previews do not alter proof evidence until release, and canceled gestures are discarded. Point labels are placed around the actual diagram in screen space, avoiding geometry, points, and other labels; dense layouts use free space with leader lines. Their size remains readable when the construction view scales or the window resizes.
+
+
+The point tool uses the same intersection solver in every lesson, including the original first five. It snaps to line/line, circle/line, and circle/circle crossings using screen pixels and records their incident objects; a nearby existing point does not prevent selecting a closer intersection. Original guided constructions retain their expected point names.
+
+Justifications are checked by rule: P4 compares established right angles, E.15 requires vertical-angle evidence, and CN2/CN3 require addition/subtraction of established equal magnitudes. More involved area arguments use Deduction with the accompanying explanation. D20 can unpack a recorded E.1 construction directly; an explicit equilateral proof line is optional when the tool already established that property.
