@@ -7,6 +7,8 @@ function fixture(i){
  if(i===2){s.points.E=[180,160];s.points.F=[320,300];s.edges.push('AE');s.circles=[{a:'A',b:'E'}];s.facts=['copy:A:E:C:D']}
  if(i===3)s.facts=['superpose:ABC:DEF'];
  if(i===4){s.points.F=[208,436];s.points.G=[592,436];s.edges.push('BF','CG','FC','GB');s.rays=['AB','AC'];s.facts=['cut:A:F:A:G']}
+ EuclidConstruction.initialize(s,LESSONS[i]);
+ for(let n of Object.keys(s.points))EuclidConstruction.intersection(s,n);
  return s;
 }
 function grade(s,i){return EuclidLogic.grade(s,LESSONS[i])}
@@ -15,6 +17,7 @@ try{
  for(let i=0;i<5;i++){
   let s=fixture(i);s.lines=LESSONS[i].hintSteps.map(r=>({s:r.s,j:r.j}));let result=grade(s,i);
   assert(result.complete,'Reference derivation I.'+(i+1)+' — '+s.lines.filter(l=>!l.valid).map(l=>l.s+': '+l.error).join('; '));
+  let distorted=structuredClone(s);Object.keys(distorted.points).forEach((n,k)=>distorted.points[n]=[k*17,k*k*23]);assert(grade(distorted,i).complete,'Original proposition '+(i+1)+' ignores display coordinates');
   let lesson={...LESSONS[i],hintSteps:[]};assert(EuclidLogic.grade(s,lesson).complete,'Grader independent of hint route I.'+(i+1));
  }
  let s=fixture(0);s.lines=lines(['BA = BC','D15'],['AB = CA','D15'],['BCA is equilateral','D20']);assert(grade(s,0).complete,'Shorter reordered proof, with no prescribed transitivity line');

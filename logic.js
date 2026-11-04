@@ -1,5 +1,5 @@
 /* A small Euclidean inference calculus. The grader never reads lesson proof recipes.
- * Coordinates establish diagram incidence only, never equality of lengths/angles.
+ * Incidence, orientation, and metric claims come from construction records or proof premises.
  * Every equality is proved from hypotheses, construction certificates, definitions,
  * prior accepted statements, or an explicit inference rule. */
 const EuclidLogic=(()=>{
@@ -28,15 +28,16 @@ const EuclidLogic=(()=>{
   return {kind:parts[1]==='='?'equality':'inequality',left:parts[1]==='<'?right:left,right:parts[1]==='<'?left:right};
  }
  function relationKey(a,b){let forward=[...a].map((v,i)=>v+'='+b[i]).sort().join(','),reverse=[...b].map((v,i)=>v+'='+a[i]).sort().join(',');return [forward,reverse].sort()[0]}
- function diagram(state){
-  const points=state.points, names=Object.keys(points), vector=(a,b)=>[points[b][0]-points[a][0],points[b][1]-points[a][1]];
-  function collinear(a,b,c){if(!points[a]||!points[b]||!points[c])return false;let u=vector(a,b),v=vector(a,c),scale=Math.hypot(...u)*Math.hypot(...v);return scale>EPS&&Math.abs(u[0]*v[1]-u[1]*v[0])<=1e-7*scale}
-  function sameRay(v,a,b){if(a===b)return true;if(!collinear(v,a,b))return false;let u=vector(v,a),w=vector(v,b);return u[0]*w[0]+u[1]*w[1]>0}
-  function between(a,b,c){if(!collinear(a,b,c))return false;let u=vector(b,a),v=vector(b,c);return u[0]*v[0]+u[1]*v[1]<-EPS}
-  function drawn(a,b){return [...state.edges,...state.rays].some(e=>{let [u,v]=e;if(segment(a+b)===segment(e))return true;return (a===u||a===v||collinear(u,v,a))&&(b===u||b===v||collinear(u,v,b))})}
-  function proper(t){return triangle(t)&&[...t].every(n=>points[n])&&!collinear(t[0],t[1],t[2])&&drawn(t[0],t[1])&&drawn(t[1],t[2])&&drawn(t[0],t[2])}
+ function diagram(state,established=[]){
+  const points=state.points, names=Object.keys(points);
+  function collinear(a,b,c){if(new Set(a+b+c).size<3)return true;let groups=[...(state.topology?.lines||[]),...established.filter(f=>f.kind==='collinear').map(f=>f.points)];let merged=true;while(merged){merged=false;for(let i=0;i<groups.length;i++)for(let j=i+1;j<groups.length;j++)if([...groups[i]].filter(n=>groups[j].includes(n)).length>=2){groups[i]=[...new Set(groups[i]+groups[j])].join('');groups.splice(j,1);merged=true;j--}}return groups.some(g=>[a,b,c].every(n=>g.includes(n)))}
+  const direction=(a,b)=>EuclidConstruction.direction(state,a,b),turn=(a,b,c)=>EuclidConstruction.turn(state,a,b,c);
+  function sameRay(v,a,b){return a===b||collinear(v,a,b)&&direction(v,a)*direction(v,b)>0}
+  function between(a,b,c){return new Set(a+b+c).size===3&&collinear(a,b,c)&&direction(b,a)*direction(b,c)<0}
+  function drawn(a,b){return [...state.edges,...state.rays].some(e=>{let [u,v]=e;return segment(a+b)===segment(e)||(a===u||a===v||collinear(u,v,a))&&(b===u||b===v||collinear(u,v,b))})}
+  function proper(t){return triangle(t)&&[...t].every(n=>points[n])&&!!turn(...t)&&!collinear(...t)&&drawn(t[0],t[1])&&drawn(t[1],t[2])&&drawn(t[0],t[2])}
   function canonical(term){if(!term.startsWith(ANG))return segment(term);let [a,v,b]=term.slice(1);if(between(a,v,b))return ANG+'STRAIGHT';let ray=p=>names.filter(n=>n!==v&&sameRay(v,p,n)).sort()[0]||p;return ANG+[ray(a),ray(b)].sort().join('')+'@'+v}
-  function angleInside(a,v,c,b){if(new Set([a,v,c,b]).size!==4||!points[a]||!points[v]||!points[c]||!points[b])return false;let u=vector(v,a),w=vector(v,b),q=vector(v,c),cross=(x,y)=>x[0]*y[1]-x[1]*y[0],orientation=cross(u,w);return Math.abs(orientation)>EPS&&cross(u,q)*orientation>EPS&&cross(q,w)*orientation>EPS}
+  function angleInside(a,v,c,b){return new Set(a+v+c+b).size===4&&turn(v,a,b)*turn(v,a,c)>0&&turn(v,a,b)*turn(v,c,b)>0}
   function identities(terms){
    let equations=[];const put=items=>equations.push(new Map(items.map(([term,n])=>[canonical(term),n])));
    let lengths=terms.filter(t=>!t.startsWith(ANG));
@@ -45,7 +46,7 @@ const EuclidLogic=(()=>{
    for(let big of angles){let [a,v,b]=big.slice(1);for(let mid of names){if(drawn(v,mid)&&angleInside(a,v,mid,b))put([[big,1],[ANG+a+v+mid,-1],[ANG+mid+v+b,-1]]);if(drawn(v,mid)&&between(a,v,mid)&&!collinear(a,v,b))put([[ANG+a+v+mid,1],[big,-1],[ANG+b+v+mid,-1]]);if(drawn(v,mid)&&between(b,v,mid)&&!collinear(a,v,b))put([[ANG+b+v+mid,1],[big,-1],[ANG+a+v+mid,-1]])}}
    return equations;
   }
-  return {names,points,canonical,collinear,sameRay,between,drawn,proper,identities};
+  return {names,points,canonical,collinear,sameRay,between,drawn,proper,identities,turn,direction,angleInside};
  }
  const termsOf=ast=>ast.kind==='equality'||ast.kind==='inequality'?[...ast.left,...ast.right].map(t=>t.term):ast.kind==='property'?[ast.triangle[0]+ast.triangle[1],ast.triangle[1]+ast.triangle[2],ast.triangle[2]+ast.triangle[0]]:[];
  function vector(ast,d){let v=new Map();for(let [side,sign] of [[ast.left,1],[ast.right,-1]])for(let t of side){let key=d.canonical(t.term);v.set(key,(v.get(key)||0)+sign*t.coefficient)}return clean(v)}
@@ -55,7 +56,7 @@ const EuclidLogic=(()=>{
  const atomic=ast=>ast.kind==='equality'&&ast.left.length===1&&ast.right.length===1&&ast.left[0].coefficient===1&&ast.right[0].coefficient===1;
  function makeEquality(a,b){return parse(a+' = '+b)}
  function context(state,lesson){
-  const d=diagram(state),accepted=[],hypotheses=(lesson.givens||[]).map(parse),reasons=[];
+  const accepted=[],d=diagram(state,accepted),hypotheses=(lesson.givens||[]).map(parse),reasons=[];
   function sameFact(a,b){if(a.kind!==b.kind)return false;if(a.kind==='equality')return follows(vector(a,d),[vector(b,d)]);if(a.kind==='property')return a.property===b.property&&segment(a.triangle)===segment(b.triangle);if(a.kind==='relation')return a.relation===b.relation&&relationKey(a.a,a.b)===relationKey(b.a,b.b);return false}
   function equivalent(a,b){return d.canonical(a)===d.canonical(b)}
   function knownEqual(a,b){if(equivalent(a,b))return true;let graph=new Map();for(let fact of accepted)if(atomic(fact)){let x=d.canonical(fact.left[0].term),y=d.canonical(fact.right[0].term);if(!graph.has(x))graph.set(x,new Set());if(!graph.has(y))graph.set(y,new Set());graph.get(x).add(y);graph.get(y).add(x)}let end=d.canonical(b),queue=[d.canonical(a)],seen=new Set();while(queue.length){let p=queue.shift();if(p===end)return true;if(seen.has(p))continue;seen.add(p);for(let n of graph.get(p)||[])if(!seen.has(n))queue.push(n)}return false}
@@ -78,8 +79,8 @@ const EuclidLogic=(()=>{
    }return out.filter(Boolean);
   }
   function superposition(a,b){return state.facts.some(f=>f==='superpose'&&lesson.id===4&&relationKey(a,b)===relationKey('ABC','DEF')||f.startsWith('superpose:')&&relationKey(a,b)===relationKey(f.split(':')[1],f.split(':')[2]))}
-  function radiusEquality(ast){if(!atomic(ast)||ast.left[0].term.startsWith(ANG))return false;let [x,y]=[ast.left[0].term,ast.right[0].term];return state.circles.some(c=>{let endpoint=t=>t[0]===c.a?t[1]:t[1]===c.a?t[0]:null,p=endpoint(x),q=endpoint(y);if(!p||!q)return false;let r=Math.hypot(d.points[c.a][0]-d.points[c.b][0],d.points[c.a][1]-d.points[c.b][1]);let on=n=>d.points[n]&&Math.abs(Math.hypot(d.points[c.a][0]-d.points[n][0],d.points[c.a][1]-d.points[n][1])-r)<=1e-6*Math.max(1,r);return on(p)&&on(q)})}
-  function definition20(ast){if(ast.kind==='property'&&ast.property==='equilateral'){let [a,b,c]=ast.triangle;return d.proper(ast.triangle)&&knownEqual(a+b,b+c)&&knownEqual(a+b,a+c)}if(ast.kind==='equality')return accepted.some(a=>a.kind==='property'&&a.property==='equilateral'&&atomic(ast)&&[ast.left[0].term,ast.right[0].term].every(t=>!t.startsWith(ANG)&&[...t].every(n=>a.triangle.includes(n))));return false}
+  function radiusEquality(ast){if(!atomic(ast)||ast.left[0].term.startsWith(ANG))return false;let [x,y]=[ast.left[0].term,ast.right[0].term];return state.circles.some(c=>{let endpoint=t=>t[0]===c.a?t[1]:t[1]===c.a?t[0]:null,p=endpoint(x),q=endpoint(y);return p&&q&&EuclidConstruction.radius(state,c,p)&&EuclidConstruction.radius(state,c,q)})}
+  function definition20(ast){let triangles=accepted.filter(a=>a.kind==='property'&&a.property==='equilateral').map(a=>a.triangle);if(lesson.id>1)for(let f of state.facts){let p=f.split(':');if(p[0]==='equilateral'){let t=p[1]+(p[2]||'A')+(p[3]||'B');if(d.proper(t))triangles.push(t)}}if(ast.kind==='property'&&ast.property==='equilateral'){let [a,b,c]=ast.triangle;return triangles.some(t=>segment(t)===segment(ast.triangle))||d.proper(ast.triangle)&&knownEqual(a+b,b+c)&&knownEqual(a+b,a+c)}return atomic(ast)&&triangles.some(t=>[ast.left[0].term,ast.right[0].term].every(s=>/^[A-Z]{2}$/.test(s)&&[...s].every(n=>t.includes(n))))}
   function linearRule(ast,rule){
    if(ast.kind!=='equality')return false;
    let eqs=accepted.filter(a=>a.kind==='equality');if(!eqs.length)return false;
@@ -105,7 +106,7 @@ const EuclidLogic=(()=>{
    if(/^I[1-4]$/.test(rule)&&Number(rule.slice(1))>=lesson.id)return {ok:false,error:'This proposition has not yet been established. Use an earlier proposition.'};
    let ok=false,explanation='';
    if(rule==='Given'){ok=hypotheses.some(h=>sameFact(ast,h));explanation='Hypothesis of the proposition.'}
-   else if(rule==='D15'){ok=radiusEquality(ast);explanation='Radii of the same constructed circle.'}
+   else if(rule==='D15'){ok=radiusEquality(ast);explanation='Both endpoints must be recorded on the same constructed circle. Mark the circle endpoint or intersection explicitly with D1; P3 records the endpoint used to define the circle.'}
    else if(rule==='D20'){ok=definition20(ast);explanation='Definition of an equilateral triangle and established side equalities.'}
    else if(rule==='CN1'){ok=transitiveEquality(ast);explanation='Equality follows from earlier established equalities.'}
    else if(rule==='CN2'||rule==='CN3'){ok=linearRule(ast,rule);explanation=rule==='CN2'?'Add equal magnitudes to equal magnitudes.':'Subtract equal parts from equal wholes.'}

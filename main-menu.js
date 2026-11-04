@@ -15,9 +15,11 @@ function validateSave(data){
   const facts=new Set(['equilateral:D','copy:E','equalExtensions','superpose']);
   if(!Array.isArray(value.facts)||value.facts.length>300||!value.facts.every(f=>typeof f==='string'&&(facts.has(f)||validBookCertificate(f,points)||/^(?:equilateral:[A-Z]:[A-Z]:[A-Z]|copy:[A-Z]:[A-Z]:[A-Z]:[A-Z]|cut:[A-Z]:[A-Z]:[A-Z]:[A-Z]|superpose:[A-Z]{3}:[A-Z]{3})$/.test(f)&&[...f.split(':').slice(1).join('')].every(n=>points[n]))))fail();
   if(!Array.isArray(value.lines)||value.lines.length>500||!value.lines.every(l=>object(l)&&typeof l.s==='string'&&l.s.length<=500&&(l.j===null||justifications.has(l.j))))fail();
-  progress[key]={points,edges:[...value.edges],rays:[...value.rays],circles:value.circles.map(c=>({a:c.a,b:c.b})),facts:[...value.facts],lines:value.lines.map(l=>({s:readableStatement(l.s),j:l.j})),completed:false};
+  if(value.topology&&!EuclidConstruction.valid(value.topology,points))fail();
+  progress[key]={points,topology:value.topology?structuredClone(value.topology):undefined,edges:[...value.edges],rays:[...value.rays],circles:value.circles.map(c=>({a:c.a,b:c.b})),facts:[...value.facts],lines:value.lines.map(l=>({s:readableStatement(l.s),j:l.j})),completed:false};
  }
  if(!progress[data.activeProposition])fail();
+ for(let [key,value] of Object.entries(progress))if(!value.topology)EuclidConstruction.initialize(value,LESSONS[Number(key)]);
  // Recheck derived validity instead of trusting flags supplied by the file.
  let previousIndex=index,previousState=state;
  try{for(let [key,value] of Object.entries(progress)){index=Number(key);state=value;value.completed=evaluate()}}finally{index=previousIndex;state=previousState}
