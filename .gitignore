@@ -3,3 +3,4 @@ qa.html
 qa-result.txt
 *.png
 __pycache__/
+.qa-*.html

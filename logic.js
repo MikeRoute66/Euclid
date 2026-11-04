@@ -42,7 +42,7 @@ const EuclidLogic=(()=>{
    let lengths=terms.filter(t=>!t.startsWith(ANG));
    for(let big of lengths)for(let mid of names)if(mid!==big[0]&&mid!==big[1]&&drawn(big[0],big[1])&&between(big[0],mid,big[1]))put([[big,1],[big[0]+mid,-1],[mid+big[1],-1]]);
    let angles=terms.filter(t=>t.startsWith(ANG));
-   for(let big of angles){let [a,v,b]=big.slice(1);for(let mid of names){if(drawn(v,mid)&&angleInside(a,v,mid,b))put([[big,1],[ANG+a+v+mid,-1],[ANG+mid+v+b,-1]]);if(drawn(v,mid)&&between(a,v,mid)&&!collinear(a,v,b))put([[ANG+a+v+mid,1],[big,-1],[ANG+b+v+mid,-1]])}}
+   for(let big of angles){let [a,v,b]=big.slice(1);for(let mid of names){if(drawn(v,mid)&&angleInside(a,v,mid,b))put([[big,1],[ANG+a+v+mid,-1],[ANG+mid+v+b,-1]]);if(drawn(v,mid)&&between(a,v,mid)&&!collinear(a,v,b))put([[ANG+a+v+mid,1],[big,-1],[ANG+b+v+mid,-1]]);if(drawn(v,mid)&&between(b,v,mid)&&!collinear(a,v,b))put([[ANG+b+v+mid,1],[big,-1],[ANG+a+v+mid,-1]])}}
    return equations;
   }
   return {names,points,canonical,collinear,sameRay,between,drawn,proper,identities};
