@@ -24,7 +24,7 @@ function validateSave(data){
  return {progress,activeProposition:data.activeProposition};
 }
 function restoreSave(data){const result=validateSave(data);saved=result.progress;load(result.activeProposition)}
-function openMainMenu(){$('#jump-search').value='';closeTools();showMenuHome();$('#fresh-confirm').hidden=true;$('#save-status').textContent='';$('#jump-options').replaceChildren(...LESSONS.map((lesson,i)=>{let b=document.createElement('button');b.type='button';b.textContent=(i+1)+'. '+lesson.title;b.classList.toggle('current',i===index);b.onclick=()=>{load(i);$('#main-menu').close()};return b}));$('#main-menu').showModal()}
+function openMainMenu(){$('#jump-search').value='';closeTools();showMenuHome();$('#fresh-confirm').hidden=true;$('#save-status').textContent='';$('#jump-options').replaceChildren(...LESSONS.map((lesson,i)=>{let b=document.createElement('button');b.type='button';b.textContent='E.'+(i+1)+' - '+lesson.title;b.classList.toggle('current',i===index);b.onclick=()=>{load(i);$('#main-menu').close()};return b}));$('#main-menu').showModal()}
 $('#main-menu-button').onclick=openMainMenu;
 $('#resume-menu').onclick=$('#continue-menu').onclick=()=>$('#main-menu').close();
 $('#fresh-menu').onclick=()=>{$('#fresh-confirm').hidden=false;$('#confirm-fresh').focus()};
@@ -38,7 +38,7 @@ $('#save-file').addEventListener('change',loadSaveFileFromInput);
 const CHECKPOINT_KEY='euclid-workshop-checkpoints-v1';
 function readSavePoints(){try{let points=JSON.parse(localStorage.getItem(CHECKPOINT_KEY)||'[]');return Array.isArray(points)?points:[]}catch{return []}}
 function showMenuHome(){ $('#menu-home').hidden=false;$('#save-points-view').hidden=true;$('#save-status').textContent=''; }
-function checkpointLabel(document){let p=document?.progress?.[document.activeProposition],number=document?.activeProposition;return Number.isInteger(number)&&number>=0&&number<LESSONS.length?'Proposition '+(number+1)+' - '+LESSONS[number].title+' - '+(p?.lines?.length||0)+' proof lines':'Saved workshop';}
+function checkpointLabel(document){let p=document?.progress?.[document.activeProposition],number=document?.activeProposition;return Number.isInteger(number)&&number>=0&&number<LESSONS.length?'Proposition E.'+(number+1)+' - '+LESSONS[number].title+' - '+(p?.lines?.length||0)+' proof lines':'Saved workshop';}
 function appendSavePoint(container,point,automatic=false){
  let button=document.createElement('button');button.type='button';button.className='save-point';let name=document.createElement('strong');name.textContent=point.name;let details=document.createElement('span');details.textContent=checkpointLabel(point.document);let time=document.createElement('small');let date=new Date(point.createdAt);time.textContent=(automatic?'Autosave - ':'')+(Number.isNaN(date.getTime())?'':date.toLocaleString());button.append(name,details,time);
  button.onclick=()=>{try{restoreSave(point.document);$('#main-menu').close()}catch{ $('#save-status').textContent='This save point could not be loaded. Your current progress is unchanged.'; }};container.append(button);
