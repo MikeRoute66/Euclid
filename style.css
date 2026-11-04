@@ -125,3 +125,14 @@ dialog{max-height:85dvh;overflow:auto}
 #logic-tool{padding:5px 8px;font-size:10px;color:var(--muted);margin-left:5px}
 #canvas .edge,#canvas .circle,#canvas .ghost{vector-effect:non-scaling-stroke}
 @media(max-width:800px){#chapters select{max-width:170px;font-size:10px;padding:6px}#chapters button{width:23px;height:26px}.brand small{display:none}#jump-options{grid-template-columns:1fr}}
+
+/* Prevent native selection/dragging from taking over SVG gestures. */
+#canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+#canvas .point-hit{fill:transparent;stroke:none;pointer-events:all;cursor:crosshair}
+#canvas .point-label-group{cursor:crosshair;pointer-events:all}
+#canvas .point-label{fill:var(--ink);stroke:#000;paint-order:stroke fill;stroke-linejoin:round;pointer-events:none}
+#canvas .label-background{fill:#000;stroke:none;pointer-events:all}
+#canvas.is-dragging,#canvas.is-dragging *{cursor:grabbing}
+#canvas .drag-preview{fill:none;stroke:#a8edba;stroke-width:3;stroke-dasharray:7 4;pointer-events:none}
+#canvas .drag-preview path,#canvas .drag-preview circle{vector-effect:non-scaling-stroke}
+#canvas .label-leader{stroke:#67756b;stroke-width:1;stroke-dasharray:2 3;vector-effect:non-scaling-stroke;pointer-events:none}
