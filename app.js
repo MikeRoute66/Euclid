@@ -19,7 +19,7 @@ function triangleStatement(s){
 }
 function norm(s){let pair=equality(s);return pair?pair.sort().join('='):triangleStatement(s)||s.toUpperCase().replace(/\s/g,'').replace(/\u25b3/g,'').replace(/ANGLE/g,'\u2220')}
 
-function remember(){try{saved[index]=state;localStorage.setItem('euclid-workshop-v1',JSON.stringify(saved));localStorage.setItem('euclid-workshop-active',String(index))}catch{}}
+function remember(){try{saved[index]=state;localStorage.setItem('euclid-workshop-v1',JSON.stringify(saved));localStorage.setItem('euclid-workshop-active',String(index));localStorage.setItem('euclid-workshop-updated',new Date().toISOString())}catch{}}
 function snapshot(){history.push(JSON.stringify(state));if(history.length>50)history.shift()}
 function fresh(){return {points:structuredClone(LESSONS[index].points),edges:[...LESSONS[index].edges],circles:[],rays:[],facts:[],lines:[]}}
 function load(i){index=i;state=saved[i]||fresh();state.lines.forEach(l=>l.s=readableStatement(l.s));tool=null;tab=null;picks=[];editingLine=null;resetLineForm();history=[];$('#title').textContent=LESSONS[i].title;$('#description').textContent=LESSONS[i].description;$('#given').textContent=LESSONS[i].given;render();renderTools()}
