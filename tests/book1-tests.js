@@ -1,5 +1,6 @@
 addEventListener('load',()=>{
  const results=[];let failures=0;const operations=new Set();
+ const cleanHint=text=>!(/\b(?:CN|[DEIP])\.?\s*\d+\b|select\s+(?:Given|Deduction)|open the (?:Propositions|Definitions|Postulates|Common notions) menu/i.test(text));
  const check=(ok,message)=>{if(!ok){failures++;results.push('FAIL '+message)}else results.push('PASS '+message)};
  function lineIntersection(a,b){let p=state.points[a[0]],q=state.points[a[1]],r=state.points[b[0]],s=state.points[b[1]],u=[q[0]-p[0],q[1]-p[1]],v=[s[0]-r[0],s[1]-r[1]],cross=(x,y)=>x[0]*y[1]-x[1]*y[0],t=cross([r[0]-p[0],r[1]-p[1]],v)/cross(u,v);return [p[0]+t*u[0],p[1]+t*u[1]]}
  try{
@@ -9,6 +10,7 @@ addEventListener('load',()=>{
    try{
     load(i);state=fresh();render();let lesson=LESSONS[i];
     for(let task of lesson.construction||[]){
+     check(cleanHint(nextHint()),'E.'+lesson.id+' construction hint has no reference answer');
      if(/^I/.test(task.ref)&&Number(task.ref.slice(1))>=lesson.id)throw Error('Construction uses future theorem '+task.ref);
      tool=Object.values(REFERENCES).flat().find(r=>r[1]===task.ref);picks=[];
      if(task.ref==='D1'&&task.inputs.length)task.inputs.forEach(choosePoint);
@@ -23,6 +25,7 @@ addEventListener('load',()=>{
     for(let step of lesson.proofGuide){
      EuclidLogic.grade(state,lesson);let hint=bookOneHint();
      check(hint.includes('complete')||(hint.includes('Reasoning:')&&hint.includes('click ')),'E.'+lesson.id+' actionable hint for '+step.s);
+     check(cleanHint(hint)&&cleanHint(proofStepReason(lesson,step)),'E.'+lesson.id+' proof hint has no reference answer');
      check(proofStepReason(lesson,step)?.length>60,'E.'+lesson.id+' explains '+step.s);
      state.lines.push({s:step.s,j:step.j});
     }
@@ -39,8 +42,8 @@ addEventListener('load',()=>{
   check(referenceName('I1').startsWith('E.1'),'Proof justifications use E labels');
   check(displayReference('I1, I.48 and point I')==='E.1, E.48 and point I','Display labels preserve geometry names');
   check([...$('#chapters select').options].every(o=>o.textContent.startsWith('E.')),'Every navigation label uses E');
-  load(5);state=fresh();state.lines=[{s:LESSONS[5].proofGuide[0].s,j:'Given'},{s:'AB = AC',j:null}];render();check(bookOneHint().includes('line 2')&&bookOneHint().includes('Deduction above the proof')&&bookOneHint().includes('Suppose AB'),'Pending deduction receives its argument and precise action');
-  load(1);state=fresh();tool=REFERENCES.propositions[0];choosePoint('A');choosePoint('B');check(nextHint().includes('Select P2'),'E.2 hint recognizes the E.1 construction record');state.lines=[{s:'AD = DB',j:'D20'},{s:'BDA is equilateral',j:'D20'}];render();check(state.lines.every(l=>l.valid),'E.1 tool immediately supports D20 side equality and reordered triangle');
+  load(5);state=fresh();state.lines=[{s:LESSONS[5].proofGuide[0].s,j:'Given'},{s:'AB = AC',j:null}];render();check(bookOneHint().includes('line 2')&&bookOneHint().includes('Choose a justification')&&bookOneHint().includes('Suppose AB'),'Pending deduction receives its argument and precise action');
+  load(1);state=fresh();tool=REFERENCES.propositions[0];choosePoint('A');choosePoint('B');check(nextHint().includes('extend DB beyond B'),'E.2 hint recognizes the E.1 construction record');state.lines=[{s:'AD = DB',j:'D20'},{s:'BDA is equilateral',j:'D20'}];render();check(state.lines.every(l=>l.valid),'E.1 tool immediately supports D20 side equality and reordered triangle');
   let snapshotDocument=saveDocument();restoreSave(snapshotDocument);check(state.lines.every(l=>l.valid),'E.1 construction memory survives save and load');
   load(8);state=fresh();tool=REFERENCES.propositions[0];choosePoint('A');choosePoint('B');let apex=Object.keys(state.points).at(-1);state.lines=[{s:'A'+apex+' = B'+apex,j:'D20'}];render();check(state.lines[0].valid,'Later lessons extract equilateral sides with D20');
   state.facts=[];render();check(!state.lines[0].valid,'Equal-looking triangle without its construction record is rejected');
@@ -94,8 +97,11 @@ addEventListener('load',()=>{
    if(i===0){useTool('P3','A','B');useTool('P3','B','A');mark(intersectionCandidates().sort((a,b)=>a[1]-b[1])[0]);useTool('P1','A','C');useTool('P1','B','C')}
    if(i===1){useTool('P1','A','B');useTool('I1','A','B');useTool('P2','D','B');useTool('P3','B','C');let beyond=(a,b,center,through)=>intersectionCandidates().find(q=>{let u=state.points[a],v=state.points[b];return Math.abs((v[0]-u[0])*(q[1]-u[1])-(v[1]-u[1])*(q[0]-u[0]))<.001&&distance(u,q)>distance(u,v)&&Math.abs(distance(q,state.points[center])-distance(state.points[center],state.points[through]))<.001});mark(beyond('D','B','B','C'));useTool('P2','D','A');useTool('P3','D','G');mark(beyond('D','A','D','G'));useTool('P1','A','L')}
    if(i===2){useTool('I2','A','C','D');useTool('P3','A','E');mark(intersectionCandidates().find(q=>Math.abs(q[1]-state.points.A[1])<.001&&q[0]>state.points.A[0]&&q[0]<state.points.B[0]))}
+   for(let step of LESSONS[i].hintSteps){check(cleanHint(nextHint())&&cleanHint(proofStepReason(LESSONS[i],step)),'E.'+(i+1)+' original hint hides reference answers');state.lines.push({s:step.s,j:step.j});render()}
    state.lines=LESSONS[i].hintSteps.map(r=>({s:r.s,j:r.j}));render();check(state.completed,'Original E.'+(i+1)+' construction and proof still work through the actual tools');
   }
+  for(let i=0;i<5;i++){load(i);state=fresh();render();check(cleanHint(nextHint()),'E.'+(i+1)+' initial hint has no reference answer')}
+  load(0);state=fresh();state.lines=[{s:'AB = AC',j:'P1'}];render();check(cleanHint(nextHint()),'Incorrect-line hint does not reveal a reference');check(cleanHint(hintFeedback('Missing D15 evidence: mark with D1 and use P3.')),'Error feedback does not leak reference indices');$('#hint').click();check(!/E\.\d/.test($('#modalkicker').textContent)&&cleanHint($('#modalbody').textContent),'Hint dialog heading and body hide reference indices');$('#modal').close();
   load(47);let doc=saveDocument();restoreSave(doc);check(index===47,'Save/load accepts proposition 48');check($('#chapters select').options.length===48,'Header navigation handles 48 propositions');check(document.body.scrollWidth===document.body.clientWidth&&document.body.scrollHeight===document.body.clientHeight,'Expanded workshop fits the viewport');
   openMainMenu();$('#jump-search').value='pythagorean';$('#jump-search').dispatchEvent(new Event('input'));check([...$('#jump-options').children].filter(b=>!b.hidden).some(b=>b.textContent.startsWith('E.47')),'Main-menu search locates I.47');$('#continue-menu').click();
  }catch(error){check(false,error.stack)}

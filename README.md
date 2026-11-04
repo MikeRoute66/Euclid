@@ -50,3 +50,6 @@ Canvas input uses screen-sized point targets and pointer capture with window-lev
 The point tool uses the same intersection solver in every lesson, including the original first five. It snaps to line/line, circle/line, and circle/circle crossings using screen pixels and records their incident objects; a nearby existing point does not prevent selecting a closer intersection. Original guided constructions retain their expected point names.
 
 Justifications are checked by rule: P4 compares established right angles, E.15 requires vertical-angle evidence, and CN2/CN3 require addition/subtraction of established equal magnitudes. More involved area arguments use Deduction with the accompanying explanation. D20 can unpack a recorded E.1 construction directly; an explicit equilateral proof line is optional when the tool already established that property.
+
+
+Hints describe the next geometric action and the reasoning for a proof statement without reference indices, menu names, or instructions naming the correct tool. Learners choose the tool or justification themselves. Point names, mathematical quantities, and proof-line numbers remain so the action is unambiguous. This applies to construction, proof, editing, and correction hints throughout all 48 lessons.
