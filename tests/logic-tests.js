@@ -45,6 +45,14 @@ try{
  assert(!suggestStatementFormat('AB = CD'),'No suggestions for already formatted statements, regardless of truth');
  assert(!suggestStatementFormat(''),'No unsolicited suggestions');
  assert(suggestStatementFormat('equilateral').text==='[triangle] is equilateral'&&!suggestStatementFormat('equilateral').insertable,'Missing names use placeholders, never lesson answers');
+ const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+ assert(capitalizeGeometryLabels('ab = ac',alphabet)==='AB = AC','Geometric segments capitalize automatically');
+ assert(capitalizeGeometryLabels('area abcd = 2 area efgh',alphabet)==='area ABCD = 2 area EFGH','Area labels capitalize while words and quantities stay unchanged');
+ assert(capitalizeGeometryLabels('abcd is a square',alphabet)==='ABCD is a square','Point A is distinct from the article a');
+ assert(capitalizeGeometryLabels('2ab = 2ac',alphabet)==='2AB = 2AC','Coefficients do not prevent label capitalization');
+ assert(capitalizeGeometryLabels('is = an',alphabet)==='IS = AN','Word-like labels still capitalize in mathematical positions');
+ assert(capitalizeGeometryLabels('a = b',alphabet)==='A = B','Individual point labels capitalize');
+ assert(capitalizeGeometryLabels('this is a bad proof',alphabet)==='this is a bad proof','Ordinary prose is preserved');
  output.push('ALL CHECKS PASSED');
 }catch(e){output.push('FAILED '+e.stack)}
 document.querySelector('#results').textContent=output.join('\n');

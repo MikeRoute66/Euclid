@@ -5,7 +5,7 @@ const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 // Lengths are undirected, angles may reverse their rays, and equality is symmetric.
 function magnitude(s){if(/^[A-Z]{2}$/.test(s))return [...s].sort().join('');if(/^∠[A-Z]{3}$/.test(s)){let a=s.slice(1),b=[...a].reverse().join('');return '∠'+[a,b].sort()[0]}return s}
 function equality(s){let text=s.toUpperCase().replace(/\s/g,'').replace(/ANGLE/g,'∠'),parts=text.split('=');if(parts.length!==2||!parts.every(p=>/^(?:[A-Z]{2}|∠[A-Z]{3})$/.test(p)))return null;return parts.map(magnitude)}
-function readableStatement(s){return s.replace(/Equilateral\(([A-Z]{3})\)/gi,'$1 is equilateral').replace(/Congruent\(([A-Z]{3}),\s*([A-Z]{3})\)/gi,'$1 is congruent to $2').replace(/Superpose\(([A-Z]{3}),\s*([A-Z]{3})\)/gi,'$1 is superposed on $2')}
+function readableStatement(s,points=state?.points){let text=s.replace(/Equilateral\(([A-Z]{3})\)/gi,'$1 is equilateral').replace(/Congruent\(([A-Z]{3}),\s*([A-Z]{3})\)/gi,'$1 is congruent to $2').replace(/Superpose\(([A-Z]{3}),\s*([A-Z]{3})\)/gi,'$1 is superposed on $2');return capitalizeGeometryLabels(text,Object.keys(points||{}))}
 function triangleStatement(s){
  let text=readableStatement(s).toUpperCase().replace(/\bTRIANGLES?\b/g,'').replace(/[\u25b3\u0394]/g,'').replace(/\s/g,'').replace(/\.$/,'');
  let unary=text.match(/^([A-Z]{3})IS(EQUILATERAL|ISOSCELES|SCALENE)$/);
@@ -72,7 +72,7 @@ function deleteProofLine(i){snapshot();state.lines.splice(i,1);if(editingLine===
 function beginEdit(i){editingLine=i;$('#statement').value=state.lines[i].s;$('#lineform label').textContent='Editing line '+(i+1);$('#lineform button[type="submit"]').textContent='Save changes';$('#cancel-edit').hidden=false;$('#statement').focus();$('#statement').select();updateFormatHelp();$('#lineform').scrollIntoView({block:'nearest'});}
 $('#cancel-edit').onclick=()=>resetLineForm();
 $('#statement').addEventListener('keydown',e=>{if(e.key==='Escape'&&editingLine!==null){e.preventDefault();resetLineForm();}});
-$('#lineform').onsubmit=e=>{e.preventDefault();let value=$('#statement').value.trim();if(!value)return;snapshot();if(editingLine===null)state.lines.push({s:value,j:null});else state.lines[editingLine].s=value;resetLineForm();render();};
+$('#lineform').onsubmit=e=>{e.preventDefault();let value=readableStatement($('#statement').value.trim());if(!value)return;snapshot();if(editingLine===null)state.lines.push({s:value,j:null});else state.lines[editingLine].s=value;resetLineForm();render();};
 document.querySelectorAll('[data-tab]').forEach(b=>{
  b.onclick=()=>{tab=tab===b.dataset.tab?null:b.dataset.tab;renderTools()};
  b.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();tab=b.dataset.tab;renderTools();$('#tools button:not(:disabled)')?.focus();}});

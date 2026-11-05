@@ -53,3 +53,6 @@ Justifications are checked by rule: P4 compares established right angles, E.15 r
 
 
 Hints describe the next geometric action and the reasoning for a proof statement without reference indices, menu names, or instructions naming the correct tool. Learners choose the tool or justification themselves. Point names, mathematical quantities, and proof-line numbers remain so the action is unambiguous. This applies to construction, proof, editing, and correction hints throughout all 48 lessons.
+
+
+Proof entries automatically capitalize labels belonging to the current construction while preserving ordinary words and the text cursor. For example, `ab = ac` becomes `AB = AC`, and `abcd is a square` becomes `ABCD is a square`. The same normalization applies to edited lines and loaded saves.
