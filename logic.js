@@ -57,7 +57,7 @@ const EuclidLogic=(()=>{
  function makeEquality(a,b){return parse(a+' = '+b)}
  function context(state,lesson){
   const accepted=[],d=diagram(state,accepted),hypotheses=(lesson.givens||[]).map(parse),reasons=[];
-  function sameFact(a,b){if(a.kind!==b.kind)return false;if(a.kind==='equality')return follows(vector(a,d),[vector(b,d)]);if(a.kind==='property')return a.property===b.property&&segment(a.triangle)===segment(b.triangle);if(a.kind==='relation')return a.relation===b.relation&&relationKey(a.a,a.b)===relationKey(b.a,b.b);return false}
+  function sameFact(a,b){if(a.kind!==b.kind)return false;if(a.kind==='equality')return follows(vector(a,d),[vector(b,d)]);if(a.kind==='inequality'){let left=vector(a,d),right=vector(b,d);return left.size===right.size&&[...left].every(([term,coefficient])=>Math.abs(coefficient-(right.get(term)||0))<1e-9)}if(a.kind==='property')return a.property===b.property&&segment(a.triangle)===segment(b.triangle);if(a.kind==='relation')return a.relation===b.relation&&relationKey(a.a,a.b)===relationKey(b.a,b.b);return false}
   function equivalent(a,b){return d.canonical(a)===d.canonical(b)}
   function knownEqual(a,b){if(equivalent(a,b))return true;let graph=new Map();for(let fact of accepted)if(atomic(fact)){let x=d.canonical(fact.left[0].term),y=d.canonical(fact.right[0].term);if(!graph.has(x))graph.set(x,new Set());if(!graph.has(y))graph.set(y,new Set());graph.get(x).add(y);graph.get(y).add(x)}let end=d.canonical(b),queue=[d.canonical(a)],seen=new Set();while(queue.length){let p=queue.shift();if(p===end)return true;if(seen.has(p))continue;seen.add(p);for(let n of graph.get(p)||[])if(!seen.has(n))queue.push(n)}return false}
   function transitiveEquality(ast){

@@ -68,9 +68,18 @@ function ensurePracticeConstruction(){
  if(settings.skipConstruction&&!state.manualConstruction){let supplied=state.practiceConstruction||suppliedConstruction(index);delete state.practiceConstruction;state.manualConstruction=constructionGeometry(state);Object.assign(state,supplied)}
  if(!settings.skipConstruction&&state.manualConstruction){let original=state.manualConstruction;state.practiceConstruction=constructionGeometry(state);delete state.manualConstruction;Object.assign(state,original)}
 }
+// Hypotheses are supplied premises, independent of the selected practice mode.
+function proofWithHypotheses(lines,lesson){
+ const givens=lesson.givens||[];
+ if(!givens.length)return lines;
+ const value={...state,lines:[]},context=lesson.id<=5?EuclidLogic.context(value,lesson):BookOneLogic.context(value,lesson);
+ const parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
+ return [...givens.map(s=>({s:readableStatement(s),j:'Given'})),...lines.filter(line=>{let ast=parse(line.s);return !ast||!context.check(ast,'Given').ok})];
+}
 function ensurePracticeProof(){
  if(settings.skipProof&&!state.manualProof){let original=state.lines;state.manualProof=original.map(l=>({s:l.s,j:l.j}));state.lines=state.practiceProof||(LESSONS[index].proofGuide||LESSONS[index].hintSteps).map(step=>({s:step.s,j:original.find(l=>l.s===step.s)?.j||null}));delete state.practiceProof}
  if(!settings.skipProof&&state.manualProof){state.practiceProof=state.lines.map(l=>({s:l.s,j:l.j}));state.lines=state.manualProof;delete state.manualProof}
+ if(settings.skipProof)state.lines=proofWithHypotheses(state.lines,LESSONS[index]);
 }
 function inferredProof(value,lesson){
  const copy=structuredClone(value),context=lesson.id<=5?EuclidLogic.context(copy,lesson):BookOneLogic.context(copy,lesson),parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
