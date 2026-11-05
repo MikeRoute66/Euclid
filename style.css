@@ -65,8 +65,8 @@ dialog{max-height:85dvh;overflow:auto}
 /* Each palette occupies the column of its own command button. */
 #toolpopup{left:calc(var(--menu-column,0) * 25%);right:auto;width:25%;border-radius:6px 6px 0 0}
 .popuphead{padding:9px 10px;gap:4px;font-size:11px;min-width:0}.popuphead span{overflow-wrap:anywhere}
-#tools{grid-template-columns:repeat(auto-fit,minmax(48px,1fr));padding:8px;gap:5px}
-#tools .tool{text-align:center;padding:10px 5px;font-size:12px}
+#tools{grid-template-columns:repeat(auto-fit,minmax(48px,1fr));grid-auto-rows:max-content;padding:8px;gap:5px}
+#tools .tool{display:flex;align-items:center;justify-content:center;min-height:36px;text-align:center;padding:10px 5px;font-size:12px;line-height:1.25;white-space:nowrap}
 .reference-source{padding:7px 10px;font-size:9px;overflow-wrap:anywhere}
 #tool-name{position:fixed;z-index:100;max-width:min(280px,calc(100vw - 16px));padding:7px 10px;border:1px solid #526358;border-radius:4px;background:#18211b;color:var(--ink);font-size:12px;line-height:1.4;box-shadow:0 4px 16px #0009;pointer-events:none}
 #tool-name[hidden]{display:none}
