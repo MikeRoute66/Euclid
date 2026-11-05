@@ -26,7 +26,8 @@ E.27 is the clearest example: an assumed meeting point X of the two lines would 
 | E.24 | Added the copied interior ray, copied radius, circle intersection, and joins BI and CI. Adjusted the initial diagram so the copied smaller angle visibly lies inside the larger angle. |
 | E.25-26 | Unequal-angle/unequal-side alternatives are hypothetical; existing triangles supply the actual figure. |
 | E.27 | The meeting-point triangle is hypothetical; clarified guidance and inspected argument. No actual intersection is required. |
-| E.28-30 | Existing transversals/parallel lines suffice. E.29's assumed intersection is hypothetical. |
+| E.28-29 | Existing transversals/parallel lines suffice. E.29's assumed intersection is hypothetical. |
+| E.30 | Added transversal AF and intersection G. The proof transfers angles using E.29, equates them with the first common notion, and concludes with E.27; parallelism itself is not justified by a common notion. |
 | E.31-34 | Existing constructed parallel, joins, and diagonals supply the proof figures. |
 | E.35 | Corrected the explanation to use the end triangles ADF and BCE, whose sides are already present, rather than wrongly named triangles. |
 | E.36 | Added AH and BG to form connecting parallelogram ABGH. |

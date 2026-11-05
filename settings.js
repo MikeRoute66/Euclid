@@ -79,13 +79,17 @@ function proofWithHypotheses(lines,lesson){
 function ensurePracticeProof(){
  if(settings.skipProof&&!state.manualProof){let original=state.lines;state.manualProof=original.map(l=>({s:l.s,j:l.j}));state.lines=state.practiceProof||(LESSONS[index].proofGuide||LESSONS[index].hintSteps).map(step=>({s:step.s,j:original.find(l=>l.s===step.s)?.j||null}));delete state.practiceProof}
  if(!settings.skipProof&&state.manualProof){state.practiceProof=state.lines.map(l=>({s:l.s,j:l.j}));state.lines=state.manualProof;delete state.manualProof}
- if(settings.skipProof)state.lines=proofWithHypotheses(state.lines,LESSONS[index]);
+ if(settings.skipProof){
+  const guide=LESSONS[index].proofGuide||LESSONS[index].hintSteps;
+  state.lines=proofWithHypotheses(guide.map(step=>state.lines.find(line=>line.s===readableStatement(step.s))||{s:readableStatement(step.s),j:null}),LESSONS[index]);
+ }
 }
 function inferredProof(value,lesson){
  const copy=structuredClone(value),context=lesson.id<=5?EuclidLogic.context(copy,lesson):BookOneLogic.context(copy,lesson),parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
- const references=['Given',...Object.values(REFERENCES).flat().map(r=>r[1]).filter(r=>!/^I/.test(r)||Number(r.slice(1))<lesson.id),'Logic'];
- for(let line of copy.lines){let ast=parse(line.s),reference=ast&&references.find(r=>context.check(ast,r).ok);line.j=reference||null;if(reference)(context.accepted||context.facts).push(ast)}
- let result=EuclidLogic.grade(copy,lesson);for(let [i,line] of value.lines.entries()){line.autoJustification=copy.lines[i].j;for(let field of ['valid','error','dependencies','reason','derivation'])line[field]=copy.lines[i][field];if(!line.valid&&parse(line.s))line.error='This statement does not follow from the construction and earlier established statements.'}
+ const available=Object.values(REFERENCES).flat().map(r=>r[1]).filter(r=>!/^I/.test(r)||Number(r.slice(1))<lesson.id);
+ const references=['Given',...available.filter(r=>/^I/.test(r)),...available.filter(r=>!/^I/.test(r)),'Logic'];
+ for(let line of copy.lines){let ast=parse(line.s),reference=ast&&[...new Set(['Given',...context.sourceReferences(ast),...references])].find(r=>context.check(ast,r).ok);line.j=reference||null;if(reference)context.accept(ast,reference)}
+ let result=EuclidLogic.grade(copy,lesson);for(let [i,line] of value.lines.entries()){line.autoJustification=copy.lines[i].j;for(let field of ['valid','error','dependencies','reason','derivation','sourcePropositions'])line[field]=copy.lines[i][field];if(!line.valid&&parse(line.s))line.error='This statement does not follow from the construction and earlier established statements.'}
  return {...result,complete:copy.lines.length>0&&result.complete};
 }
 function practiceMode(){return settings.skipProof?(settings.skipJustifications?(settings.skipConstruction?'Review':'Construction practice'):(settings.skipConstruction?'Justification practice':'Construction and justifications')):settings.skipConstruction?(settings.skipJustifications?'Statement practice':'Proof practice'):settings.skipJustifications?'Statements and construction':'Full challenge'}
@@ -141,4 +145,10 @@ function practiceInstruction(){
 function updateLearningGuidance(){
  const panel=$('#learning-guidance');panel.hidden=!settings.learningMode;
  if(settings.learningMode)$('#learning-instructions').textContent=displayReference(nextHint());
+}
+
+function proofInspectionBody(line,reference){
+ let body=line.derivation?['Earlier propositions: '+line.derivation.dependencies.map(n=>'I.'+n).join(', '),...line.derivation.steps]:[line.reason||referenceName(reference),'Earlier proof lines: '+(line.dependencies||[]).join(', ')];
+ if(line.sourcePropositions?.length)body.push('Source propositions: '+line.sourcePropositions.map(displayReference).join(', '));
+ return body;
 }

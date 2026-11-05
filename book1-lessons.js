@@ -101,6 +101,10 @@ BOOK_ONE_ADDITIONS.find(l=>l.id===16).proofGuide=[guide('AE = EC','I10'),guide('
 BOOK_ONE_ADDITIONS.find(l=>l.id===18).proofGuide=[guide('AC > AB','Given'),guide('AD = AB','I3'),guide('angle ABD = angle BDA','I5'),guide('angle BDA > angle BCD','I16'),guide('angle ABC > angle ACB','Logic')];
 BOOK_ONE_ADDITIONS.find(l=>l.id===24).proofGuide=[guide('AB = DE','Given'),guide('AC = DF','Given'),guide('angle BAC > angle EDF','Given'),guide('AH = AC','I2'),guide('AI = AH','D15'),guide('AI = AC','CN1'),guide('angle BAI = angle EDF','I23'),guide('ABI is congruent to DEF','I4'),guide('BI = EF','I4'),guide('BC > EF','Logic')];
 BOOK_ONE_ADDITIONS.find(l=>l.id===48).proofGuide=[guide('BC^2 = AB^2 + AC^2','Given'),guide('AD is perpendicular to AC','I11'),guide('AE = AB','I2'),guide('AF = AE','D15'),guide('AF = AB','CN1'),guide('angle FAC is right','D10'),guide('FC^2 = AF^2 + AC^2','I47'),guide('FC^2 = BC^2','Logic'),guide('FC = BC','Logic'),guide('FAC is congruent to BAC','I8'),guide('angle FAC = angle BAC','I8'),guide('angle BAC is right','Logic')];
+let parallelTransitivity=BOOK_ONE_ADDITIONS.find(l=>l.id===30);
+parallelTransitivity.construction=[build('P1',['A','F'],'Join A to F as a transversal.'),crossing('G',['AF','CD'],'Mark G where AF meets CD.')];parallelTransitivity.requireConstruction=true;
+parallelTransitivity.proofGuide=[guide('AB is parallel to CD','Given'),guide('CD is parallel to EF','Given'),guide('angle BAG = angle DGF','I29'),guide('angle DGF = angle GFE','I29'),guide('angle BAG = angle GFE','CN1'),guide('AB is parallel to EF','I27')];
+let appliedAreaProof=BOOK_ONE_ADDITIONS.find(l=>l.id===44).proofGuide;appliedAreaProof.splice(2,0,guide('angle KBI = angle FGH','I42'));
 LESSONS.push(...BOOK_ONE_ADDITIONS);
 const BOOK_BUILD_MODES={I9:['bisectAngle',3],I10:['midpoint',2],I11:['perpendicular',3],I12:['perpendicular',3],I22:['sss',8],I23:['copyAngle',5],I31:['parallel',3],I42:['equalArea',8],I44:['applyArea',8],I45:['figureArea',9],I46:['square',2]};
 REFERENCES.propositions=LESSONS.map(l=>{

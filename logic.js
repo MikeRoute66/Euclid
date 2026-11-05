@@ -56,8 +56,8 @@ const EuclidLogic=(()=>{
  const atomic=ast=>ast.kind==='equality'&&ast.left.length===1&&ast.right.length===1&&ast.left[0].coefficient===1&&ast.right[0].coefficient===1;
  function makeEquality(a,b){return parse(a+' = '+b)}
  function context(state,lesson){
-  const accepted=[],d=diagram(state,accepted),hypotheses=(lesson.givens||[]).map(parse),reasons=[];
-  function sameFact(a,b){if(a.kind!==b.kind)return false;if(a.kind==='equality')return follows(vector(a,d),[vector(b,d)]);if(a.kind==='inequality'){let left=vector(a,d),right=vector(b,d);return left.size===right.size&&[...left].every(([term,coefficient])=>Math.abs(coefficient-(right.get(term)||0))<1e-9)}if(a.kind==='property')return a.property===b.property&&segment(a.triangle)===segment(b.triangle);if(a.kind==='relation')return a.relation===b.relation&&relationKey(a.a,a.b)===relationKey(b.a,b.b);return false}
+  const accepted=[],d=diagram(state,accepted),hypotheses=(lesson.givens||[]).map(parse),reasons=[],origins=new WeakMap();
+  function sameFact(a,b){if(a.kind!==b.kind)return false;if(a.kind==='equality')return follows(vector(a,d),[vector(b,d)])&&follows(vector(b,d),[vector(a,d)]);if(a.kind==='inequality'){let left=vector(a,d),right=vector(b,d);return left.size===right.size&&[...left].every(([term,coefficient])=>Math.abs(coefficient-(right.get(term)||0))<1e-9)}if(a.kind==='property')return a.property===b.property&&segment(a.triangle)===segment(b.triangle);if(a.kind==='relation')return a.relation===b.relation&&relationKey(a.a,a.b)===relationKey(b.a,b.b);return false}
   function equivalent(a,b){return d.canonical(a)===d.canonical(b)}
   function knownEqual(a,b){if(equivalent(a,b))return true;let graph=new Map();for(let fact of accepted)if(atomic(fact)){let x=d.canonical(fact.left[0].term),y=d.canonical(fact.right[0].term);if(!graph.has(x))graph.set(x,new Set());if(!graph.has(y))graph.set(y,new Set());graph.get(x).add(y);graph.get(y).add(x)}let end=d.canonical(b),queue=[d.canonical(a)],seen=new Set();while(queue.length){let p=queue.shift();if(p===end)return true;if(seen.has(p))continue;seen.add(p);for(let n of graph.get(p)||[])if(!seen.has(n))queue.push(n)}return false}
   function transitiveEquality(ast){
@@ -101,6 +101,8 @@ const EuclidLogic=(()=>{
    if(rule==='CN3')for(let [wholeLeft,wholeRight] of common)for(let [partLeft,partRight] of pairs)if(equal(sum(target[0],partLeft),wholeLeft)&&equal(sum(target[1],partRight),wholeRight)||equal(sum(target[1],partLeft),wholeLeft)&&equal(sum(target[0],partRight),wholeRight))return true;
    return false;
   }
+  function sourceReferences(ast){return [...new Set([...['I1','I2','I3'].filter(r=>Number(r.slice(1))<lesson.id&&(certifiedEqualities(r).some(f=>sameFact(ast,f))||r==='I1'&&ast.kind==='property'&&ast.property==='equilateral'&&state.facts.some(f=>{let p=f.split(':');return p[0]==='equilateral'&&segment(ast.triangle)===segment(p[1]+(p[2]||'A')+(p[3]||'B'))})&&d.proper(ast.triangle))),...congruences().filter(f=>partsMatch(ast,f)).map(f=>origins.get(f)).filter(r=>/^I/.test(r||''))])]}
+  function accept(ast,reference){origins.set(ast,reference);accepted.push(ast)}
   function check(ast,rule){
    if(termsOf(ast).some(t=>![...t.replace(ANG,'')].every(n=>d.points[n]))||(ast.kind==='property'&&![...ast.triangle].every(n=>d.points[n]))||(ast.kind==='relation'&&![...ast.a,...ast.b].every(n=>d.points[n])))return {ok:false,error:'This statement names a point that is not in the construction.'};
    if(/^I[1-4]$/.test(rule)&&Number(rule.slice(1))>=lesson.id)return {ok:false,error:'This proposition has not yet been established. Use an earlier proposition.'};
@@ -115,7 +117,7 @@ const EuclidLogic=(()=>{
    else if(rule==='I4'){ok=ast.kind==='relation'&&ast.relation==='congruent'&&(sas(ast.a,ast.b)||congruences().some(c=>relationKey(c.a,c.b)===relationKey(ast.a,ast.b)))||congruences().some(c=>partsMatch(ast,c));explanation='Side-angle-side, or corresponding parts of triangles already proved congruent.'}
    else if(rule==='CN4'){ok=ast.kind==='relation'&&(congruences().some(c=>relationKey(c.a,c.b)===relationKey(ast.a,ast.b))||superposition(ast.a,ast.b)&&sas(ast.a,ast.b))||congruences().some(c=>partsMatch(ast,c));explanation='Certified superposition or corresponding coincident parts.'}
    else if(rule==='P1'){ok=false;explanation='Joining points constructs a line; it does not establish a length equality.'}
-   return {ok,error:ok?'':explanation?explanation+' The required premises or construction evidence are missing.':'This reference does not imply that statement in the supported Euclidean calculus.',explanation};
+   return {ok,sourcePropositions:ok?sourceReferences(ast):[],error:ok?'':explanation?explanation+' The required premises or construction evidence are missing.':'This reference does not imply that statement in the supported Euclidean calculus.',explanation};
   }
   function goal(){switch(lesson.id){
    case 1:return accepted.some(a=>a.kind==='property'&&a.property==='equilateral'&&a.triangle.includes('A')&&a.triangle.includes('B')&&d.proper(a.triangle));
@@ -125,8 +127,8 @@ const EuclidLogic=(()=>{
    case 5:return knownEqual(ANG+'ABC',ANG+'ACB')&&d.points.F&&d.points.G&&d.between('A','B','F')&&d.between('A','C','G')&&knownEqual(ANG+'FBC',ANG+'GCB');
    default:return false;
   }}
-  return {d,accepted,check,goal,knownEqual,reasons};
+  return {d,accepted,check,goal,knownEqual,reasons,sourceReferences,accept};
  }
- function grade(state,lesson){const ctx=context(state,lesson);for(let [i,line] of state.lines.entries()){let ast=parse(line.s);line.valid=false;line.dependencies=[];if(!ast){line.error='Unrecognized format. Use the keyword-based “Did you mean?” help to format your own statement.';continue}if(!line.j){line.error='Select a reference, then click this line to justify it.';continue}let result=ctx.check(ast,line.j);line.valid=result.ok;line.error=result.error;if(result.ok){line.reason=result.explanation;line.dependencies=state.lines.slice(0,i).flatMap((l,j)=>l.valid?[j+1]:[]);ctx.accepted.push(ast)}}return {complete:state.lines.every(l=>l.valid)&&ctx.goal(),goalReached:!!ctx.goal(),context:ctx}}
+ function grade(state,lesson){const ctx=context(state,lesson);for(let [i,line] of state.lines.entries()){let ast=parse(line.s);line.valid=false;line.dependencies=[];if(!ast){line.error='Unrecognized format. Use the keyword-based “Did you mean?” help to format your own statement.';continue}if(!line.j){line.error='Select a reference, then click this line to justify it.';continue}let result=ctx.check(ast,line.j);line.valid=result.ok;line.error=result.error;if(result.ok){line.reason=result.explanation;line.sourcePropositions=result.sourcePropositions||[];line.dependencies=state.lines.slice(0,i).flatMap((l,j)=>l.valid?[j+1]:[]);ctx.accept(ast,line.j)}}return {complete:state.lines.every(l=>l.valid)&&ctx.goal(),goalReached:!!ctx.goal(),context:ctx}}
  return {parse,grade,diagram,context,permutations,relationKey};
 })();

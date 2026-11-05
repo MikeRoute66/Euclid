@@ -62,6 +62,45 @@ addEventListener('load',()=>{
 
    }catch(error){check(false,'I.'+(i+1)+' '+error.message)}
   }
+  // Named results must match their own hypotheses/conclusions, even when a
+  // different construction or theorem already makes the requested claim true.
+  function theoremAudit(lessonIndex,extraGivens=[],initialOnly=false){
+   let initial={points:structuredClone(LESSONS[lessonIndex].points),edges:[...LESSONS[lessonIndex].edges],rays:[],circles:[],facts:[],lines:[]};EuclidConstruction.initialize(initial,LESSONS[lessonIndex]);
+   let lesson={id:49,givens:[...(LESSONS[lessonIndex].givens||[]),...extraGivens]},value=initialOnly?initial:{...suppliedConstruction(lessonIndex),lines:[]},c=BookOneLogic.context(value,lesson);
+   for(let statement of lesson.givens){let ast=BookOneLogic.parse(statement);if(c.check(ast,'Given').ok)c.accept(ast,'Given')}
+   return {value,c,check:(statement,ref)=>c.check(BookOneLogic.parse(statement),ref).ok};
+  }
+  let unrelated={points:{A:[0,0],B:[4,0],C:[4,4],D:[0,4],E:[10,10],F:[14,10],G:[14,14],H:[10,14]},edges:['AB','BC','CD','DA','EF','FG','GH','HE','AC','EG'],rays:[],circles:[],facts:[],lines:[]};
+  EuclidConstruction.initialize(unrelated,{id:49});let unrelatedLesson={id:49,givens:['ABCD is a parallelogram','EFGH is a parallelogram','area ABCD = area EFGH','area ABC = area EFG','area ABCD = 2 area EFG']},unrelatedContext=BookOneLogic.context(unrelated,unrelatedLesson);
+  unrelatedLesson.givens.forEach(s=>unrelatedContext.accept(BookOneLogic.parse(s),'Given'));
+  for(let [ref,statement] of [['I34','area ABCD = area EFGH'],['I35','area ABCD = area EFGH'],['I36','area ABCD = area EFGH'],['I37','area ABC = area EFG'],['I38','area ABC = area EFG'],['I39','AD is parallel to EH'],['I40','AD is parallel to EH'],['I41','area ABCD = 2 area EFG'],['I43','area ABCD = area EFGH']])check(!unrelatedContext.check(BookOneLogic.parse(statement),ref).ok,displayReference(ref)+' rejects a true unrelated claim without its geometric hypotheses');
+  let provenance=theoremAudit(44),certStatement='area HIJK = area ABC';
+  check(provenance.check(certStatement,'I44')&&!provenance.check(certStatement,'CN1'),'Construction area equality requires its source until explicitly posted');
+  check(!provenance.check(certStatement,'I41'),'E.41 rejects an equal-area claim transferred by E.44');
+  check(!provenance.check('HI is parallel to JK','I39')&&!provenance.check('HI is parallel to JK','I40'),'Area converses cannot restate arbitrary known parallel lines');
+  let auto45={...provenance.value,lines:LESSONS[44].proofGuide.map(l=>({s:l.s,j:null}))};
+  check(inferredProof(auto45,LESSONS[44]).complete&&auto45.lines.map(l=>l.autoJustification).join(',')==='I44,I44,I44,I44,D22,CN2,I44','E.45 automatic references preserve both E.44 construction sources');
+  check(auto45.lines.filter(l=>l.autoJustification==='I44').every(l=>l.sourcePropositions.includes('I44')),'Construction source propositions survive automatic grading');
+  let angleSum=theoremAudit(31);check(angleSum.check('angle ACD = angle BAC + angle ABC','I32')&&angleSum.check('angle BAC + angle ABC + angle ACB = 2 right angles','I32')&&!angleSum.check('angle BAC + angle ABC = 2 right angles','I32'),'E.32 checks its exterior-angle and three-angle formulas');
+  let alternate=theoremAudit(26,[],true);check(alternate.check('AB is parallel to CD','I27')&&!alternate.check('AB is parallel to CD','I28'),'Alternate-angle and corresponding-angle tests retain distinct hypotheses');
+  let corresponding=theoremAudit(27,[],true);check(corresponding.check('AB is parallel to CD','I28')&&!corresponding.check('AB is parallel to CD','I27'),'Corresponding-angle data needs E.28 or an explicit alternate-angle premise');
+  let exterior=theoremAudit(15);check(exterior.check('angle ACD > angle BAC','I16')&&!exterior.check('2 angle ACD > 3 angle BAC','I16'),'Exterior-angle rule rejects altered coefficients');
+  let smallAngles=theoremAudit(16);check(smallAngles.check('angle ABC + angle ACB < 2 right angles','I17')&&!smallAngles.check('2 angle ABC + 2 angle ACB < 2 right angles','I17'),'Triangle-angle bound requires the theorem coefficients');
+  let beforeMigration={index,state,settings:{...settings}};index=29;state={...fresh(),...suppliedConstruction(29),manualProof:[],lines:[{s:'AB is parallel to CD',j:'Given'},{s:'CD is parallel to EF',j:'Given'},{s:'AB is parallel to EF',j:'CN1'}]};settings.skipProof=true;settings.skipJustifications=true;render();check(state.lines.length===LESSONS[29].proofGuide.length&&state.lines.some(l=>l.s==='angle BAG = angle DGF')&&state.lines.every(l=>l.valid),'Older supplied-proof caches receive corrected steps and automatic references');index=beforeMigration.index;state=beforeMigration.state;Object.assign(settings,beforeMigration.settings);render();
+  let joins=theoremAudit(32);check(joins.check('AC = BD','I33')&&joins.check('AC is parallel to BD','I33')&&!joins.check('AB = CD','I33'),'E.33 requires equal parallel source segments and corresponding joining ends');
+  let diagonal=theoremAudit(33);check(diagonal.check('area ABC = area CDA','I34')&&!diagonal.check('area ABCD = 2 area ABC','I34'),'E.34 recognizes diagonal halves and rejects a different area formula');
+  let sameBase=theoremAudit(34,['area ABCD = area ABEF']);check(sameBase.check('area ABCD = area ABEF','I35')&&!sameBase.check('area ABCD = area ABEF','I43'),'E.35 verifies same-base figures; E.43 requires actual diagonal complements');
+  let equalBases=theoremAudit(35);check(equalBases.check('area ABCD = area EFGH','I36')&&!equalBases.check('area ABCD = area EFGH','I35'),'Equal-base and same-base parallelogram theorems have distinct hypotheses');
+  check(theoremAudit(36).check('area ABC = area ABD','I37'),'E.37 accepts triangles sharing a base and common parallels');
+  let equalTriangles=theoremAudit(37);check(equalTriangles.check('area ABC = area DEF','I38')&&!equalTriangles.check('area ABC = area DEF','I37'),'Equal-base and same-base triangle theorems have distinct hypotheses');
+  check(theoremAudit(38).check('CD is parallel to AB','I39')&&theoremAudit(39).check('AD is parallel to BC','I40'),'Area converses verify triangle equalities, base conditions, and same side');
+  check(theoremAudit(40).check('area ABCD = 2 area ABE','I41'),'E.41 accepts the double-area relation on a common base and parallel');
+  check(theoremAudit(42).check('area GBHE = area FEKD','I43'),'E.43 accepts complements about the same recorded diagonal');
+  let squareGiven=theoremAudit(47,[],true),rightGiven=theoremAudit(46);
+  check(!squareGiven.check('BC^2 = AB^2 + AC^2','I47')&&rightGiven.check('BC^2 = AB^2 + AC^2','I47'),'E.47 requires an established right angle rather than only the conclusion');
+  check(squareGiven.check('angle BAC is right','I48')&&!rightGiven.check('angle BAC is right','I48'),'E.48 requires a preceding Pythagorean identity rather than only a right angle');
+  check(!rightGiven.check('angle BAC = angle BAC','I29'),'E.29 rejects unrelated angle reflexivity despite available parallels');
+  check(theoremAudit(29).check('AB is parallel to EF','I30')&&!theoremAudit(28).check('AB is parallel to CD','I30'),'E.30 requires two established pairs sharing a third distinct line');
   check(referenceName('I1').startsWith('E.1'),'Proof justifications use E labels');
   check(displayReference('I1, I.48 and point I')==='E.1, E.48 and point I','Display labels preserve geometry names');
   check([...$('#chapters select').options].every(o=>o.textContent.startsWith('E.')),'Every navigation label uses E');
@@ -87,7 +126,7 @@ addEventListener('load',()=>{
   state.lines=[{s:'angle BAC is right',j:'Given'},{s:'BC^2 = AB^2 + AC^2',j:'I37'}];EuclidLogic.grade(state,LESSONS[46]);check(!state.lines[1].valid,'Unrelated area theorem cannot justify a squares identity');
   load(25);state=fresh();let ambiguous={...LESSONS[25],givens:['AB = DE','AC = DF','angle ABC = angle DEF']};state.lines=ambiguous.givens.map(s=>({s,j:'Given'}));state.lines.push({s:'ABC is congruent to DEF',j:'CN4'});EuclidLogic.grade(state,ambiguous);check(!state.lines.at(-1).valid,'Ambiguous side-side-angle is not a congruence rule');
   check(!BookOneLogic.parse('angle ABA = angle ABA'),'Degenerate angle syntax rejected');
-  load(27);state=fresh();let supplemental={...LESSONS[27],givens:['angle BGH + angle GHD = 2 right angles']};state.lines=[{s:supplemental.givens[0],j:'Given'},{s:'AB is parallel to CD',j:'I27'}];EuclidLogic.grade(state,supplemental);check(state.lines.at(-1).valid,'Second parallel-test case uses supplementary interior angles');
+  load(27);state=fresh();let supplemental={...LESSONS[27],id:29,givens:['angle BGH + angle GHD = 2 right angles']};state.lines=[{s:supplemental.givens[0],j:'Given'},{s:'AB is parallel to CD',j:'I28'}];EuclidLogic.grade(state,supplemental);check(state.lines.at(-1).valid,'Second parallel-test case uses supplementary interior angles');
   check(suggestStatementFormat('XY parallel ZW').text==='XY is parallel to ZW','Parallel format help preserves user lines');
   check(suggestStatementFormat('PQRS square').text==='PQRS is a square','Square format help preserves user vertices');
   check(suggestStatementFormat('area PQR equals 2 area STU').text==='area PQR = 2 area STU','Area format help preserves quantities');

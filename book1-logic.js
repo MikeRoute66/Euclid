@@ -29,7 +29,7 @@ const BookOneLogic=(()=>{
  const equality=(x,y)=>parse(x+' = '+y),atomic=t=>t?.kind==='eq'&&t.left.length===1&&t.right.length===1&&t.left[0].coefficient===1&&t.right[0].coefficient===1;
  const namesIn=t=>{if(!t)return [];let text=t.kind==='eq'||t.kind==='gt'?[...t.left,...t.right].map(v=>v.term.replace(/AREA\(|\)|RIGHT|\^2|\u2220/g,'')).join(''):t.kind==='right'?t.angle:t.kind==='shape'?t.polygon:t.kind==='collinear'?t.points:t.kind==='inside'?t.point+t.triangle:t.kind==='sameSide'?t.a+t.b+t.line:(t.a||'')+(t.b||'');return [...text].filter(n=>/[A-Z]/.test(n))};
  function context(state,lesson){
-  let facts=[],derivations=[],d=EuclidLogic.diagram(state,facts);
+  let facts=[],derivations=[],origins=new WeakMap(),d=EuclidLogic.diagram(state,facts);
   const scalarTerms=t=>t.kind==='eq'||t.kind==='gt'?[...t.left,...t.right].map(v=>v.term):[];
   function canonical(term){if(term==='RIGHT')return 'RIGHT';if(term.startsWith('AREA('))return 'AREA('+polygonKey(term.slice(5,-1))+')';if(term.endsWith('^2'))return sort(term.slice(0,2))+'^2';return d.canonical(term)}
   function expr(items){let out=new Map();for(let item of items){let key=canonical(item.term),coefficient=item.coefficient;if(key===A+'STRAIGHT'){key='RIGHT';coefficient*=2}out.set(key,(out.get(key)||0)+coefficient)}for(let [key,n] of out)if(Math.abs(n)<1e-8)out.delete(key);return out}
@@ -54,6 +54,8 @@ const BookOneLogic=(()=>{
   const supported=dependencies=>dependencies.every(n=>n<lesson.id);
   function argument(name,dependencies,steps){derivations.push({name,dependencies,steps});return supported(dependencies)}
   function certificateClaims(){let claims=[];for(let raw of state.facts){if(!raw.startsWith('book:'))continue;try{let record=JSON.parse(raw.slice(5));if(record.rule<lesson.id&&EuclidConstruction.certificate(record,state.points)&&record.claims?.every(s=>parse(s)))for(let s of record.claims)claims.push({rule:'I'+record.rule,claim:parse(s),record})}catch{}}return claims}
+  function sourceReferences(t){return [...new Set([...certificateClaims().filter(c=>key(c.claim)===key(t)).map(c=>c.rule),...facts.filter(f=>f.kind==='congruence'&&parts(t,f)).map(f=>origins.get(f)).filter(r=>/^I/.test(r||''))])]}
+  function accept(t,reference){origins.set(t,reference);facts.push(t)}
   function certificate(t,reference){return certificateClaims().some(c=>c.rule===reference&&key(c.claim)===key(t))}
   function circleEquality(t){if(!atomic(t)||t.left[0].kind!=='length'||t.right[0].kind!=='length')return false;let x=t.left[0].term,y=t.right[0].term;return state.circles.some(c=>{let end=s=>s[0]===c.a?s[1]:s[1]===c.a?s[0]:null,a=end(x),b=end(y);return a&&b&&EuclidConstruction.radius(state,c,a)&&EuclidConstruction.radius(state,c,b)})}
   function quadrilateralPart(t){return [...facts,...certificateClaims().map(c=>c.claim)].some(f=>{if(f.kind!=='shape'||!['square','parallelogram'].includes(f.property))return false;let p=f.polygon,edges=[...p].map((a,i)=>a+p[(i+1)%4]);if(atomic(t)&&t.left[0].kind==='length'&&t.right[0].kind==='length')return f.property==='square'&&[t.left[0].term,t.right[0].term].every(s=>edges.some(e=>sort(e)===sort(s)));if(t.kind==='parallel')return [0,1].some(i=>lineKey(t.a)===lineKey(edges[i])&&lineKey(t.b)===lineKey(edges[i+2])||lineKey(t.b)===lineKey(edges[i])&&lineKey(t.a)===lineKey(edges[i+2]));if(f.property!=='square')return false;let x=t.kind==='right'?t.angle[0]+t.angle[1]:t.a,y=t.kind==='right'?t.angle[1]+t.angle[2]:t.b;return ['right','perpendicular'].includes(t.kind)&&edges.some((e,i)=>lineKey(x)===lineKey(e)&&lineKey(y)===lineKey(edges[(i+1)%4])||lineKey(y)===lineKey(e)&&lineKey(x)===lineKey(edges[(i+1)%4]));})}
@@ -61,15 +63,31 @@ const BookOneLogic=(()=>{
   function angleDirections(angle){let [a,v,b]=angle;function ray(p){let support=lineKey(v+p),group=[support];for(let [x,y] of parallelPairs())for(let e of [x,y])if(parallel(v+p,e))group.push(lineKey(e));let dir=group.sort()[0],sign=d.direction(v,p);return [dir,sign]}return [ray(a),ray(b)]}
   function anglesEqualByParallels(a,b){let x=angleDirections(a),y=angleDirections(b);return [y,[...y].reverse()].some(z=>x[0][0]===z[0][0]&&x[1][0]===z[1][0]&&x[0][1]*x[1][1]===z[0][1]*z[1][1])}
   function adjacentStraight(t){if(t.kind!=='eq')return false;let angles=t.left.filter(v=>v.kind==='angle'&&v.term!=='RIGHT');if(angles.length!==2||angles.some(v=>v.coefficient!==1)||t.left.length!==2||t.right.length!==1||t.right[0].term!=='RIGHT'||t.right[0].coefficient!==2)return false;let [x,y]=angles.map(v=>v.term.slice(1));for(let a of [x,[...x].reverse().join('')])for(let b of [y,[...y].reverse().join('')])if(a[1]===b[1]&&d.sameRay(a[1],a[2],b[0])&&d.between(a[0],a[1],b[2]))return true;return false}
-  function parallelAngleTest(t){if(t.kind!=='parallel')return false;for(let g of d.names)for(let h of d.names)if(g!==h&&lineKey(t.a).includes(g)&&lineKey(t.b).includes(h))for(let u of t.a)for(let v of t.b)if(u!==g&&v!==h&&!sameSide(u,v,g+h)&&(equal(A+u+g+h,A+g+h+v)||linear(equality(A+u+g+h,A+g+h+v))))return true;return false}
-  function exteriorTarget(t){if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1||t.left[0].kind!=='angle'||t.right[0].kind!=='angle')return false;let x=t.left[0].term.slice(1),y=t.right[0].term.slice(1);for(let a of [x,[...x].reverse().join('')])for(let other of d.names)if(d.between(other,a[1],a[2])&&d.proper(a[0]+other+a[1])&&[a[0],other].includes(y[1])&&sort(y)===sort(a[0]+other+a[1]))return true;return false}
-  function sideAngleOrder(t,inverse=false){if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1)return false;let x=t.left[0].term,y=t.right[0].term;if(inverse){if(t.left[0].kind!=='length'||t.right[0].kind!=='length')return false;let common=[...x].find(n=>y.includes(n));if(!common)return false;let u=x.replace(common,''),v=y.replace(common,'');return d.proper(common+u+v)&&posted(parse('angle '+common+v+u+' > angle '+common+u+v))}if(!x.startsWith(A)||!y.startsWith(A))return false;let a=x.slice(1),b=y.slice(1);if(sort(a)!==sort(b)||a[1]===b[1]||!d.proper(a))return false;let third=[...a].find(n=>n!==a[1]&&n!==b[1]);return posted(parse(third+b[1]+' > '+third+a[1]))}
+  function parallelAngleTest(t,otherTests=false){
+   if(t.kind!=='parallel'||!d.drawn(...t.a)||!d.drawn(...t.b))return false;
+   for(let g of d.names)for(let h of d.names)if(g!==h&&lineKey(t.a).includes(g)&&lineKey(t.b).includes(h)&&d.drawn(g,h))for(let u of t.a)for(let v of t.b){
+    if(u===g||v===h)continue;
+    if(!otherTests&&!sameSide(u,v,g+h)&&equal(A+u+g+h,A+g+h+v))return true;
+    if(otherTests&&sameSide(u,v,g+h)){
+     if(equalExpression(parse('angle '+u+g+h+' + angle '+g+h+v+' = 2 right angles')))return true;
+     for(let k of d.names)if(d.between(k,g,h)&&equal(A+k+g+u,A+g+h+v))return true;
+    }
+   }
+   return false;
+  }
+  function parallelTransitivity(t){
+   if(t.kind!=='parallel')return false;let a=lineKey(t.a),b=lineKey(t.b),pairs=parallelPairs().map(([x,y])=>[lineKey(x),lineKey(y)]);
+   let neighbours=x=>pairs.flatMap(([u,v])=>u===x?[v]:v===x?[u]:[]);
+   return neighbours(a).some(c=>c!==a&&c!==b&&neighbours(b).includes(c));
+  }
+  function exteriorTarget(t){if(t.left?.some(v=>v.coefficient!==1)||t.right?.some(v=>v.coefficient!==1))return false;if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1||t.left[0].kind!=='angle'||t.right[0].kind!=='angle')return false;let x=t.left[0].term.slice(1),y=t.right[0].term.slice(1);for(let a of [x,[...x].reverse().join('')])for(let other of d.names)if(d.between(other,a[1],a[2])&&d.proper(a[0]+other+a[1])&&[a[0],other].includes(y[1])&&sort(y)===sort(a[0]+other+a[1]))return true;return false}
+  function sideAngleOrder(t,inverse=false){if(t.left?.some(v=>v.coefficient!==1)||t.right?.some(v=>v.coefficient!==1))return false;if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1)return false;let x=t.left[0].term,y=t.right[0].term;if(inverse){if(t.left[0].kind!=='length'||t.right[0].kind!=='length')return false;let common=[...x].find(n=>y.includes(n));if(!common)return false;let u=x.replace(common,''),v=y.replace(common,'');return d.proper(common+u+v)&&posted(parse('angle '+common+v+u+' > angle '+common+u+v))}if(!x.startsWith(A)||!y.startsWith(A))return false;let a=x.slice(1),b=y.slice(1);if(sort(a)!==sort(b)||a[1]===b[1]||!d.proper(a))return false;let third=[...a].find(n=>n!==a[1]&&n!==b[1]);return posted(parse(third+b[1]+' > '+third+a[1]))}
   function inverseIsosceles(t){if(!atomic(t)||t.left[0].kind!=='length')return false;let x=t.left[0].term,y=t.right[0].term,a=[...x].find(n=>y.includes(n));if(!a)return false;let b=x.replace(a,''),c=y.replace(a,'');return b!==c&&d.proper(a+b+c)&&equal(A+a+b+c,A+a+c+b)}
   function triangleInequality(t){if(t.kind!=='gt'||t.left.length!==2||t.right.length!==1||[...t.left,...t.right].some(v=>v.kind!=='length'||v.coefficient!==1))return false;let x=t.left[0].term,y=t.left[1].term,z=t.right[0].term,a=[...x].find(n=>y.includes(n));return !!a&&sort(x.replace(a,'')+y.replace(a,''))===sort(z)&&d.proper(a+z)}
-  function hinge(t,inverse){if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1)return false;let x=t.left[0].term,y=t.right[0].term;if(inverse){if(!x.startsWith(A)||!y.startsWith(A))return false;let a=x.slice(1),b=y.slice(1);return d.proper(a)&&d.proper(b)&&equal(a[0]+a[1],b[0]+b[1])&&equal(a[1]+a[2],b[1]+b[2])&&posted(parse(a[0]+a[2]+' > '+b[0]+b[2]))}if(t.left[0].kind!=='length'||t.right[0].kind!=='length')return false;for(let a of d.names)for(let b of d.names)for(let z of [y,[...y].reverse().join('')])if(!x.includes(a)&&!z.includes(b)&&d.proper(a+x)&&d.proper(b+z)&&equal(a+x[0],b+z[0])&&equal(a+x[1],b+z[1])&&posted(parse('angle '+x[0]+a+x[1]+' > angle '+z[0]+b+z[1])))return true;return false}
+  function hinge(t,inverse){if(t.left?.some(v=>v.coefficient!==1)||t.right?.some(v=>v.coefficient!==1))return false;if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1)return false;let x=t.left[0].term,y=t.right[0].term;if(inverse){if(!x.startsWith(A)||!y.startsWith(A))return false;let a=x.slice(1),b=y.slice(1);return d.proper(a)&&d.proper(b)&&equal(a[0]+a[1],b[0]+b[1])&&equal(a[1]+a[2],b[1]+b[2])&&posted(parse(a[0]+a[2]+' > '+b[0]+b[2]))}if(t.left[0].kind!=='length'||t.right[0].kind!=='length')return false;for(let a of d.names)for(let b of d.names)for(let z of [y,[...y].reverse().join('')])if(!x.includes(a)&&!z.includes(b)&&d.proper(a+x)&&d.proper(b+z)&&equal(a+x[0],b+z[0])&&equal(a+x[1],b+z[1])&&posted(parse('angle '+x[0]+a+x[1]+' > angle '+z[0]+b+z[1])))return true;return false}
   function innerBrokenLine(t){for(let f of facts)if(f.kind==='inside'&&inside(f.point,f.triangle)){let [a,b,c]=f.triangle,p=f.point;if(key(t)===key(parse(a+b+' + '+a+c+' > '+p+b+' + '+p+c))||key(t)===key(parse('angle '+b+p+c+' > angle '+b+a+c)))return true}return false}
-  function uniqueness(t){if(t.kind!=='pointEqual'||t.a===t.b)return false;for(let a of d.names)for(let b of d.names)if(a!==b&&![t.a,t.b].includes(a)&&![t.a,t.b].includes(b)&&sameSide(t.a,t.b,a+b)&&equal(a+t.a,a+t.b)&&equal(b+t.a,b+t.b))return true;return false}
-  function twoAnglesLess(t){if(t.kind!=='gt'||t.left.length!==1||t.left[0].term!=='RIGHT'||t.left[0].coefficient!==2||t.right.length!==2||t.right.some(v=>v.kind!=='angle'||v.term==='RIGHT'))return false;let a=t.right[0].term.slice(1),b=t.right[1].term.slice(1);return sort(a)===sort(b)&&a[1]!==b[1]&&d.proper(a)}
+  function uniqueness(t){if(t.kind!=='pointEqual'||t.a===t.b)return false;for(let a of d.names)for(let b of d.names)if(a!==b&&![t.a,t.b].includes(a)&&![t.a,t.b].includes(b)&&d.proper(a+b+t.a)&&d.proper(a+b+t.b)&&sameSide(t.a,t.b,a+b)&&equal(a+t.a,a+t.b)&&equal(b+t.a,b+t.b))return true;return false}
+  function twoAnglesLess(t){if(t.kind!=='gt'||t.left.length!==1||t.left[0].term!=='RIGHT'||t.left[0].coefficient!==2||t.right.length!==2||t.right.some(v=>v.kind!=='angle'||v.term==='RIGHT'||v.coefficient!==1))return false;let a=t.right[0].term.slice(1),b=t.right[1].term.slice(1);return sort(a)===sort(b)&&a[1]!==b[1]&&d.proper(a)}
   function linear(t){if(t.kind!=='eq')return false;let terms=[...scalarTerms(t),...facts.flatMap(scalarTerms)],equations=facts.filter(f=>f.kind==='eq').map(f=>subtract(expr(f.left),expr(f.right),1));let plain=terms.filter(v=>v.startsWith(A)||/^[A-Z]{2}$/.test(v));for(let id of d.identities(plain)){let row=new Map();for(let [k,v] of id){if(k===A+'STRAIGHT'){k='RIGHT';v*=2}row.set(k,(row.get(k)||0)+v)}equations.push(row)}return span(subtract(expr(t.left),expr(t.right),1),equations)}
   function commonNotion(t,rule){
    if(t.kind!=='eq')return false;
@@ -95,7 +113,7 @@ const BookOneLogic=(()=>{
    if(reference==='Given'){ok=(lesson.givens||[]).some(s=>key(parse(s))===key(t));reason='Hypothesis.'}
    else if(certificate(t,reference)){ok=true;reason='Certified construction using '+reference+'.'}
    else if(reference==='D15'){ok=circleEquality(t);reason='Both endpoints must be recorded on the same constructed circle. Mark the circle endpoint or intersection explicitly with D1; P3 records the endpoint used to define the circle.'}
-   else if(reference==='CN1'){ok=t.kind==='eq'&&equalExpression(t)||t.kind==='parallel'&&parallel(t.a,t.b);reason='Transitivity of established equalities or parallel directions.'}
+   else if(reference==='CN1'){ok=t.kind==='eq'&&equalExpression(t);reason='Transitivity of established equalities or parallel directions.'}
    else if(reference==='CN2'||reference==='CN3'){ok=commonNotion(t,reference);reason=reference==='CN2'?'Add established equal magnitudes to equal magnitudes.':'Subtract established equal parts from equal wholes.'}
    else if(reference==='P4'){ok=atomic(t)&&t.left[0].kind==='angle'&&t.right[0].kind==='angle'&&[t.left[0].term,t.right[0].term].every(s=>s==='RIGHT'||right(s.slice(1)));reason='Postulate 4 equates angles already established as right angles.'}
    else if(reference==='D10'){ok=t.kind==='eq'&&adjacentStraight(t)||straightFromSum(t)||t.kind==='perpendicular'&&(perpendicularByAdjacent(t)||perpendicular(t.a,t.b))||t.kind==='right'&&right(t.angle);reason='Equal adjacent angles define perpendicular lines; a straight angle is two right angles.'}
@@ -117,11 +135,12 @@ const BookOneLogic=(()=>{
    else if(reference==='I20'){ok=triangleInequality(t);reason='Triangle inequality.'}
    else if(reference==='I21'){ok=innerBrokenLine(t);reason='An interior broken line shortens the two sides and enlarges the included angle.'}
    else if(reference==='I24'||reference==='I25'){ok=hinge(t,reference==='I25');reason='Hinge comparison with two established equal side pairs.'}
-   else if(reference==='I27'||reference==='I28'){ok=parallelAngleTest(t);reason='Equal alternate angles imply parallel lines.'}
-   else if(reference==='I30'){ok=t.kind==='parallel'&&parallel(t.a,t.b);reason='Lines parallel to the same line are parallel.'}
+   else if(reference==='I27'||reference==='I28'){ok=parallelAngleTest(t,reference==='I28');reason=reference==='I27'?'Equal alternate angles imply parallel lines.':'Equal corresponding angles or supplementary same-side interior angles imply parallel lines.'}
+   else if(reference==='I32'){ok=triangleAngleSum(t);reason='The exterior angle equals the two opposite interior angles; the three triangle angles sum to two right angles.'}
+   else if(reference==='I30'){ok=parallelTransitivity(t);reason='Two established parallel pairs must share a third distinct line.'}
    else if(/^I(?:3[3-9]|4[0-3])$/.test(reference)){ok=areaOrParallelogramConsequence(t,number);reason='Established parallelograms, equal bases, and common parallels imply the claimed parts or areas.'}
-   else if(reference==='I47'){ok=t.kind==='eq'&&[...t.left,...t.right].length===3&&[...t.left,...t.right].every(v=>v.kind==='square')&&geometricAlgebra(t);reason='The Pythagorean identity for an established right angle.'}
-   else if(reference==='I48'){ok=t.kind==='right'&&geometricAlgebra(t);reason='The converse Pythagorean identity.'}
+   else if(reference==='I47'){ok=pythagorean(t);reason='The Pythagorean identity for an established right angle.'}
+   else if(reference==='I48'){ok=conversePythagorean(t);reason='The converse Pythagorean identity.'}
    else if(reference==='CN5'){ok=properPart(t);reason='A proper part is smaller than the whole.'}
    else if(reference==='Logic'){
     if(lesson.requireConstruction&&!constructionProgress(state,lesson).complete)return {ok:false,error:'Complete the recorded auxiliary construction before using this deduction.'};
@@ -136,37 +155,151 @@ const BookOneLogic=(()=>{
     else if(hinge(t,false)&&argument('Hinge inequality',[3,4,5,19,23],['Copy the smaller included angle inside the greater one (I.23).','Cut the equal sides and apply SAS.','Base-angle and side-order comparisons show the remaining base is greater.']))ok=true;
     else if(hinge(t,true)&&argument('Converse hinge inequality',[4,24],['Equal included angles would give equal bases (I.4).','A smaller included angle would give the opposite base inequality (I.24).','Trichotomy leaves the greater included angle.']))ok=true;
     else if(parallelAngleTest(t)&&argument('Parallel test by contradiction',[16],['Temporarily assume a meeting point X on either side. X and the resulting triangle are hypothetical, not actual construction objects.','The given alternate-angle equality would equate an exterior angle with an opposite interior angle, contradicting I.16. Discharge the meeting assumption on both sides; no point X enters the construction record.']))ok=true;
+    else if(derivedAreaArgument(t))ok=true;
+    else if(pythagorean(t)&&argument('Pythagorean area argument',[4,31,41,46],['Construct squares on the three sides and the parallel partition of the opposite square.','Compare the constructed triangles by SAS and equate their doubled areas using the common base and parallels.','Add the two rectangle areas to obtain the square on the opposite side.']))ok=true;
+    else if(conversePythagorean(t)&&argument('Converse Pythagorean comparison',[8,11,47],['Construct the perpendicular comparison triangle with its recorded equal leg.','Apply the right-triangle square identity and the given equality of squares.','Equal nonnegative squared lengths give SSS congruence and the required right angle.']))ok=true;
     else if(atomic(t)&&t.left[0].kind==='length'&&t.right[0].kind==='length'&&d.drawn(...t.left[0].term)&&d.drawn(...t.right[0].term)&&equal(t.left[0].term+'^2',t.right[0].term+'^2')){ok=true;reason='Segments have nonnegative lengths, so established equal squares imply equal lengths.';argument('Equal squares of segment lengths',[],['The squares of the two lengths were established equal on earlier lines.','Both segment lengths are nonnegative, so their equal squares have equal nonnegative roots.'])}
-    else if((t.kind==='eq'||t.kind==='parallel'||t.kind==='right')&&geometricAlgebra(t)){ok=true;reason='A symbolic Euclidean identity follows from the established constraints; no displayed measurements were used.';argument('Symbolic Euclidean deduction',[],['Translate established side, angle, parallel, and area constraints into identities.','Eliminate those identities from the claim.','The remainder is identically zero for arbitrary admissible coordinates.'])}
+    else if((t.kind==='eq'||t.kind==='parallel'||t.kind==='right')&&geometricAlgebra(t)){ok=true;reason='A symbolic Euclidean identity follows from the established constraints; no displayed measurements were used.';argument('Symbolic Euclidean deduction',[...new Set([...certificateClaims().map(c=>Number(c.rule.slice(1))),...facts.map(f=>origins.get(f)).filter(r=>/^I/.test(r||'')).map(r=>Number(r.slice(1)))])],['Translate established side, angle, parallel, and area constraints into identities.','Eliminate those identities from the claim.','The remainder is identically zero for arbitrary admissible coordinates.'])}
    }
-   return {ok:!!ok,error:ok?'':'The stated premises and construction do not establish this claim using '+reference+'.',explanation:reason||derivations.at(-1)?.name,derivation:derivations.at(-1)||null};
+   return {ok:!!ok,sourcePropositions:ok?sourceReferences(t):[],error:ok?'':'The stated premises and construction do not establish this claim using '+reference+'.',explanation:reason||derivations.at(-1)?.name,derivation:derivations.at(-1)||null};
   }
-  function equalExpression(t){if(atomic(t))return equal(t.left[0].term,t.right[0].term);let graph=new Map(),join=(a,b)=>{if(!graph.has(a))graph.set(a,new Set());graph.get(a).add(b)};for(let f of [...facts,...certificateClaims().map(c=>c.claim)])if(f.kind==='eq'){let a=exprKey(f.left),b=exprKey(f.right);join(a,b);join(b,a)}let queue=[exprKey(t.left)],end=exprKey(t.right),seen=new Set();while(queue.length){let x=queue.shift();if(x===end)return true;if(seen.has(x))continue;seen.add(x);for(let y of graph.get(x)||[])queue.push(y)}return false}
+  function equalExpression(t){let graph=new Map(),join=(a,b)=>{if(!graph.has(a))graph.set(a,new Set());graph.get(a).add(b)};for(let f of facts)if(f.kind==='eq'){let a=exprKey(f.left),b=exprKey(f.right);join(a,b);join(b,a)}let queue=[exprKey(t.left)],end=exprKey(t.right),seen=new Set();while(queue.length){let x=queue.shift();if(x===end)return true;if(seen.has(x))continue;seen.add(x);for(let y of graph.get(x)||[])queue.push(y)}return false}
   function isoscelesAngle(t){if(!atomic(t)||t.left[0].kind!=='angle'||t.right[0].kind!=='angle')return false;let a=t.left[0].term.slice(1),b=t.right[0].term.slice(1);if(sort(a)!==sort(b)||a[1]===b[1])return false;let v=[...a].find(n=>n!==a[1]&&n!==b[1]);return d.proper(a)&&equal(v+a[1],v+b[1])}
   function vertical(a,b){return a[1]===b[1]&&[b,[...b].reverse().join('')].some(v=>d.between(a[0],a[1],v[0])&&d.between(a[2],a[1],v[2]))}
-  function straightFromSum(t){if(t.kind!=='collinear')return false;for(let f of facts)if(f.kind==='eq'&&f.left.length===2&&f.left.every(q=>q.kind==='angle'&&q.term!=='RIGHT')&&f.right.length===1&&f.right[0].term==='RIGHT'&&f.right[0].coefficient===2){let [x,y]=f.left.map(q=>q.term.slice(1));for(let a of [x,[...x].reverse().join('')])for(let b of [y,[...y].reverse().join('')])if(a[1]===b[1]&&d.sameRay(a[1],a[2],b[0])&&!sameSide(a[0],b[2],a[1]+a[2])&&sort(a[0]+a[1]+b[2])===sort(t.points))return true}return false}
+  function straightFromSum(t){if(t.kind!=='collinear')return false;for(let f of facts)if(f.kind==='eq'&&f.left.length===2&&f.left.every(q=>q.kind==='angle'&&q.term!=='RIGHT'&&q.coefficient===1)&&f.right.length===1&&f.right[0].term==='RIGHT'&&f.right[0].coefficient===2){let [x,y]=f.left.map(q=>q.term.slice(1));for(let a of [x,[...x].reverse().join('')])for(let b of [y,[...y].reverse().join('')])if(a[1]===b[1]&&d.sameRay(a[1],a[2],b[0])&&!sameSide(a[0],b[2],a[1]+a[2])&&sort(a[0]+a[1]+b[2])===sort(t.points))return true}return false}
   function perpendicularByAdjacent(t){for(let f of facts)if(atomic(f)&&f.left[0].kind==='angle'&&f.right[0].kind==='angle'){let x=f.left[0].term.slice(1),y=f.right[0].term.slice(1);for(let a of [x,[...x].reverse().join('')])for(let b of [y,[...y].reverse().join('')])if(a[1]===b[1]&&d.sameRay(a[1],a[2],b[0])&&d.between(a[0],a[1],b[2])&&(lineKey(t.a)===lineKey(a[1]+a[2])&&lineKey(t.b)===lineKey(a[0]+b[2])||lineKey(t.b)===lineKey(a[1]+a[2])&&lineKey(t.a)===lineKey(a[0]+b[2])))return true}return false}
-  function parallelAngleConsequence(t){if(atomic(t)&&t.left[0].term.startsWith(A)&&t.right[0].term.startsWith(A))return parallelPairs().length>0&&anglesEqualByParallels(t.left[0].term.slice(1),t.right[0].term.slice(1));if(t.kind==='eq'&&t.left.length===2&&t.left.every(v=>v.term.startsWith(A)&&v.coefficient===1)&&t.right.length===1&&t.right[0].term==='RIGHT'&&t.right[0].coefficient===2){let [x,y]=t.left.map(v=>v.term.slice(1)),a=angleDirections(x),b=angleDirections(y);return parallelPairs().length>0&&[b,[...b].reverse()].some(z=>a[0][0]===z[0][0]&&a[1][0]===z[1][0]&&a[0][1]*a[1][1]===-z[0][1]*z[1][1])}return false}
-  function areaOrParallelogramConsequence(t,n){
-   const areaEq=t.kind==='eq'&&[...t.left,...t.right].every(v=>v.kind==='area');
-   if(n===33)return t.kind==='parallel'&&geometricAlgebra(t)||atomic(t)&&t.left[0].kind==='length'&&t.right[0].kind==='length'&&geometricAlgebra(parse(t.left[0].term+'^2 = '+t.right[0].term+'^2'));
-   if(n===34){if(facts.some(f=>f.kind==='congruence'&&parts(t,f)))return true;let names=[...new Set(namesIn(t))];if(names.length!==4)return false;let orders=EuclidLogic.permutations(names.slice(1).join('')).map(p=>names[0]+p),p=orders.find(isParallelogram);if(!p)return false;if(areaEq)return geometricAlgebra(t);if(atomic(t)&&t.left[0].kind==='length'){let pairs=[[p[0]+p[1],p[2]+p[3]],[p[1]+p[2],p[3]+p[0]]];return pairs.some(([a,b])=>equivalent(t.left[0].term,a)&&equivalent(t.right[0].term,b)||equivalent(t.left[0].term,b)&&equivalent(t.right[0].term,a))}return atomic(t)&&t.left[0].kind==='angle'&&anglesEqualByParallels(t.left[0].term.slice(1),t.right[0].term.slice(1));}
-   if(n===39||n===40)return t.kind==='parallel'&&geometricAlgebra(t);
-   if(n===42)return false;
-   if(!areaEq)return false;
-   let polygons=[...t.left,...t.right].map(v=>v.term.slice(5,-1));
-   if([35,36,43].includes(n)&&!polygons.every(p=>p.length===4&&isParallelogram(p)))return false;
-   if([37,38].includes(n)&&!polygons.every(p=>p.length===3&&d.proper(p)))return false;
-   if(n===41&&!(polygons.some(p=>p.length===4&&isParallelogram(p))&&polygons.some(p=>p.length===3&&d.proper(p))))return false;
-   return geometricAlgebra(t);
+  function transversalAngles(a,b){
+   if(a[1]===b[1])return false;
+   for(let x of [a,[...a].reverse().join('')])for(let y of [b,[...b].reverse().join('')]){
+    let [u,v,k]=x,[l,w,z]=y;
+    if(!d.drawn(v,w)||!onLine(v+w,k)||!onLine(v+w,l)||sameLine(v+u,w+z))continue;
+    if(d.drawn(v,u)&&d.drawn(w,z)&&parallel(v+u,w+z))return true;
+   }
+   return false;
   }
-  function properPart(t){if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1)return false;let a=t.left[0].term,b=t.right[0].term;if(t.left[0].kind==='length')return [...a].some(v=>b.includes(v)&&d.between(v,b.replace(v,''),a.replace(v,'')));return false}
-  return {d,facts,check,key,posted,equal,parallel,right,isParallelogram,canonical,expr,certificateClaims};
+  function parallelAngleConsequence(t){
+   if(atomic(t)&&t.left[0].term.startsWith(A)&&t.right[0].term.startsWith(A)){let a=t.left[0].term.slice(1),b=t.right[0].term.slice(1);return transversalAngles(a,b)&&anglesEqualByParallels(a,b)}
+   if(t.kind==='eq')for(let [left,rightTerms] of [[t.left,t.right],[t.right,t.left]])if(left.length===2&&left.every(v=>v.kind==='angle'&&v.term.startsWith(A)&&v.coefficient===1)&&rightTerms.length===1&&rightTerms[0].term==='RIGHT'&&rightTerms[0].coefficient===2){let [x,y]=left.map(v=>v.term.slice(1));if(!transversalAngles(x,y))continue;let a=angleDirections(x),b=angleDirections(y);if([b,[...b].reverse()].some(z=>a[0][0]===z[0][0]&&a[1][0]===z[1][0]&&a[0][1]*a[1][1]===-z[0][1]*z[1][1]))return true}
+   return false;
+  }
+  const sameLine=(a,b)=>lineKey(a)===lineKey(b);
+  const onLine=(line,p)=>line.includes(p)||d.collinear(line[0],line[1],p);
+  const edges=p=>[...p].map((a,i)=>a+p[(i+1)%p.length]);
+  function areaPair(t,ratio=1){
+   if(t.kind!=='eq'||t.left.length!==1||t.right.length!==1)return null;
+   let [a,b]=[t.left[0],t.right[0]];
+   if(a.kind!=='area'||b.kind!=='area'||a.coefficient<=0||b.coefficient<=0)return null;
+   if(Math.abs(b.coefficient/a.coefficient-ratio)<1e-8)return [a.term.slice(5,-1),b.term.slice(5,-1)];
+   if(Math.abs(a.coefficient/b.coefficient-ratio)<1e-8)return [b.term.slice(5,-1),a.term.slice(5,-1)];
+   return null;
+  }
+  function sameParallels(p,q,equalBases,sameBase,triangles=false){
+   for(let [i,a] of edges(p).entries())for(let [j,b] of edges(q).entries()){
+    if(sameBase?sort(a)!==sort(b):!sameLine(a,b))continue;
+    if(equalBases&&!equal(a,b))continue;
+    if(triangles){let u=p[(i+2)%3],v=q[(j+2)%3];if(u!==v&&parallel(a,u+v))return true;}
+    else {let u=edges(p)[(i+2)%4],v=edges(q)[(j+2)%4];if(sameLine(u,v)&&parallel(a,u))return true;}
+   }
+   return false;
+  }
+  function equalParallelJoins(t){
+   let x,y;
+   if(t.kind==='parallel'){x=t.a;y=t.b}
+   else if(atomic(t)&&t.left[0].kind==='length'&&t.right[0].kind==='length'){x=t.left[0].term;y=t.right[0].term}else return false;
+   if(new Set(x+y).size!==4||!d.drawn(...x)||!d.drawn(...y))return false;
+   for(let v of [y,[...y].reverse().join('')]){let [a,c]=x,[b,e]=v;if(d.drawn(a,b)&&d.drawn(c,e)&&parallel(a+b,c+e)&&equal(a+b,c+e)&&d.direction(a,b)*d.direction(c,e)>0)return true}
+   return false;
+  }
+  function parallelogramParts(t){
+   let names=[...new Set(namesIn(t))];if(names.length!==4)return false;
+   for(let rest of EuclidLogic.permutations(names.slice(1).join(''))){
+    let p=names[0]+rest;if(!isParallelogram(p))continue;let [a,b,c,e]=p;
+    if(atomic(t)&&t.left[0].kind==='length'&&t.right[0].kind==='length'&&[[a+b,c+e],[b+c,e+a]].some(([x,y])=>key(t)===key(equality(x,y))))return true;
+    if(atomic(t)&&t.left[0].kind==='angle'&&[[e+a+b,b+c+e],[a+b+c,c+e+a]].some(([x,y])=>key(t)===key(equality('angle '+x,'angle '+y))))return true;
+    let areas=areaPair(t);if(areas&&[[a+b+c,a+c+e,a+c],[b+c+e,b+e+a,b+e]].some(([x,y,diagonal])=>d.drawn(...diagonal)&&sortPair(polygonKey(areas[0]),polygonKey(areas[1]))===sortPair(polygonKey(x),polygonKey(y))))return true;
+   }
+   return false;
+  }
+  function converseAreaParallel(t,equalBases){
+   if(t.kind!=='parallel')return false;
+   for(let fact of facts){let pair=areaPair(fact);if(!pair||pair.some(p=>p.length!==3||!d.proper(p)))continue;
+    for(let [i,a] of edges(pair[0]).entries())for(let [j,b] of edges(pair[1]).entries()){
+     if(equalBases?(!sameLine(a,b)||!equal(a,b)):sort(a)!==sort(b))continue;
+     let u=pair[0][(i+2)%3],v=pair[1][(j+2)%3];
+     if(u!==v&&sameSide(u,v,a)&&((sameLine(t.a,u+v)&&sameLine(t.b,a))||(sameLine(t.b,u+v)&&sameLine(t.a,a))))return true;
+    }
+   }
+   return false;
+  }
+  function complements(t){
+   let pair=areaPair(t);if(!pair||pair.some(p=>p.length!==4||!isParallelogram(p)))return false;
+   let common=[...pair[0]].filter(n=>pair[1].includes(n));if(common.length!==1)return false;let e=common[0];
+   const at=p=>{let i=p.indexOf(e);return p.slice(i)+p.slice(0,i)};
+   for(let p of [at(pair[0]),at([...pair[0]].reverse().join(''))])for(let q of [at(pair[1]),at([...pair[1]].reverse().join(''))]){
+    let [,g,b,h]=p,[,f,v,k]=q;
+    for(let a of d.names.filter(n=>onLine(g+b,n)&&onLine(f+v,n)))for(let c of d.names.filter(n=>onLine(h+b,n)&&onLine(k+v,n))){
+     if(new Set(a+b+c+v).size===4&&isParallelogram(a+b+c+v)&&d.between(a,e,c)&&d.drawn(a,c)&&d.between(a,g,b)&&d.between(b,h,c)&&d.between(a,f,v)&&d.between(v,k,c))return true;
+    }
+   }
+   return false;
+  }
+  function areaOrParallelogramConsequence(t,n){
+   if(n===33)return equalParallelJoins(t);
+   if(n===34)return parallelogramParts(t);
+   if(n===39||n===40)return converseAreaParallel(t,n===40);
+   if(n===43)return complements(t);
+   if(n===41){
+    let pair=areaPair(t,2);if(!pair||pair[0].length!==4||pair[1].length!==3||!isParallelogram(pair[0])||!d.proper(pair[1]))return false;
+    for(let [i,base] of edges(pair[0]).entries())for(let [j,side] of edges(pair[1]).entries())if(sort(base)===sort(side)&&onLine(edges(pair[0])[(i+2)%4],pair[1][(j+2)%3]))return true;
+    return false;
+   }
+   let pair=areaPair(t);if(!pair)return false;
+   if(n===35||n===36)return pair.every(p=>p.length===4&&isParallelogram(p))&&sameParallels(...pair,n===36,n===35);
+   if(n===37||n===38)return pair.every(p=>p.length===3&&d.proper(p))&&sameParallels(...pair,n===38,n===37,true);
+   return false;
+  }
+  function triangleAngleSum(t){
+   if(t.kind!=='eq'||[...t.left,...t.right].some(v=>v.kind!=='angle'))return false;
+   let names=[...new Set(namesIn(t))];if(names.length<3||names.length>4)return false;
+   for(let a of names)for(let b of names)for(let c of names)if(new Set(a+b+c).size===3&&d.proper(a+b+c)){
+    if(key(t)===key(parse('angle '+a+b+c+' + angle '+b+c+a+' + angle '+c+a+b+' = 2 right angles')))return true;
+    for(let e of names)if(![a,b,c].includes(e)&&d.between(b,c,e)&&d.drawn(c,e)&&key(t)===key(parse('angle '+a+c+e+' = angle '+c+a+b+' + angle '+a+b+c)))return true;
+   }
+   return false;
+  }
+  function pythagorean(t){
+   if(t.kind!=='eq')return false;
+   for(let [hyp,legs] of [[t.left,t.right],[t.right,t.left]]){
+    if(hyp.length!==1||legs.length!==2||[...hyp,...legs].some(x=>x.kind!=='square'||x.coefficient<=0||Math.abs(x.coefficient-hyp[0].coefficient)>1e-8))continue;
+    let h=hyp[0].term.slice(0,2),a=legs[0].term.slice(0,2),b=legs[1].term.slice(0,2),v=[...a].find(n=>b.includes(n));
+    if(v&&!h.includes(v)&&sort(a.replace(v,'')+b.replace(v,''))===sort(h)&&d.proper(v+h)&&right(h[0]+v+h[1]))return true;
+   }
+   return false;
+  }
+  function conversePythagorean(t){return t.kind==='right'&&d.proper(t.angle)&&equalExpression(parse(t.angle[0]+t.angle[2]+'^2 = '+t.angle[0]+t.angle[1]+'^2 + '+t.angle[1]+t.angle[2]+'^2'))}
+  function derivedAreaArgument(t){
+   const rules=[
+    [33,[4,27,29],'Corresponding joins of equal parallel segments'],
+    [34,[26,29],'Opposite parts and diagonal halves of a parallelogram'],
+    [35,[4,29,34],'Subtract equal end triangles from the common outer area'],
+    [36,[33,35],'Compare both parallelograms with their constructed connecting parallelogram'],
+    [37,[31,34,35],'Complete the triangles to parallelograms and take equal halves'],
+    [38,[31,34,36],'Complete equal-base triangles to equal-base parallelograms and take halves'],
+    [39,[31,37],'Construct the comparison parallel and reject an unequal proper-part replacement triangle'],
+    [40,[31,38],'Use the equal-base comparison parallel and reject a proper-part replacement triangle'],
+    [41,[34,37],'Use the diagonal half and an equal triangle on the common base and parallels'],
+    [43,[34],'Subtract the two pairs of equal diagonal halves to leave the complements']
+   ];
+   for(let [n,dependencies,name] of rules)if(areaOrParallelogramConsequence(t,n)&&supported(dependencies))return argument(name,dependencies,['Check the recorded figure, incidence, and base/parallel conditions.',name+'.','Use the established equalities and common notions to obtain the stated conclusion.']);
+   return false;
+  }
+  function properPart(t){if(t.left?.some(v=>v.coefficient!==1)||t.right?.some(v=>v.coefficient!==1))return false;if(t.kind!=='gt'||t.left.length!==1||t.right.length!==1)return false;let a=t.left[0].term,b=t.right[0].term;if(t.left[0].kind==='length')return [...a].some(v=>b.includes(v)&&d.between(v,b.replace(v,''),a.replace(v,'')));return false}
+  return {d,facts,check,key,posted,equal,parallel,right,isParallelogram,canonical,expr,certificateClaims,sourceReferences,accept};
  }
  function sortPair(a,b){return [a,b].sort().join('|')}
  function subtract(a,b,n=1){let out=new Map(a);for(let [k,v] of b)out.set(k,(out.get(k)||0)-n*v);for(let [k,v] of out)if(Math.abs(v)<1e-8)out.delete(k);return out}
  function span(target,equations){let basis=new Map();for(let input of equations){let row=new Map(input);for(let [pivot,b] of basis)if(row.has(pivot))row=subtract(row,b,row.get(pivot));if(row.size){let key=[...row.keys()].sort()[0],factor=row.get(key);for(let [k,v] of row)row.set(k,v/factor);basis.set(key,row)}}let out=new Map(target);for(let [pivot,b] of basis)if(out.has(pivot))out=subtract(out,b,out.get(pivot));return out.size===0}
- function grade(state,lesson){if(lesson.id<=5)return baseGrade(state,lesson);let c=context(state,lesson);for(let [i,line] of state.lines.entries()){let ast=parse(line.s);line.valid=false;line.dependencies=[];line.derivation=null;if(!ast){line.error='Unrecognized format. Use the keyword-based format help or the statement grammar in How to work.';continue}if(!line.j){line.error='Select a reference, then click this line.';continue}let result=c.check(ast,line.j);line.valid=result.ok;line.error=result.error;line.reason=result.explanation;line.derivation=result.derivation;if(result.ok){line.dependencies=state.lines.slice(0,i).flatMap((l,n)=>l.valid?[n+1]:[]);c.facts.push(ast)}}let reached=(lesson.goals||[]).every(s=>{let goal=parse(s);return c.posted(goal)||goal?.kind==='eq'&&atomic(goal)&&c.equal(goal.left[0].term,goal.right[0].term)});let constraints=lesson.goalConstraints||{};if(constraints.between)reached=reached&&c.d.between(...constraints.between);if(constraints.triangle)reached=reached&&c.d.proper(constraints.triangle);if(constraints.insideAngle){let {point,angle}=constraints.insideAngle;reached=reached&&c.d.angleInside(angle[0],angle[1],point,angle[2])}return {complete:!!reached&&state.lines.every(l=>l.valid)&&(!lesson.requireConstruction||constructionProgress(state,lesson).complete),goalReached:!!reached,context:c}}
+ function grade(state,lesson){if(lesson.id<=5)return baseGrade(state,lesson);let c=context(state,lesson);for(let [i,line] of state.lines.entries()){let ast=parse(line.s);line.valid=false;line.dependencies=[];line.derivation=null;if(!ast){line.error='Unrecognized format. Use the keyword-based format help or the statement grammar in How to work.';continue}if(!line.j){line.error='Select a reference, then click this line.';continue}let result=c.check(ast,line.j);line.valid=result.ok;line.error=result.error;line.reason=result.explanation;line.derivation=result.derivation;line.sourcePropositions=result.sourcePropositions||[];if(result.ok){line.dependencies=state.lines.slice(0,i).flatMap((l,n)=>l.valid?[n+1]:[]);c.accept(ast,line.j)}}let reached=(lesson.goals||[]).every(s=>{let goal=parse(s);return c.posted(goal)||goal?.kind==='eq'&&atomic(goal)&&c.equal(goal.left[0].term,goal.right[0].term)});let constraints=lesson.goalConstraints||{};if(constraints.between)reached=reached&&c.d.between(...constraints.between);if(constraints.triangle)reached=reached&&c.d.proper(constraints.triangle);if(constraints.insideAngle){let {point,angle}=constraints.insideAngle;reached=reached&&c.d.angleInside(angle[0],angle[1],point,angle[2])}return {complete:!!reached&&state.lines.every(l=>l.valid)&&(!lesson.requireConstruction||constructionProgress(state,lesson).complete),goalReached:!!reached,context:c}}
  return {parse,grade,context,span,subtract,expression,polygonKey,baseParse,statementNames:namesIn};
 })();
 EuclidLogic.parse=s=>BookOneLogic.parse(s)||BookOneLogic.baseParse(s);
