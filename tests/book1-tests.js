@@ -92,6 +92,12 @@ addEventListener('load',()=>{
     state.lines[0].s='angle BGH = angle GHD';check(!EuclidLogic.grade(state,LESSONS[26]).complete,'Named E.16 deduction rejects missing alternate-angle premise');
    }else check(state.lines[1].autoJustification==='I15','E.28 second line auto-justifies with E.15');
   }
+  load(27);state=fresh();settings.skipProof=false;settings.skipJustifications=true;render();
+  settings.learningMode=true;render();
+  $('#statement').value='angle EGB = Angle AGH';$('#lineform').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+  check(state.lines.length===2&&state.lines[1].valid&&state.lines[1].autoJustification==='I15','E.28 exact manually typed mixed-case vertical-angle line auto-justifies via E.15');
+  nextHint();render();check(state.lines[1].valid&&state.lines[1].autoJustification==='I15'&&!$('#lines .proofline:last-child small').textContent.includes('Select a reference'),'Learning guidance and hint requests preserve automatic E.28 justification');
+  settings.learningMode=false;settings.skipJustifications=false;
   let alternate=theoremAudit(26,[],true);check(alternate.check('AB is parallel to CD','I27')&&!alternate.check('AB is parallel to CD','I28'),'Alternate-angle and corresponding-angle tests retain distinct hypotheses');
   let corresponding=theoremAudit(27,[],true);check(corresponding.check('AB is parallel to CD','I28')&&!corresponding.check('AB is parallel to CD','I27'),'Corresponding-angle data needs E.28 or an explicit alternate-angle premise');
   let exterior=theoremAudit(15);check(exterior.check('angle ACD > angle BAC','I16')&&!exterior.check('2 angle ACD > 3 angle BAC','I16'),'Exterior-angle rule rejects altered coefficients');

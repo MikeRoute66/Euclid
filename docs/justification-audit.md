@@ -45,3 +45,7 @@ The construction-consequence audit in [construction-consequences-audit.md](const
 Validated compound arguments accept an earlier proposition explicitly used in their derivation as the manual reference. Automatic justification selects a validated named source when available; the complete argument stays in right-click proof inspection. A proposition mentioned only in a generic symbolic constraint set is not sufficient for this alias. Current and future propositions remain unavailable, and every premise and construction prerequisite is still checked.
 
 E.27 now names and accepts E.16 for its contradiction argument. E.28's vertical-angle step uses E.15. Known given-line incidences are restored from the lesson in older topology records, so missing saved intersection records do not block that step. No new incidence is inferred from display coordinates.
+
+## Guidance respects automatic justifications
+
+Learning mode and the hint button previously called the manual grader while generating Book I guidance. That overwrote valid automatic results on manually entered proof lines whose manual reference remained empty. Guidance now uses the same automatic/manual grading selection as the active practice mode. The regression submits `angle EGB = Angle AGH` through the E.28 form with Learning mode and Skip justifications enabled, requests another hint, and verifies E.15 remains valid and visible.
