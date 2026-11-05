@@ -9,6 +9,10 @@ function fixture(i){
  if(i===4){s.points.F=[208,436];s.points.G=[592,436];s.edges.push('BF','CG','FC','GB');s.rays=['AB','AC'];s.facts=['cut:A:F:A:G']}
  EuclidConstruction.initialize(s,LESSONS[i]);
  for(let n of Object.keys(s.points))EuclidConstruction.intersection(s,n);
+ // Fixture incidences are explicitly selected construction supports, not
+ // every line that happens to pass through a displayed intersection.
+ if(i===1){EuclidConstruction.intersection(s,'G',['DB','circle:BC']);EuclidConstruction.intersection(s,'L',['DA','circle:DG'])}
+ if(i===2)EuclidConstruction.intersection(s,'F',['AB','circle:AE']);
  return s;
 }
 function grade(s,i){return EuclidLogic.grade(s,LESSONS[i])}

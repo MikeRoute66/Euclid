@@ -72,20 +72,24 @@ function bookOneIntersections(){
  let output=[],objects=[...state.edges.map(e=>({kind:'line',names:e})),...state.rays.map(e=>({kind:'line',names:e})),...state.circles.map(c=>({kind:'circle',...c}))],p=n=>state.points[n],cross=(a,b)=>a[0]*b[1]-a[1]*b[0],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]];
  for(let i=0;i<objects.length;i++)for(let j=i+1;j<objects.length;j++){
   let a=objects[i],b=objects[j];if(a.kind==='line'&&b.kind==='circle')[a,b]=[b,a];
-  if(a.kind==='line'&&b.kind==='line'){let u=p(a.names[0]),v=p(a.names[1]),x=p(b.names[0]),y=p(b.names[1]),r=sub(v,u),s=sub(y,x),denominator=cross(r,s);if(Math.abs(denominator)<1e-8)continue;let t=cross(sub(x,u),s)/denominator;output.push([u[0]+t*r[0],u[1]+t*r[1]])}
-  else if(a.kind==='circle'&&b.kind==='circle'){let u=p(a.a),v=p(b.a),r=distance(u,p(a.b)),s=distance(v,p(b.b)),length=distance(u,v);if(length<1e-8||length>r+s||length<Math.abs(r-s))continue;let along=(r*r-s*s+length*length)/(2*length),height=Math.sqrt(Math.max(0,r*r-along*along)),dx=(v[0]-u[0])/length,dy=(v[1]-u[1])/length;for(let sign of [-1,1])output.push([u[0]+along*dx-sign*height*dy,u[1]+along*dy+sign*height*dx])}
-  else{let center=p(a.a),r=distance(center,p(a.b)),u=p(b.names[0]),v=p(b.names[1]),direction=sub(v,u),offset=sub(u,center),aa=direction[0]**2+direction[1]**2,bb=2*(direction[0]*offset[0]+direction[1]*offset[1]),cc=offset[0]**2+offset[1]**2-r*r,discriminant=bb*bb-4*aa*cc;if(discriminant<0||aa<1e-8)continue;for(let sign of [-1,1]){let t=(-bb+sign*Math.sqrt(discriminant))/(2*aa);output.push([u[0]+t*direction[0],u[1]+t*direction[1]])}}
+  const selected=[a,b].map(o=>o.kind==='line'?o.names:'circle:'+o.a+o.b),put=q=>{q.supports=selected;output.push(q)};
+  if(a.kind==='line'&&b.kind==='line'){let u=p(a.names[0]),v=p(a.names[1]),x=p(b.names[0]),y=p(b.names[1]),r=sub(v,u),s=sub(y,x),denominator=cross(r,s);if(Math.abs(denominator)<1e-8)continue;let t=cross(sub(x,u),s)/denominator;put([u[0]+t*r[0],u[1]+t*r[1]])}
+  else if(a.kind==='circle'&&b.kind==='circle'){let u=p(a.a),v=p(b.a),r=distance(u,p(a.b)),s=distance(v,p(b.b)),length=distance(u,v);if(length<1e-8||length>r+s||length<Math.abs(r-s))continue;let along=(r*r-s*s+length*length)/(2*length),height=Math.sqrt(Math.max(0,r*r-along*along)),dx=(v[0]-u[0])/length,dy=(v[1]-u[1])/length;for(let sign of [-1,1])put([u[0]+along*dx-sign*height*dy,u[1]+along*dy+sign*height*dx])}
+  else{let center=p(a.a),r=distance(center,p(a.b)),u=p(b.names[0]),v=p(b.names[1]),direction=sub(v,u),offset=sub(u,center),aa=direction[0]**2+direction[1]**2,bb=2*(direction[0]*offset[0]+direction[1]*offset[1]),cc=offset[0]**2+offset[1]**2-r*r,discriminant=bb*bb-4*aa*cc;if(discriminant<0||aa<1e-8)continue;for(let sign of [-1,1]){let t=(-bb+sign*Math.sqrt(discriminant))/(2*aa);put([u[0]+t*direction[0],u[1]+t*direction[1]])}}
  }
  return output.filter(v=>v.every(Number.isFinite)&&!Object.values(state.points).some(q=>distance(v,q)<.01));
 }
-function bookOneMark(coordinate){
+function bookOneMark(coordinate,selectedSupports){
  const candidates=bookOneIntersections().sort((a,b)=>distance(a,coordinate)-distance(b,coordinate)),scale=Math.hypot($('#canvas').getScreenCTM().a,$('#canvas').getScreenCTM().b),snapped=!!candidates[0]&&distance(candidates[0],coordinate)*scale<=20,point=snapped?candidates[0]:coordinate;
  let name=nextPointName();const onCircle=(a,b)=>state.points[a]&&state.points[b]&&state.circles.some(c=>c.a===a&&c.b===b)&&Math.abs(distance(point,state.points[a])-distance(state.points[a],state.points[b]))<1e-6;
  const onExtension=(a,b)=>{let u=state.points[a],v=state.points[b];return u&&v&&state.rays.includes(a+b)&&Math.abs((v[0]-u[0])*(point[1]-u[1])-(v[1]-u[1])*(point[0]-u[0]))<.001&&(point[0]-u[0])*(v[0]-u[0])+(point[1]-u[1])*(v[1]-u[1])>distance(u,v)**2};
  if(index===1&&snapped){if(!state.points.G&&onCircle('B','C')&&onExtension('D','B'))name='G';else if(!state.points.L&&onCircle('D','G')&&onExtension('D','A'))name='L'}
  if(index===2&&snapped&&!state.points.F&&onCircle('A','E')){let [a,b]=[state.points.A,state.points.B];if(Math.abs((b[0]-a[0])*(point[1]-a[1])-(b[1]-a[1])*(point[0]-a[0]))<.001&&distance(point,a)<distance(a,b)&&distance(point,b)<distance(a,b))name='F'}
  if(!name){$('#instruction').textContent='All 26 point names are in use. Undo an unnecessary point.';return}
- snapshot();state.points[name]=point;EuclidConstruction.point(state,name);if(snapped)EuclidConstruction.intersection(state,name);render();
+ const task=(LESSONS[index].construction||[]).find(t=>t.ref==='D1'&&t.outputs[0]===name),planned=task?.supports||(typeof INTERSECTION_SUPPORTS!=='undefined'?INTERSECTION_SUPPORTS[LESSONS[index].id]?.[name]:null);
+ const liesOn=s=>{if(s.startsWith('circle:'))return onCircle(s[7],s[8]);let u=state.points[s[0]],v=state.points[s[1]];return u&&v&&Math.abs((v[0]-u[0])*(point[1]-u[1])-(v[1]-u[1])*(point[0]-u[0]))<.001};
+ const supports=selectedSupports||((planned&&planned.every(liesOn))?planned:point.supports);
+ snapshot();state.points[name]=point.slice(0,2);EuclidConstruction.point(state,name);if(snapped)EuclidConstruction.intersection(state,name,supports);render();
 }
 function bookOneHint(){
  const lesson=LESSONS[index],progress=constructionProgress(state,lesson);for(let [i,task] of (lesson.construction||[]).entries()){if(progress.checks[i])continue;if(task.beyond&&task.outputs.length&&task.outputs.every(n=>state.points[n]))return 'The existing '+task.outputs.join(', ')+' do not satisfy the required construction on the extension of '+task.beyond+'. Undo that construction, or use Start over, then '+task.text;if(task.ref==='D1'&&task.inputs.length)return task.text+' Click '+task.inputs.join(', ')+'.';if(!task.outputs.length&&['P1','P2','P3'].includes(task.ref))return task.text;if(task.outputs.length)return task.text+' '+(task.inputs.length?'Click '+task.inputs.join(', ')+', in that order.':'Mark the stated intersection.');}

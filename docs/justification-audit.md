@@ -4,7 +4,7 @@
 
 The automatic checker prefers hypotheses and matching recorded construction propositions, then the proposition responsible for an earlier triangle congruence, then applicable earlier propositions, definitions/common notions, and explicit deduction. Every candidate is checked against the current construction and preceding accepted proof lines. Proof-guide answers are not consulted.
 
-E.45 cites E.44 for each constructed component, then explicitly uses E.29 and E.14 to establish both outer straight lines and E.30 to establish the outer parallel pair. Construction-source metadata is retained in manual and automatic grading and shown by right-click proof inspection. Manual answers remain separate from automatic answers when practice settings change.
+E.45 now cites E.42 for the first constructed component and E.44 for the adjoining application, then explicitly uses E.29/E.14 for both outer straight lines and E.34/E.30/E.33 for equal, parallel endpoint joins. Older valid two-E.44 drawings retain their original sources. Construction-source metadata is retained in manual and automatic grading and shown by right-click proof inspection. Manual answers remain separate from automatic answers when practice settings change.
 
 Common Notion 1 now uses posted equality premises rather than silently importing unposted construction certificate equalities. Parallel-line transitivity is checked by E.30, not by Common Notion 1. E.44's supplied proof explicitly posts its constructed angle equality before using equality transitivity. E.30 now includes its actual transversal and angle-based proof.
 
@@ -49,3 +49,5 @@ E.27 now names and accepts E.16 for its contradiction argument. E.28's vertical-
 ## Guidance respects automatic justifications
 
 Learning mode and the hint button previously called the manual grader while generating Book I guidance. That overwrote valid automatic results on manually entered proof lines whose manual reference remained empty. Guidance now uses the same automatic/manual grading selection as the active practice mode. The regression submits `angle EGB = Angle AGH` through the E.28 form with Learning mode and Skip justifications enabled, requests another hint, and verifies E.15 remains valid and visible.
+
+The later [E.38-E.48 source and mode audit](late-book-audit.md) adds the complete practice matrix, selected-support intersection records, and the repaired E.48 missing-premise case.

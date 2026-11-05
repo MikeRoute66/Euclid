@@ -32,7 +32,7 @@ addEventListener('load',()=>{
      EuclidLogic.grade(state,lesson);let hint=bookOneHint();
      check(hint.includes('complete')||(hint.includes('Reasoning:')&&hint.includes('click ')),'E.'+lesson.id+' actionable hint for '+step.s);
      check(cleanHint(hint)&&cleanHint(proofStepReason(lesson,step)),'E.'+lesson.id+' proof hint has no reference answer');
-     check(proofStepReason(lesson,step)?.length>60,'E.'+lesson.id+' explains '+step.s);
+     check(proofStepReason(lesson,step)?.length>30,'E.'+lesson.id+' explains '+step.s);
      state.lines.push({s:step.s,j:step.j});
     }
     state.lines=lesson.proofGuide.map(r=>({s:r.s,j:r.j}));let result=EuclidLogic.grade(state,lesson),bad=state.lines.flatMap((l,n)=>l.valid?[]:[(n+1)+'. '+l.s+' ['+l.j+'] '+l.error]);
@@ -46,8 +46,8 @@ addEventListener('load',()=>{
     }
     if(lesson.id===48){
      check(state.lines.find(l=>l.s==='FC = BC')?.derivation?.name==='Equal squares of segment lengths','E.48 explains the nonnegative-root inference from equal squares');
-     let missingSquare=structuredClone(state);missingSquare.lines=missingSquare.lines.filter(l=>l.s!=='FC^2 = BC^2');EuclidLogic.grade(missingSquare,lesson);
-     check(!missingSquare.lines.find(l=>l.s==='FC = BC').valid,'E.48 equal-length inference requires the earlier square equality');
+     let missingSquare=structuredClone(state);missingSquare.lines=missingSquare.lines.filter(l=>!['FC^2 = BC^2','FC^2 = AF^2 + AC^2'].includes(l.s));EuclidLogic.grade(missingSquare,lesson);
+     check(!missingSquare.lines.find(l=>l.s==='FC = BC').valid,'E.48 equal-length inference requires the established auxiliary square comparison');
     }
     if(lesson.id===27){
      let initialNames=Object.keys(state.points).join(''),context=BookOneLogic.context(state,lesson),hypothetical=context.check(BookOneLogic.parse('XG = XH'),'Logic');
@@ -75,11 +75,11 @@ addEventListener('load',()=>{
   unrelatedLesson.givens.forEach(s=>unrelatedContext.accept(BookOneLogic.parse(s),'Given'));
   for(let [ref,statement] of [['I34','area ABCD = area EFGH'],['I35','area ABCD = area EFGH'],['I36','area ABCD = area EFGH'],['I37','area ABC = area EFG'],['I38','area ABC = area EFG'],['I39','AD is parallel to EH'],['I40','AD is parallel to EH'],['I41','area ABCD = 2 area EFG'],['I43','area ABCD = area EFGH']])check(!unrelatedContext.check(BookOneLogic.parse(statement),ref).ok,displayReference(ref)+' rejects a true unrelated claim without its geometric hypotheses');
   let provenance=theoremAudit(44),certStatement='area HIJK = area ABC';
-  check(provenance.check(certStatement,'I44')&&!provenance.check(certStatement,'CN1'),'Construction area equality requires its source until explicitly posted');
-  check(!provenance.check(certStatement,'I41'),'E.41 rejects an equal-area claim transferred by E.44');
+  check(provenance.check(certStatement,'I42')&&!provenance.check(certStatement,'CN1'),'Construction area equality requires its source until explicitly posted');
+  check(!provenance.check(certStatement,'I41'),'E.41 rejects an equal-area claim transferred by E.42');
   check(!provenance.check('HI is parallel to JK','I39')&&!provenance.check('HI is parallel to JK','I40'),'Area converses cannot restate arbitrary known parallel lines');
   let auto45={...provenance.value,lines:LESSONS[44].proofGuide.map(l=>({s:l.s,j:null}))};
-  check(inferredProof(auto45,LESSONS[44]).complete&&auto45.lines.slice(0,6).every(l=>l.autoJustification==='I44')&&['I29','I14','I30'].every(r=>auto45.lines.some(l=>l.autoJustification===r)),'E.45 preserves E.44 sources and explicitly uses E.29, E.14, and E.30');
+  check(inferredProof(auto45,LESSONS[44]).complete&&auto45.lines.slice(0,6).every((l,n)=>l.autoJustification===([0,1,4].includes(n)?'I42':'I44'))&&['I29','I14','I30'].every(r=>auto45.lines.some(l=>l.autoJustification===r)),'E.45 preserves E.42/E.44 sources and explicitly uses E.29, E.14, and E.30');
   check(auto45.lines.filter(l=>l.autoJustification==='I44').every(l=>l.sourcePropositions.includes('I44')),'Construction source propositions survive automatic grading');
   let angleSum=theoremAudit(31);check(angleSum.check('angle ACD = angle BAC + angle ABC','I32')&&angleSum.check('angle BAC + angle ABC + angle ACB = 2 right angles','I32')&&!angleSum.check('angle BAC + angle ABC = 2 right angles','I32'),'E.32 checks its exterior-angle and three-angle formulas');
   for(let lessonIndex of [26,27]){

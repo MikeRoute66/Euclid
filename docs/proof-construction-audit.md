@@ -58,3 +58,5 @@ Browser regressions exercise every proposition's actual construction and proof, 
 - [Euclid E.27](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI27.html): the meeting point is introduced under the negation of the conclusion.
 - [Euclid E.16](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI16.html): actual midpoint, equal extension, and joins are required.
 - [Euclid E.48](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI48.html): an actual perpendicular equal to the given side and its joining line form the comparison triangle.
+
+The subsequent [E.38-E.48 audit](late-book-audit.md) checks every practice/learning-mode combination and repairs incidental line memberships, missing E.44 extensions, and misattributed Definition 22 references.

@@ -128,7 +128,7 @@ function showHowToPlay(){
    <dl class="play-formats">
     <dt>Lengths &amp; angles</dt><dd><code>AB = CD</code><br><code>angle ABC = angle DEF</code></dd>
     <dt>Triangle properties</dt><dd><code>ABC is equilateral</code><br><code>ABC is congruent to DEF</code></dd>
-    <dt>Lines &amp; figures</dt><dd><code>AB is parallel to CD</code><br><code>AB is perpendicular to CD</code><br><code>ABC are collinear</code><br><code>angle ABC is right</code><br><code>ABCD is a parallelogram</code><br><code>ABCD is a square</code></dd>
+    <dt>Lines &amp; figures</dt><dd><code>AB is parallel to CD</code><br><code>AB is perpendicular to CD</code><br><code>ABC are collinear</code><br><code>AB meets CD at E</code><br><code>angle ABC is right</code><br><code>ABCD is a parallelogram</code><br><code>ABCD is a square</code></dd>
     <dt>Areas &amp; squares</dt><dd><code>area ABC = area DEF</code><br><code>AB^2 = CD^2 + EF^2</code></dd>
    </dl>
    <p>Use <code>=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>+</code>, and <code>-</code> for comparisons and sums. Segment endpoints can be reversed. Triangle properties accept any vertex order; congruence must preserve matching vertices.</p>

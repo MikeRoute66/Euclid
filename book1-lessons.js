@@ -138,7 +138,26 @@ reviseProof(47,[
  ['KL is parallel to CD','I30'],['KCDL is a parallelogram','D22'],['area KCDL = 2 area ACD','I41'],['area ACHI = 2 area BCH','I41'],['2 area ACD = 2 area BCH','CN2'],['area KCDL = area ACHI','CN1'],
  ['area BCDE = area ABFG + area ACHI','CN2'],['area BCDE = BC^2','Logic'],['area ABFG = AB^2','Logic'],['area ACHI = AC^2','Logic'],['area ABFG + area ACHI = AB^2 + AC^2','CN2'],['BC^2 = AB^2 + AC^2','CN1']
 ]);
+let converse48=BOOK_ONE_ADDITIONS.find(l=>l.id===48),squares48=converse48.proofGuide.findIndex(l=>l.s==='FC^2 = AF^2 + AC^2');
+converse48.proofGuide.splice(squares48,0,guide('AF^2 = AB^2','Logic'),guide('AF^2 + AC^2 = AB^2 + AC^2','CN2'));
+converse48.proofGuide.find(l=>l.s==='FC^2 = BC^2').j='CN1';
+// Explicit extensions and the parallel-postulate existence argument in E.44.
+let application44=BOOK_ONE_ADDITIONS.find(l=>l.id===44);
+application44.construction.splice(application44.construction.findIndex(t=>t.outputs.includes('N')),0,build('P2',['J','I'],'Extend JI beyond I to meet the extended diagonal MB.'));
+application44.construction.splice(application44.construction.findIndex(t=>t.outputs.includes('P')),0,build('P2',['L','A'],'Extend LA beyond A.'),build('P2',['K','B'],'Extend KB beyond B.'));
+let meeting44=[['AL is parallel to BK','I31'],['BK is parallel to IJ','D23'],['AM is parallel to IJ','I30'],['angle AMJ + angle MJI = 2 right angles','I29'],['angle AMJ > angle BMJ','CN5'],['angle BMJ + angle MJI < 2 right angles','Logic'],['MB meets JI at N','P5']];
+application44.proofGuide.splice(3,0,...meeting44.map(([s,j])=>guide(s,j)));
+let freeArea45=BOOK_ONE_ADDITIONS.find(l=>l.id===45);
+delete freeArea45.points.I;freeArea45.points.H=[420,700];freeArea45.edges=freeArea45.edges.filter(e=>e!=='HI');
+freeArea45.construction[0]=build('I42',['A','B','C','E','F','G','H','B'],'Construct HIJK equal to triangle ABC at H, in the given angle, with its base along ray HB.',['I','J','K']);
+freeArea45.construction[0].alternatives=[{ref:'I44',inputs:['H','I','A','B','C','E','F','G'],outputs:['J','K']}];
+for(let step of freeArea45.proofGuide)if(['HIJK is a parallelogram','area HIJK = area ABC','angle KHI = angle EFG'].includes(step.s))step.j='I42';
+let application45=BOOK_ONE_ADDITIONS.find(l=>l.id===45),join45=application45.proofGuide.findIndex(t=>t.s==='HI is parallel to ML');
+application45.proofGuide.splice(join45,0,...[['HI = KJ','I34'],['KJ = ML','I34'],['HI = ML','CN1']].map(([s,j])=>guide(s,j)));
+let outer45=application45.proofGuide.findIndex(t=>t.s==='HM is parallel to IL');
+application45.proofGuide.splice(outer45,1,guide('HM = IL','I33'),guide('HM is parallel to IL','I33'));
 for(let lesson of BOOK_ONE_ADDITIONS)if(lesson.construction.length)lesson.requireConstruction=true;
+for(let lesson of BOOK_ONE_ADDITIONS)for(let step of lesson.proofGuide)if(step.j==='D22'&&/is a parallelogram/.test(step.s))step.j='Logic';
 LESSONS.push(...BOOK_ONE_ADDITIONS);
 const BOOK_BUILD_MODES={I9:['bisectAngle',3],I10:['midpoint',2],I11:['perpendicular',3],I12:['perpendicular',3],I22:['sss',8],I23:['copyAngle',5],I31:['parallel',3],I42:['equalArea',8],I44:['applyArea',8],I45:['figureArea',9],I46:['square',2]};
 REFERENCES.propositions=LESSONS.map(l=>{

@@ -39,7 +39,7 @@ function constructionProgress(value,lesson){
   if(task.ref==='P2')return value.rays.includes(task.inputs.join(''));
   if(task.ref==='P3')return circle(...task.inputs);
   if(task.ref==='D1'){let name=task.outputs[0]||task.inputs[0],supports=task.supports||(lesson.id===12?['circle:CA','AB']:INTERSECTION_SUPPORTS[lesson.id]?.[name]),d=EuclidLogic.diagram(value);return !!supports&&supports.every(s=>matchesConstructionSupport(value,name,s))&&(!task.beyond||d.between(task.beyond[0],task.beyond[1],name))&&(!task.within||d.between(task.within[0],name,task.within[1]))}
-  return value.facts.some(raw=>{if(!raw.startsWith('book:'))return false;try{let c=JSON.parse(raw.slice(5));return EuclidConstruction.certificate(c,value.points)&&c.rule===Number(task.ref.slice(1))&&sameConstructionInputs(c.operation,c.inputs,task.inputs)&&JSON.stringify(c.outputs)===JSON.stringify(task.outputs)&&(!task.beyond||EuclidLogic.diagram(value).between(task.beyond[0],task.beyond[1],c.outputs[0]))}catch{return false}});
+  return value.facts.some(raw=>{if(!raw.startsWith('book:'))return false;try{let c=JSON.parse(raw.slice(5));return EuclidConstruction.certificate(c,value.points)&&[task,...(task.alternatives||[])].some(candidate=>c.rule===Number(candidate.ref.slice(1))&&sameConstructionInputs(c.operation,c.inputs,candidate.inputs)&&JSON.stringify(c.outputs)===JSON.stringify(candidate.outputs))&&(!task.beyond||EuclidLogic.diagram(value).between(task.beyond[0],task.beyond[1],c.outputs[0]))}catch{return false}});
  });
  return {complete:checks.every(Boolean),done:checks.filter(Boolean).length,total:checks.length,checks};
 }
@@ -52,7 +52,7 @@ function suppliedConstruction(lessonIndex){
    let candidates=bookOneIntersections().filter(q=>supports.every(s=>{if(s.startsWith('circle:')){let [a,b]=s.slice(7);return Math.abs(distance(q,state.points[a])-distance(state.points[a],state.points[b]))<.001}let [a,b]=[state.points[s[0]],state.points[s[1]]];return Math.abs((b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]))<.001}));
    if(beyond)candidates=candidates.filter(q=>{let a=state.points[beyond[0]],b=state.points[beyond[1]],v=[b[0]-a[0],b[1]-a[1]];return (q[0]-a[0])*v[0]+(q[1]-a[1])*v[1]>v[0]*v[0]+v[1]*v[1]});
    if(within)candidates=candidates.filter(q=>distance(q,state.points[within[0]])<distance(state.points[within[0]],state.points[within[1]])&&distance(q,state.points[within[1]])<distance(state.points[within[0]],state.points[within[1]]));
-   let q=candidates.sort((a,b)=>a[1]-b[1])[0];if(!q)throw Error('The supplied construction could not locate an intersection.');bookOneMark(q);
+   let q=candidates.sort((a,b)=>a[1]-b[1])[0];if(!q)throw Error('The supplied construction could not locate an intersection.');bookOneMark(q,supports);
   };
   if(index===0){use('P3','A','B');use('P3','B','A');intersection(['circle:AB','circle:BA']);use('P1','A','C');use('P1','B','C')}
   else if(index===1){use('P1','A','B');use('I1','A','B');use('P2','D','B');use('P3','B','C');intersection(['DB','circle:BC'],'DB');use('P2','D','A');use('P3','D','G');intersection(['DA','circle:DG'],'DA');use('P1','A','L')}
@@ -85,7 +85,11 @@ function ensurePracticeProof(){
   state.lines=proofWithHypotheses(guide.map(step=>state.lines.find(line=>line.s===readableStatement(step.s))||{s:readableStatement(step.s),j:null}),LESSONS[index]);
  }
 }
+const AUTOMATIC_PROOF_CACHE=new WeakMap();
 function inferredProof(value,lesson){
+ const signature=JSON.stringify([lesson,value.points,value.edges,value.rays,value.circles,value.facts,value.topology,value.lines.map(l=>[l.s,l.j])]);
+ const cached=AUTOMATIC_PROOF_CACHE.get(value),fields=['autoJustification','valid','error','dependencies','reason','derivation','sourcePropositions'];
+ if(cached?.signature===signature){value.lines.forEach((line,i)=>{for(let field of fields)line[field]=cached.lines[i][field]});return cached.result}
  const copy=structuredClone(value),context=lesson.id<=5?EuclidLogic.context(copy,lesson):BookOneLogic.context(copy,lesson),parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
  const available=Object.values(REFERENCES).flat().map(r=>r[1]).filter(r=>!/^I/.test(r)||Number(r.slice(1))<lesson.id);
  const references=['Given',...available.filter(r=>/^I/.test(r)),...available.filter(r=>!/^I/.test(r)),'Logic'];
@@ -98,7 +102,9 @@ function inferredProof(value,lesson){
   line.j=reference||null;if(reference)context.accept(ast,reference);
  }
  let result=EuclidLogic.grade(copy,lesson);for(let [i,line] of value.lines.entries()){line.autoJustification=copy.lines[i].j;for(let field of ['valid','error','dependencies','reason','derivation','sourcePropositions'])line[field]=copy.lines[i][field];if(!line.valid&&parse(line.s))line.error='This statement does not follow from the construction and earlier established statements.'}
- return {...result,complete:copy.lines.length>0&&result.complete};
+ const outcome={...result,complete:copy.lines.length>0&&result.complete};
+ AUTOMATIC_PROOF_CACHE.set(value,{signature,result:outcome,lines:value.lines.map(line=>Object.fromEntries(fields.map(field=>[field,line[field]])))});
+ return outcome;
 }
 function practiceMode(){return settings.skipProof?(settings.skipJustifications?(settings.skipConstruction?'Review':'Construction practice'):(settings.skipConstruction?'Justification practice':'Construction and justifications')):settings.skipConstruction?(settings.skipJustifications?'Statement practice':'Proof practice'):settings.skipJustifications?'Statements and construction':'Full challenge'}
 function evaluatePractice(){

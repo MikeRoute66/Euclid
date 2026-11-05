@@ -4,8 +4,18 @@ const EuclidConstruction=(()=>{
  const layouts={9:['ADB'],11:['ADCB'],13:['ACB'],15:['AEB','CED'],16:['BCD'],17:['BCD'],27:['AGB','CHD','EGHF'],28:['AGB','CHD','EGHF'],29:['AGB','CHD','EGHF'],32:['BCD'],35:['DCFE'],36:['ABEF','DCHG'],38:['BCEF'],40:['BCEF'],41:['DEC'],43:['AEC','FEH','GEK','AGB','BHC','CKD','DFA']};
  const sort=s=>[...s].sort().join('');
  function permutation(s){let n=0;for(let i=0;i<s.length;i++)for(let j=i+1;j<s.length;j++)if(s[i]>s[j])n++;return n%2?-1:1}
- function restoreGivens(state,lesson){for(let line of layouts[lesson.id]||[])if([...line].every(n=>state.points[n])&&!state.topology.lines.includes(line))state.topology.lines.push(line)}
- function initialize(state,lesson){state.topology={version:1,lines:[...(layouts[lesson.id]||[])],turns:{},directions:{},circles:[]};for(let n of Object.keys(state.points))point(state,n);
+ function restoreGivens(state,lesson){
+  for(let line of layouts[lesson.id]||[])if([...line].every(n=>state.points[n])&&!state.topology.lines.includes(line))state.topology.lines.push(line);
+  // Older point tools recorded every displayed coincidence. For guided
+  // intersections, retain the selected supports, not unrelated passing lines.
+  state.topology.intersections??=[];
+  for(let task of lesson.construction||[])if(task.ref==='D1'&&task.outputs.length){let n=task.outputs[0],supports=task.supports||(typeof INTERSECTION_SUPPORTS!=='undefined'?INTERSECTION_SUPPORTS[lesson.id]?.[n]:null);if(!state.points[n]||!supports)continue;
+   let entry=state.topology.intersections.find(r=>r.point===n);
+   if(!entry&&supports.every(s=>s.startsWith('circle:')?state.topology.circles.includes(s[7]+':'+s[8]+':'+n):state.topology.lines.some(g=>[...s,n].every(v=>g.includes(v))))){entry={point:n,supports:[...supports]};state.topology.intersections.push(entry)}
+   if(entry){let lines=entry.supports.filter(s=>!s.startsWith('circle:'));state.topology.lines=state.topology.lines.filter(g=>g.at(-1)!==n||(layouts[lesson.id]||[]).includes(g)||lines.some(line=>[...line].every(v=>g.includes(v))))}
+  }
+ }
+ function initialize(state,lesson){state.topology={version:1,lines:[...(layouts[lesson.id]||[])],turns:{},directions:{},circles:[],intersections:[]};for(let n of Object.keys(state.points))point(state,n);
   // Replay only relationships implied by recorded operations in older saves.
   for(let raw of state.facts||[])if(raw.startsWith('book:')){try{let r=JSON.parse(raw.slice(5));if(!certificate(r,state.points))continue;let [a,b,c]=r.inputs,[n,m]=r.outputs;
    if(['cut','midpoint'].includes(r.operation))support(state,a+b,n);
@@ -22,16 +32,29 @@ const EuclidConstruction=(()=>{
  // Old saves contain these inferred triples; ignore them until a proof line
  // establishes the relationship. This applies to every use of the area tool.
  function derivedAlignments(state){
-  let records=[];for(let raw of state.facts||[])if(raw.startsWith('book:'))try{let r=JSON.parse(raw.slice(5));if(r.operation==='applyArea'&&certificate(r,state.points))records.push(r)}catch{}
-  let result=[];for(let r of records)for(let p of records)if(p!==r&&p.inputs.slice(5).join('')===r.inputs.slice(5).join('')&&p.outputs[1]===r.inputs[0]&&p.outputs[0]===r.inputs[1])result.push(p.inputs[0]+r.inputs[0]+r.outputs[1],p.inputs[1]+r.inputs[1]+r.outputs[0]);
+  let records=[];for(let raw of state.facts||[])if(raw.startsWith('book:'))try{let r=JSON.parse(raw.slice(5));if(['equalArea','applyArea','figureArea'].includes(r.operation)&&certificate(r,state.points)){
+   let applied=r.operation==='applyArea',size=r.operation==='figureArea'?4:3;
+   records.push({applied,p:applied?[...r.inputs.slice(0,2),...r.outputs]:[r.inputs.at(-2),...r.outputs],angle:(applied?r.inputs.slice(5,8):r.inputs.slice(size,size+3)).join('')});
+  }}catch{}
+  let result=[];for(let r of records)if(r.applied)for(let p of records)if(p!==r&&p.angle===r.angle&&p.p[2]===r.p[1]&&p.p[3]===r.p[0])result.push(p.p[0]+r.p[0]+r.p[3],p.p[1]+r.p[1]+r.p[2]);
   return [...new Set(result.map(sort))];
  }
+
  function directLines(state){let derived=derivedAlignments(state);return (state.topology?.lines||[]).filter(line=>!derived.some(triple=>[...triple].every(n=>line.includes(n))))}
  function support(state,line,n){if(!state.topology||line.includes(n))return;let key=sort(line+n);if(!state.topology.lines.some(s=>sort(s)===key))state.topology.lines.push(line+n)}
  function onCircle(state,c,n){if(!state.topology)return;let key=c.a+':'+c.b+':'+n;if(!state.topology.circles.includes(key))state.topology.circles.push(key)}
  function nearCircle(state,c,n){let p=state.points,r=Math.hypot(p[c.a][0]-p[c.b][0],p[c.a][1]-p[c.b][1]),s=Math.hypot(p[c.a][0]-p[n][0],p[c.a][1]-p[n][1]);return Math.abs(r-s)<1e-7*Math.max(1,r)}
  function edge(state,a,b){if(!state.topology)return;point(state,a);point(state,b)}
- function intersection(state,n){if(!state.topology)return;point(state,n);let p=state.points[n];for(let line of [...state.edges,...state.rays]){let a=state.points[line[0]],b=state.points[line[1]],cross=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);if(Math.abs(cross)<1e-6*Math.max(1,Math.hypot(b[0]-a[0],b[1]-a[1])))support(state,line,n)}for(let c of state.circles)if(nearCircle(state,c,n))onCircle(state,c,n)}
+ function intersection(state,n,supports){
+  if(!state.topology)return;point(state,n);
+  // Clicking an existing point can mark circle membership. It does not prove
+  // that the point also lies on every line at the same screen coordinates.
+  supports??=state.circles.filter(c=>nearCircle(state,c,n)).map(c=>'circle:'+c.a+c.b);
+  state.topology.intersections??=[];
+  if(supports.length&&!state.topology.intersections.some(r=>r.point===n&&[...r.supports].sort().join(',')===[...supports].sort().join(',')))state.topology.intersections.push({point:n,supports:[...supports]});
+  for(let selected of supports)if(selected.startsWith('circle:')){let [a,b]=selected.slice(7);onCircle(state,{a,b},n)}else support(state,selected,n);
+ }
+
  function radius(state,c,n){return n===c.b||!!state.topology?.circles.includes(c.a+':'+c.b+':'+n)}
  function turn(state,a,b,c){return (state.topology?.turns[sort(a+b+c)]||0)*permutation(a+b+c)}
  function direction(state,a,b){return (state.topology?.directions[sort(a+b)]||0)*(a<b?1:-1)}
@@ -54,6 +77,6 @@ const EuclidConstruction=(()=>{
   }
   return r.claims.length===expected.length&&r.claims.every(s=>expected.includes(s));
  }
- function valid(t,points){const names=s=>typeof s==='string'&&[...s].every(n=>points[n]);return t?.version===1&&Array.isArray(t.lines)&&t.lines.length<=500&&t.lines.every(s=>names(s)&&s.length>=3&&s.length<=26)&&t.turns&&Object.keys(t.turns).length<=2600&&Object.entries(t.turns).every(([s,n])=>names(s)&&s.length===3&&new Set(s).size===3&&Math.abs(n)===1)&&t.directions&&Object.keys(t.directions).length<=325&&Object.entries(t.directions).every(([s,n])=>names(s)&&s.length===2&&new Set(s).size===2&&[-1,0,1].includes(n))&&Array.isArray(t.circles)&&t.circles.length<=2600&&t.circles.every(s=>typeof s==='string'&&/^[A-Z]:[A-Z]:[A-Z]$/.test(s)&&names(s.replace(/:/g,'')))}
+ function valid(t,points){const names=s=>typeof s==='string'&&[...s].every(n=>points[n]);return t?.version===1&&(t.intersections===undefined||Array.isArray(t.intersections)&&t.intersections.length<=500&&t.intersections.every(r=>r&&names(r.point)&&r.point.length===1&&Array.isArray(r.supports)&&r.supports.length<=10&&r.supports.every(s=>typeof s==='string'&&/^(?:circle:)?[A-Z]{2}$/.test(s)&&names(s.replace('circle:','')))))&&Array.isArray(t.lines)&&t.lines.length<=500&&t.lines.every(s=>names(s)&&s.length>=3&&s.length<=26)&&t.turns&&Object.keys(t.turns).length<=2600&&Object.entries(t.turns).every(([s,n])=>names(s)&&s.length===3&&new Set(s).size===3&&Math.abs(n)===1)&&t.directions&&Object.keys(t.directions).length<=325&&Object.entries(t.directions).every(([s,n])=>names(s)&&s.length===2&&new Set(s).size===2&&[-1,0,1].includes(n))&&Array.isArray(t.circles)&&t.circles.length<=2600&&t.circles.every(s=>typeof s==='string'&&/^[A-Z]:[A-Z]:[A-Z]$/.test(s)&&names(s.replace(/:/g,'')))}
  return {restoreGivens,certificate,valid,directLines,derivedAlignments,initialize,point,support,onCircle,edge,intersection,radius,turn,direction};
 })();

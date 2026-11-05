@@ -1,13 +1,13 @@
 /* Capitalize only construction labels in geometric statement positions. */
 function capitalizeGeometryLabels(input,pointNames){
  const known=new Set(pointNames),parsed=!!EuclidLogic.parse(input);
- const words=new Set('this that these those it which what here there isosceles a an is are and the to on of at has two all for same than triangle triangles equilateral isosceles scalene congruent superposed superpose equal equals angle angles segment length line side parallel perpendicular parallelogram square collinear right area greater less inside point'.split(' '));
+ const words=new Set('this that these those it which what here there isosceles a an is are and the to on of at has two all for same than triangle triangles equilateral isosceles scalene congruent superposed superpose equal equals angle angles segment length line side parallel perpendicular parallelogram square collinear right area greater less inside point meets'.split(' '));
  return input.replace(/[a-z]+/gi,(word,offset)=>{
   const lower=word.toLowerCase(),upper=word.toUpperCase(),before=input.slice(0,offset),after=input.slice(offset+word.length);
   if(![...upper].every(n=>known.has(n))||new Set(upper).size!==upper.length)return word;
   // The article in "is a square" or "a right angle" is not point A.
   if(lower==='a'&&/^\s+(?:square|parallelogram|right\s+angle)\b/i.test(after))return word;
-  const prefix=/\b(?:angle|area|triangle|triangles|segment|line|side|point|inside|(?:congruent|parallel|perpendicular)\s+to|superposed\s+on)\s*$/i.test(before),arithmetic=/(?:[=<>+\-^(]\s*|^\s*)(?:\d+(?:\/\d+)?\s*\*?\s*)$|[=<>+\-^(]\s*$/.test(before)||/^\s*[=<>+\-^),]/.test(after);
+  const prefix=/\b(?:angle|area|triangle|triangles|segment|line|side|point|inside|meets|at|(?:congruent|parallel|perpendicular)\s+to|superposed\s+on)\s*$/i.test(before),arithmetic=/(?:[=<>+\-^(]\s*|^\s*)(?:\d+(?:\/\d+)?\s*\*?\s*)$|[=<>+\-^(]\s*$/.test(before)||/^\s*[=<>+\-^),]/.test(after);
   if(lower!=='a'&&words.has(lower)&&!prefix&&!(word.length<=3&&arithmetic))return word;
   const context=prefix||arithmetic||/^\s+(?:is|are|and)\b/i.test(after);
   return parsed||context?upper:word;
@@ -26,6 +26,7 @@ function suggestStatementFormat(input){
  if(property){let name=names.find(n=>n.length===3);return {text:(name||'[triangle]')+' is '+property,insertable:!!name}}
  let relation=keyword('congruent')?'congruent to':keyword('superposed')||keyword('superpose')?'superposed on':null;
  if(relation){let triangles=names.filter(n=>n.length===3);return {text:(triangles[0]||'[first triangle]')+' is '+relation+' '+(triangles[1]||'[second triangle]'),insertable:triangles.length>=2}}
+ if(/\b(?:meets?|intersects?)\b/i.test(input)){let segments=names.filter(n=>n.length===2),point=input.match(/\bat\s+([a-z])\b/i)?.[1]?.toUpperCase();return {text:(segments[0]||'[line]')+' meets '+(segments[1]||'[line]')+' at '+(point||'[point]'),insertable:segments.length>=2&&!!point}}
  let lineRelation=keyword('perpendicular')?'perpendicular':keyword('parallel')?'parallel':null;
  if(lineRelation){let segments=names.filter(n=>n.length===2);return {text:(segments[0]||'[line]')+' is '+lineRelation+' to '+(segments[1]||'[line]'),insertable:segments.length>=2}}
  let shape=keyword('parallelogram')?'parallelogram':keyword('square')?'square':null;
