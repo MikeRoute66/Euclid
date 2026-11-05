@@ -6,7 +6,7 @@ function constructionLabelLayout(svg){
  const segments=[...state.edges.map(e=>[project(state.points[e[0]]),project(state.points[e[1]])]),...state.rays.map(e=>{let a=state.points[e[0]],b=state.points[e[1]];return [project(a),project([a[0]+4*(b[0]-a[0]),a[1]+4*(b[1]-a[1])])]})];
  const circles=state.circles.map(c=>({...project(state.points[c.a]),r:distance(state.points[c.a],state.points[c.b])*scale}));
  const overlaps=(a,b,gap=0)=>a.x<b.x+b.w+gap&&a.x+a.w+gap>b.x&&a.y<b.y+b.h+gap&&a.y+a.h+gap>b.y;
- const instruction=document.querySelector('#instruction')?.getBoundingClientRect(),obstacles=instruction?[{x:instruction.left-rect.left,y:instruction.top-rect.top,w:instruction.width,h:instruction.height}]:[];
+ const obstacles=[document.querySelector('#instruction'),document.querySelector('.angle-key')].filter(Boolean).map(n=>n.getBoundingClientRect()).map(r=>({x:r.left-rect.left,y:r.top-rect.top,w:r.width,h:r.height}));
  function crosses(box,a,b){let low=0,high=1;for(let [origin,delta,min,max] of [[a.x,b.x-a.x,box.x-3,box.x+box.w+3],[a.y,b.y-a.y,box.y-3,box.y+box.h+3]]){if(Math.abs(delta)<1e-9){if(origin<min||origin>max)return false}else{let x=(min-origin)/delta,y=(max-origin)/delta;low=Math.max(low,Math.min(x,y));high=Math.min(high,Math.max(x,y));if(low>high)return false}}return true}
  const boxes=[];
  for(let p of points){
@@ -36,4 +36,4 @@ function constructionLabelLayout(svg){
 }
 
 let labelResizeFrame;
-window.addEventListener('resize',()=>{cancelAnimationFrame(labelResizeFrame);labelResizeFrame=requestAnimationFrame(()=>{const svg=document.querySelector('#canvas');if(!svg||typeof state==='undefined'||!state)return;svg.querySelectorAll('.point-label-group,.point-hit,.label-leader').forEach(n=>n.remove());constructionLabelLayout(svg)})});
+window.addEventListener('resize',()=>{cancelAnimationFrame(labelResizeFrame);labelResizeFrame=requestAnimationFrame(()=>{const svg=document.querySelector('#canvas');if(!svg||typeof state==='undefined'||!state)return;svg.querySelectorAll('.point-label-group,.point-hit,.label-leader').forEach(n=>n.remove());AngleVisual.clear(svg);svg.querySelector('.angle-sectors')?.remove();AngleVisual.mount(svg,LESSONS[index],state);constructionLabelLayout(svg)})});

@@ -13,8 +13,9 @@ function capitalizeGeometryLabels(input,pointNames){
   return parsed||context?upper:word;
  });
 }
-/* Syntax assistance only: this function has no lesson, diagram, or proof input. */
+/* Syntax assistance only. Lesson colors resolve names without supplying proof facts. */
 function suggestStatementFormat(input){
+ if(typeof AngleVisual!=='undefined'&&typeof index!=='undefined'){let resolved=AngleVisual.resolve(input,LESSONS[index]);if(resolved!==input&&EuclidLogic.parse(resolved))return {text:resolved,insertable:true}}
  if(!input.trim()||EuclidLogic.parse(input))return null;
  const words=input.toLowerCase().match(/[a-z]+/g)||[];
  function editDistance(a,b){let row=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let next=[i];for(let j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,row[j]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));row=next}return row[b.length]}

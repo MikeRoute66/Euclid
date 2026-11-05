@@ -158,7 +158,7 @@ function practiceInstruction(){
 
 function updateLearningGuidance(){
  const panel=$('#learning-guidance');panel.hidden=!settings.learningMode;
- if(settings.learningMode)$('#learning-instructions').textContent=displayReference(nextHint());
+ if(settings.learningMode)AngleVisual.decorate($('#learning-instructions'),displayReference(nextHint()),LESSONS[index]);
 }
 
 function proofInspectionBody(line,reference){
