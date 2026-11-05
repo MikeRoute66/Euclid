@@ -90,8 +90,9 @@ function inferredProof(value,lesson){
 }
 function practiceMode(){return settings.skipProof?(settings.skipJustifications?(settings.skipConstruction?'Review':'Construction practice'):(settings.skipConstruction?'Justification practice':'Construction and justifications')):settings.skipConstruction?(settings.skipJustifications?'Statement practice':'Proof practice'):settings.skipJustifications?'Statements and construction':'Full challenge'}
 function evaluatePractice(){
- ensurePracticeConstruction();ensurePracticeProof();if(settings.skipProof&&settings.skipJustifications)return constructionProgress(state,LESSONS[index]).complete;
+ ensurePracticeConstruction();ensurePracticeProof();
  let result=(settings.skipJustifications?inferredProof(state,LESSONS[index]):EuclidLogic.grade(state,LESSONS[index])).complete;
+ if(settings.skipProof&&settings.skipJustifications)return constructionProgress(state,LESSONS[index]).complete;
  return result&&(!settings.skipProof||constructionProgress(state,LESSONS[index]).complete);
 }
 function savedProgressComplete(value,lesson){
@@ -103,15 +104,15 @@ function savedProgressComplete(value,lesson){
 function applyPracticeDisplay(completed){
  const modified=settings.skipConstruction||settings.skipProof||settings.skipJustifications;
  state.completionMode=modified?practiceMode():'Full challenge';
- const constructionOnly=settings.skipProof&&settings.skipJustifications;
- document.querySelector('.proof').hidden=constructionOnly;document.querySelector('.workspace').classList.toggle('construction-only',constructionOnly);
+ const automatedProof=settings.skipProof&&settings.skipJustifications;
+ document.querySelector('.proof').hidden=false;document.querySelector('.workspace').classList.remove('construction-only');
  $('#lineform').hidden=settings.skipProof;
  $('#given-tool').hidden=$('#logic-tool').hidden=settings.skipJustifications;$('#hint').hidden=settings.learningMode||!settings.showHints;
  updateLearningGuidance();
- document.querySelector('.proofnote').textContent=settings.skipProof?'Proof statements are supplied. Choose a reference, then click a line to justify it.':settings.skipJustifications?'Write formal statements. Their reasoning is checked automatically; justifications are not required.':'Write a formal statement, then select a reference below and click its line to justify it.';
+ document.querySelector('.proofnote').textContent=automatedProof?'Proof statements are supplied and their justifications are checked automatically. Complete the construction to establish them.':settings.skipProof?'Proof statements are supplied. Choose a reference, then click a line to justify it.':settings.skipJustifications?'Write formal statements. Their reasoning is checked automatically; justifications are not required.':'Write a formal statement, then select a reference below and click its line to justify it.';
  let progress=constructionProgress(state,LESSONS[index]);$('#practice-status').hidden=!modified;
- $('#practice-status').textContent=practiceMode()+' - '+(settings.skipConstruction&&constructionOnly?'Finished diagram supplied for review.':constructionOnly?(progress.total?progress.done+' / '+progress.total+' construction steps':'No drawing required for this stage.')+(completed?' Stage clear.':''):settings.skipProof?'Statements supplied. Justify each line.':settings.skipConstruction?'Diagram supplied. Write the proof.':'Justifications checked automatically.');
- $('#practice-next').hidden=!(constructionOnly&&completed&&index<LESSONS.length-1);
+ $('#practice-status').textContent=practiceMode()+' - '+(settings.skipConstruction&&automatedProof?'Finished diagram supplied for review.':automatedProof?(progress.total?progress.done+' / '+progress.total+' construction steps':'No drawing required for this stage.')+(completed?' Stage clear.':''):settings.skipProof?'Statements supplied. Justify each line.':settings.skipConstruction?'Diagram supplied. Write the proof.':'Justifications checked automatically.');
+ $('#practice-next').hidden=!(automatedProof&&completed&&index<LESSONS.length-1);
  $('#practice-next').onclick=()=>load(index+1);
 }
 function updateSettings(){
