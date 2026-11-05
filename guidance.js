@@ -41,4 +41,4 @@ function proofStepReason(lesson,step){
 }
 
 function hintFeedback(error){return String(error||'Check the premises and the construction evidence.').replace(/\b(?:CN|[DEIP])\.?\s*\d+\b/g,'the selected justification')}
-function hintProofAction(statement,line){return (line>=0?'Use Edit on line '+(line+1)+' to enter: ':'Add the statement: ')+statement+'. Then choose a justification that matches the reasoning and click '+(line>=0?'that proof line':'the new proof line')+'.'}
+function hintProofAction(statement,line){return (line>=0?'Use Edit on line '+(line+1)+' to enter: ':'Add the statement: ')+statement+'. '+(settings.skipJustifications?'Its reasoning will be checked automatically.':'Then choose a justification that matches the reasoning and click '+(line>=0?'that proof line':'the new proof line')+'.')}

@@ -10,8 +10,8 @@ function constructionLabelLayout(svg){
  function crosses(box,a,b){let low=0,high=1;for(let [origin,delta,min,max] of [[a.x,b.x-a.x,box.x-3,box.x+box.w+3],[a.y,b.y-a.y,box.y-3,box.y+box.h+3]]){if(Math.abs(delta)<1e-9){if(origin<min||origin>max)return false}else{let x=(min-origin)/delta,y=(max-origin)/delta;low=Math.max(low,Math.min(x,y));high=Math.min(high,Math.max(x,y));if(low>high)return false}}return true}
  const boxes=[];
  for(let p of points){
-  const text=el('text',{'data-label':p.name,'text-anchor':'middle',class:'point-label'});text.textContent=p.name;text.style.fontSize=(17/scale)+'px';svg.append(text);
-  const w=Math.max(10,text.getComputedTextLength()*scale)+10,h=24;let candidates=[];
+  const text=el('text',{'data-label':p.name,'text-anchor':'middle',class:'point-label'});text.textContent=p.name;text.style.fontSize=((settings.largeLabels?21:17)/scale)+'px';svg.append(text);
+  const w=Math.max(10,text.getComputedTextLength()*scale)+10,h=settings.largeLabels?28:24;let candidates=[];
   for(let radius of [21,34,50,70])for(let angle=0;angle<16;angle++){let theta=-Math.PI/4+angle*Math.PI/8,x=p.x+Math.cos(theta)*radius-w/2,y=p.y+Math.sin(theta)*radius-h/2;
    x=Math.max(4,Math.min(rect.width-w-4,x));y=Math.max(4,Math.min(rect.height-h-4,y));let box={x,y,w,h},cost=radius*.65+angle*.04;
    for(let q of points)if(overlaps(box,{x:q.x-8,y:q.y-8,w:16,h:16},2))cost+=3000;
@@ -29,7 +29,7 @@ function constructionLabelLayout(svg){
   const toSvg=(x,y)=>{let q=svg.createSVGPoint();q.x=x+rect.left;q.y=y+rect.top;return q.matrixTransform(inverse)},center=toSvg(box.x+box.w/2,box.y+box.h/2),corner=toSvg(box.x,box.y);
   const group=el('g',{'data-label':p.name,class:'point-label-group'}),background=el('rect',{x:corner.x,y:corner.y,width:box.w/scale,height:box.h/scale,rx:3/scale,class:'label-background'});
   if(Math.hypot(box.x+box.w/2-p.x,box.y+box.h/2-p.y)>40){let anchor=toSvg(Math.max(box.x,Math.min(box.x+box.w,p.x)),Math.max(box.y,Math.min(box.y+box.h,p.y))),vertex=state.points[p.name],leader=el('line',{x1:vertex[0],y1:vertex[1],x2:anchor.x,y2:anchor.y,class:'label-leader'});svg.insertBefore(leader,svg.querySelector('.point-label-group'))}
-  text.setAttribute('x',center.x);text.setAttribute('y',center.y+5.5/scale);text.style.strokeWidth=(3/scale)+'px';group.append(background,text);svg.append(group);
+  text.setAttribute('x',center.x);text.setAttribute('y',center.y+(settings.largeLabels?6.8:5.5)/scale);text.style.strokeWidth=(3/scale)+'px';group.append(background,text);svg.append(group);
  }
  // Transparent targets retain a constant physical size as the viewBox changes.
  for(let [name,p] of Object.entries(state.points)){let hit=el('circle',{cx:p[0],cy:p[1],r:16/scale,class:'point-hit','data-point':name});svg.insertBefore(hit,svg.querySelector('.point-label-group'))}

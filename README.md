@@ -56,3 +56,14 @@ Hints describe the next geometric action and the reasoning for a proof statement
 
 
 Proof entries automatically capitalize labels belonging to the current construction while preserving ordinary words and the text cursor. For example, `ab = ac` becomes `AB = AC`, and `abcd is a square` becomes `ABCD is a square`. The same normalization applies to edited lines and loaded saves.
+
+
+The arcade menu offers Continue, New game, Load game, Save game, Stage select, and Options. Options are saved in this browser:
+
+- Skip construction supplies the finished diagram while retaining a backup of the manual drawing.
+- Skip proof supplies proof statements. Their justifications are still required.
+- Skip justifications checks whether statements follow automatically, rejecting unsupported statements without assigning reference answers to the saved lines.
+- Skip proof together with Skip justifications gives construction-only practice. Skipping all three gives a finished-diagram review mode.
+- Show hints and Larger point labels control guidance and diagram readability.
+
+Practice clears are labeled separately from full proofs. Switching off supplied construction or proof restores the manual work; switching back resumes practice progress. Exported save files retain both sets of work. Construction-only completion checks actual recorded artifacts rather than point coordinates or names alone. All 48 supplied constructions and proofs, all eight practice-toggle combinations, and automatic statement checking are covered by browser regression checks.

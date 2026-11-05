@@ -16,13 +16,16 @@ function validateSave(data){
   if(!Array.isArray(value.facts)||value.facts.length>300||!value.facts.every(f=>typeof f==='string'&&(facts.has(f)||validBookCertificate(f,points)||/^(?:equilateral:[A-Z]:[A-Z]:[A-Z]|copy:[A-Z]:[A-Z]:[A-Z]:[A-Z]|cut:[A-Z]:[A-Z]:[A-Z]:[A-Z]|superpose:[A-Z]{3}:[A-Z]{3})$/.test(f)&&[...f.split(':').slice(1).join('')].every(n=>points[n]))))fail();
   if(!Array.isArray(value.lines)||value.lines.length>500||!value.lines.every(l=>object(l)&&typeof l.s==='string'&&l.s.length<=500&&(l.j===null||justifications.has(l.j))))fail();
   if(value.topology&&!EuclidConstruction.valid(value.topology,points))fail();
-  progress[key]={points,topology:value.topology?structuredClone(value.topology):undefined,edges:[...value.edges],rays:[...value.rays],circles:value.circles.map(c=>({a:c.a,b:c.b})),facts:[...value.facts],lines:value.lines.map(l=>({s:readableStatement(l.s,points),j:l.j})),completed:false};
+  progress[key]={points,topology:value.topology?structuredClone(value.topology):undefined,edges:[...value.edges],rays:[...value.rays],circles:value.circles.map(c=>({a:c.a,b:c.b})),facts:[...value.facts],lines:value.lines.map(l=>({s:readableStatement(l.s,points),j:l.j})),completed:false,completionMode:typeof value.completionMode==='string'?value.completionMode:undefined};
+  if(value.completionMode!==undefined&&!PRACTICE_MODES.includes(value.completionMode))fail();
+  for(let field of ['manualProof','practiceProof'])if(value[field]!==undefined){if(!Array.isArray(value[field])||value[field].length>500||!value[field].every(l=>object(l)&&typeof l.s==='string'&&l.s.length<=500&&(l.j===null||justifications.has(l.j))))fail();progress[key][field]=value[field].map(l=>({s:readableStatement(l.s,points),j:l.j}));}
+  for(let field of ['manualConstruction','practiceConstruction'])if(value[field]!==undefined){if(!object(value[field]))fail();let geometry={...constructionGeometry(value[field]),lines:[]};let checked=validateSave({format:SAVE_FORMAT,version:SAVE_VERSION,activeProposition:Number(key),progress:{[key]:geometry}});progress[key][field]=constructionGeometry(checked.progress[key]);}
+
  }
  if(!progress[data.activeProposition])fail();
  for(let [key,value] of Object.entries(progress))if(!value.topology)EuclidConstruction.initialize(value,LESSONS[Number(key)]);
  // Recheck derived validity instead of trusting flags supplied by the file.
- let previousIndex=index,previousState=state;
- try{for(let [key,value] of Object.entries(progress)){index=Number(key);state=value;value.completed=evaluate()}}finally{index=previousIndex;state=previousState}
+ for(let [key,value] of Object.entries(progress))value.completed=savedProgressComplete(value,LESSONS[Number(key)]);
  return {progress,activeProposition:data.activeProposition};
 }
 function restoreSave(data){const result=validateSave(data);saved=result.progress;load(result.activeProposition)}
@@ -39,18 +42,19 @@ async function loadSaveFileFromInput(e){let file=e.target.files[0];if(!file)retu
 $('#save-file').addEventListener('change',loadSaveFileFromInput);
 const CHECKPOINT_KEY='euclid-workshop-checkpoints-v1';
 function readSavePoints(){try{let points=JSON.parse(localStorage.getItem(CHECKPOINT_KEY)||'[]');return Array.isArray(points)?points:[]}catch{return []}}
-function showMenuHome(){ $('#menu-home').hidden=false;$('#save-points-view').hidden=true;$('#save-status').textContent=''; }
-function checkpointLabel(document){let p=document?.progress?.[document.activeProposition],number=document?.activeProposition;return Number.isInteger(number)&&number>=0&&number<LESSONS.length?'Proposition E.'+(number+1)+' - '+LESSONS[number].title+' - '+(p?.lines?.length||0)+' proof lines':'Saved workshop';}
+function showMenuHome(){ $('#main-menu').classList.remove('options-open');$('#menu-home').hidden=false;$('#save-points-view').hidden=true;$('#settings-view').hidden=true;$('#save-status').textContent=''; }
+function checkpointLabel(document){let p=document?.progress?.[document.activeProposition],number=document?.activeProposition;return Number.isInteger(number)&&number>=0&&number<LESSONS.length?'Proposition E.'+(number+1)+' - '+LESSONS[number].title+' - '+(p?.lines?.length||0)+' proof lines'+(p?.completionMode&&p.completionMode!=='Full challenge'?' - '+p.completionMode:''):'Saved game';}
 function appendSavePoint(container,point,automatic=false){
  let button=document.createElement('button');button.type='button';button.className='save-point';let name=document.createElement('strong');name.textContent=point.name;let details=document.createElement('span');details.textContent=checkpointLabel(point.document);let time=document.createElement('small');let date=new Date(point.createdAt);time.textContent=(automatic?'Autosave - ':'')+(Number.isNaN(date.getTime())?'':date.toLocaleString());button.append(name,details,time);
  button.onclick=()=>{try{restoreSave(point.document);$('#main-menu').close()}catch{ $('#save-status').textContent='This save point could not be loaded. Your current progress is unchanged.'; }};container.append(button);
 }
 function showSavePoints(focusName=false){
- $('#menu-home').hidden=true;$('#save-points-view').hidden=false;$('#save-status').textContent='';
+ $('#main-menu').classList.remove('options-open');
+ $('#menu-home').hidden=true;$('#settings-view').hidden=true;$('#save-points-view').hidden=false;$('#save-status').textContent='';
  let current=saveDocument(),updated;try{updated=localStorage.getItem('euclid-workshop-updated')}catch{}
- let container=$('#save-points-list');container.replaceChildren();appendSavePoint(container,{name:'Current workshop',createdAt:updated||new Date().toISOString(),document:current},true);
+ let container=$('#save-points-list');container.replaceChildren();appendSavePoint(container,{name:'Continue - current game',createdAt:updated||new Date().toISOString(),document:current},true);
  const points=readSavePoints();for(let point of points)if(point&&typeof point.name==='string'&&point.document)appendSavePoint(container,point);
- if(!points.length){let empty=document.createElement('p');empty.className='empty';empty.textContent='No named save points yet. Save your current progress above.';container.append(empty);}
+ if(!points.length){let empty=document.createElement('p');empty.className='empty';empty.textContent='No saved games yet. Save your current progress above.';container.append(empty);}
  if(focusName)$('#save-point-name').focus();else container.querySelector('button')?.focus();
 }
 function createSavePoint(name){
@@ -63,4 +67,5 @@ $('#save-point-menu').onclick=()=>showSavePoints(true);
 $('#back-from-saves').onclick=()=>{showMenuHome();$('#load-save').focus()};
 $('#save-point-form').onsubmit=e=>{e.preventDefault();try{let point=createSavePoint($('#save-point-name').value);$('#save-point-name').value='';showSavePoints();$('#save-status').textContent='Saved "'+point.name+'".';}catch(error){$('#save-status').textContent=error.message}};
 $('#jump-search').oninput=()=>{let query=$('#jump-search').value.toLowerCase();for(let button of $('#jump-options').children)button.hidden=!button.textContent.toLowerCase().includes(query)};
+installSettings();
 openMainMenu();
