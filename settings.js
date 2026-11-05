@@ -85,7 +85,7 @@ function inferredProof(value,lesson){
  const copy=structuredClone(value),context=lesson.id<=5?EuclidLogic.context(copy,lesson):BookOneLogic.context(copy,lesson),parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
  const references=['Given',...Object.values(REFERENCES).flat().map(r=>r[1]).filter(r=>!/^I/.test(r)||Number(r.slice(1))<lesson.id),'Logic'];
  for(let line of copy.lines){let ast=parse(line.s),reference=ast&&references.find(r=>context.check(ast,r).ok);line.j=reference||null;if(reference)(context.accepted||context.facts).push(ast)}
- let result=EuclidLogic.grade(copy,lesson);for(let [i,line] of value.lines.entries()){for(let field of ['valid','error','dependencies','reason','derivation'])line[field]=copy.lines[i][field];if(!line.valid&&parse(line.s))line.error='This statement does not follow from the construction and earlier established statements.'}
+ let result=EuclidLogic.grade(copy,lesson);for(let [i,line] of value.lines.entries()){line.autoJustification=copy.lines[i].j;for(let field of ['valid','error','dependencies','reason','derivation'])line[field]=copy.lines[i][field];if(!line.valid&&parse(line.s))line.error='This statement does not follow from the construction and earlier established statements.'}
  return {...result,complete:copy.lines.length>0&&result.complete};
 }
 function practiceMode(){return settings.skipProof?(settings.skipJustifications?(settings.skipConstruction?'Review':'Construction practice'):(settings.skipConstruction?'Justification practice':'Construction and justifications')):settings.skipConstruction?(settings.skipJustifications?'Statement practice':'Proof practice'):settings.skipJustifications?'Statements and construction':'Full challenge'}
