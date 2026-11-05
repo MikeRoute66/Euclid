@@ -36,7 +36,7 @@ function constructionProgress(value,lesson){
  else if(lesson.id===5)checks=[value.rays.includes('AB'),value.rays.includes('AC'),fact('equalExtensions')||fact('cut:A:F:A:G'),edge('F','C'),edge('G','B')];
  else checks=(lesson.construction||[]).map(task=>{
   if(task.ref==='P1')return edge(...task.inputs);
-  if(task.ref==='P2')return value.rays.includes(task.inputs.join(''));
+  if(task.ref==='P2')return value.rays.includes(task.inputs.join(''))&&task.outputs.every(n=>value.points[n]&&EuclidLogic.diagram(value).between(...task.inputs,n));
   if(task.ref==='P3')return circle(...task.inputs);
   if(task.ref==='D1'){let name=task.outputs[0]||task.inputs[0],supports=task.supports||(lesson.id===12?['circle:CA','AB']:INTERSECTION_SUPPORTS[lesson.id]?.[name]),d=EuclidLogic.diagram(value);return !!supports&&supports.every(s=>matchesConstructionSupport(value,name,s))&&(!task.beyond||d.between(task.beyond[0],task.beyond[1],name))&&(!task.within||d.between(task.within[0],name,task.within[1]))}
   return value.facts.some(raw=>{if(!raw.startsWith('book:'))return false;try{let c=JSON.parse(raw.slice(5));return EuclidConstruction.certificate(c,value.points)&&[task,...(task.alternatives||[])].some(candidate=>c.rule===Number(candidate.ref.slice(1))&&sameConstructionInputs(c.operation,c.inputs,candidate.inputs)&&JSON.stringify(c.outputs)===JSON.stringify(candidate.outputs))&&(!task.beyond||EuclidLogic.diagram(value).between(task.beyond[0],task.beyond[1],c.outputs[0]))}catch{return false}});
@@ -93,9 +93,15 @@ function inferredProof(value,lesson){
  const copy=structuredClone(value),context=lesson.id<=5?EuclidLogic.context(copy,lesson):BookOneLogic.context(copy,lesson),parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
  const available=Object.values(REFERENCES).flat().map(r=>r[1]).filter(r=>!/^I/.test(r)||Number(r.slice(1))<lesson.id);
  const references=['Given',...available.filter(r=>/^I/.test(r)),...available.filter(r=>!/^I/.test(r)),'Logic'];
+ // Teaching routes may nominate a displayed source, but only the independent
+ // formal checker can validate it against this construction and earlier lines.
+ const teachingContext=lesson.id<=5?BookOneLogic.context(copy,lesson):context;
+ const teachingKey=s=>teachingContext.key(BookOneLogic.parse(s));
  for(let line of copy.lines){
-  let ast=parse(line.s),reference=ast&&[...new Set(['Given',...context.sourceReferences(ast),...(line.autoJustification?[line.autoJustification]:[]),...references])].find(r=>context.check(ast,r,true).ok);
-  if(ast&&reference==='Logic'){
+  const route=lesson.proofGuide||lesson.hintSteps,taught=(route.find(step=>norm(step.s)===norm(line.s))||route.find(step=>teachingKey(step.s)===teachingKey(line.s)))?.j;
+  const taughtValid=taught&&context.check(parse(line.s),taught).ok?taught:null;
+  let ast=parse(line.s),reference=ast&&[...new Set(['Given',...(taughtValid?[taughtValid]:[]),...(context.preferredReferences?.(ast)||[]),...context.sourceReferences(ast),...(line.autoJustification?[line.autoJustification]:[]),...references])].find(r=>r===taughtValid||context.check(ast,r,true).ok);
+  if(ast&&reference==='Logic'&&taughtValid!=='Logic'){
    let result=context.check(ast,'Logic'),argument=result.derivation;
    if(argument&&argument.name!=='Symbolic Euclidean deduction')reference=[...argument.dependencies].reverse().map(n=>'I'+n).find(r=>context.check(ast,r).ok)||reference;
   }

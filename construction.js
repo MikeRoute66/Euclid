@@ -15,7 +15,8 @@ const EuclidConstruction=(()=>{
    if(entry){let lines=entry.supports.filter(s=>!s.startsWith('circle:'));state.topology.lines=state.topology.lines.filter(g=>g.at(-1)!==n||(layouts[lesson.id]||[]).includes(g)||lines.some(line=>[...line].every(v=>g.includes(v))))}
   }
  }
- function initialize(state,lesson){state.topology={version:1,lines:[...(layouts[lesson.id]||[])],turns:{},directions:{},circles:[],intersections:[]};for(let n of Object.keys(state.points))point(state,n);
+ function initialize(state,lesson){state.topology={version:1,lines:(layouts[lesson.id]||[]).filter(g=>[...g].every(n=>state.points[n])),turns:{},directions:{},circles:[],intersections:[]};for(let n of Object.keys(state.points))point(state,n);
+  for(let raw of state.facts||[])if(/^extend:[A-Z]:[A-Z]:[A-Z]$/.test(raw)){let [,a,b,n]=raw.split(':');if([a,b,n].every(v=>state.points[v])&&state.rays.includes(a+b))support(state,a+b,n)}
   // Replay only relationships implied by recorded operations in older saves.
   for(let raw of state.facts||[])if(raw.startsWith('book:')){try{let r=JSON.parse(raw.slice(5));if(!certificate(r,state.points))continue;let [a,b,c]=r.inputs,[n,m]=r.outputs;
    if(['cut','midpoint'].includes(r.operation))support(state,a+b,n);

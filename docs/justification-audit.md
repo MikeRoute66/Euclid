@@ -2,7 +2,7 @@
 
 ## Automatic selection
 
-The automatic checker prefers hypotheses and matching recorded construction propositions, then the proposition responsible for an earlier triangle congruence, then applicable earlier propositions, definitions/common notions, and explicit deduction. Every candidate is checked against the current construction and preceding accepted proof lines. Proof-guide answers are not consulted.
+The automatic checker prefers hypotheses and matching recorded construction propositions, then the proposition responsible for an earlier triangle congruence, then applicable earlier propositions, definitions/common notions, and explicit deduction. Every candidate is checked against the current construction and preceding accepted proof lines. The teaching route may nominate a source for an equivalent expected statement, but the formal checker independently validates it; the route supplies no premises.
 
 E.45 now cites E.42 for the first constructed component and E.44 for the adjoining application, then explicitly uses E.29/E.14 for both outer straight lines and E.34/E.30/E.33 for equal, parallel endpoint joins. Older valid two-E.44 drawings retain their original sources. Construction-source metadata is retained in manual and automatic grading and shown by right-click proof inspection. Manual answers remain separate from automatic answers when practice settings change.
 
@@ -51,3 +51,5 @@ E.27 now names and accepts E.16 for its contradiction argument. E.28's vertical-
 Learning mode and the hint button previously called the manual grader while generating Book I guidance. That overwrote valid automatic results on manually entered proof lines whose manual reference remained empty. Guidance now uses the same automatic/manual grading selection as the active practice mode. The regression submits `angle EGB = Angle AGH` through the E.28 form with Learning mode and Skip justifications enabled, requests another hint, and verifies E.15 remains valid and visible.
 
 The later [E.38-E.48 source and mode audit](late-book-audit.md) adds the complete practice matrix, selected-support intersection records, and the repaired E.48 missing-premise case.
+
+The [E1?E40 source audit](source-book-audit.md) documents the restored argument sequences and stricter distinction between vertical-angle equality, substitution, and closed contradiction arguments.

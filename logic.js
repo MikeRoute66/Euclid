@@ -113,6 +113,7 @@ const EuclidLogic=(()=>{
    if(rule==='CN3')for(let [wholeLeft,wholeRight] of common)for(let [partLeft,partRight] of pairs)if(equal(sum(target[0],partLeft),wholeLeft)&&equal(sum(target[1],partRight),wholeRight)||equal(sum(target[1],partLeft),wholeLeft)&&equal(sum(target[0],partRight),wholeRight))return true;
    return false;
   }
+  function preferredReferences(ast){return atomic(ast)&&definition20(ast)?['D20']:[]}
   function sourceReferences(ast){return [...new Set([...['I1','I2','I3'].filter(r=>Number(r.slice(1))<lesson.id&&(certifiedEqualities(r).some(f=>sameFact(ast,f))||r==='I1'&&ast.kind==='property'&&ast.property==='equilateral'&&state.facts.some(f=>{let p=f.split(':');return p[0]==='equilateral'&&segment(ast.triangle)===segment(p[1]+(p[2]||'A')+(p[3]||'B'))})&&d.proper(ast.triangle))),...congruences().filter(f=>partsMatch(ast,f)).map(f=>origins.get(f)).filter(r=>/^I/.test(r||''))])]}
   function accept(ast,reference){origins.set(ast,reference);accepted.push(ast)}
   function check(ast,rule){
@@ -133,13 +134,13 @@ const EuclidLogic=(()=>{
   }
   function goal(){switch(lesson.id){
    case 1:return accepted.some(a=>a.kind==='property'&&a.property==='equilateral'&&a.triangle.includes('A')&&a.triangle.includes('B')&&d.proper(a.triangle));
-   case 2:return d.names.some(n=>n!=='A'&&d.drawn('A',n)&&knownEqual('A'+n,'BC'));
-   case 3:return d.names.some(n=>n!=='A'&&n!=='B'&&d.between('A',n,'B')&&knownEqual('A'+n,'CD'));
-   case 4:return congruences().some(c=>relationKey(c.a,c.b)===relationKey('ABC','DEF'));
+   case 2:return d.names.some(n=>n!=='A'&&d.drawn('A',n)&&accepted.some(a=>sameFact(a,parse('A'+n+' = BC'))));
+   case 3:return d.names.some(n=>n!=='A'&&n!=='B'&&d.between('A',n,'B')&&accepted.some(a=>sameFact(a,parse('A'+n+' = CD'))));
+   case 4:return congruences().some(c=>c.relation==='congruent'&&relationKey(c.a,c.b)===relationKey('ABC','DEF'));
    case 5:return knownEqual(ANG+'ABC',ANG+'ACB')&&d.points.F&&d.points.G&&d.between('A','B','F')&&d.between('A','C','G')&&knownEqual(ANG+'FBC',ANG+'GCB');
    default:return false;
   }}
-  return {d,accepted,check,goal,knownEqual,reasons,sourceReferences,accept};
+  return {d,accepted,check,goal,knownEqual,reasons,sourceReferences,preferredReferences,accept};
  }
  function grade(state,lesson){const ctx=context(state,lesson);for(let [i,line] of state.lines.entries()){let ast=parse(line.s);line.valid=false;line.dependencies=[];if(!ast){line.error='Unrecognized format. Use the keyword-based “Did you mean?” help to format your own statement.';continue}if(!line.j){line.error='Select a reference, then click this line to justify it.';continue}let result=ctx.check(ast,line.j);line.valid=result.ok;line.error=result.error;if(result.ok){line.reason=result.explanation;line.sourcePropositions=result.sourcePropositions||[];line.dependencies=state.lines.slice(0,i).flatMap((l,j)=>l.valid?[j+1]:[]);ctx.accept(ast,line.j)}}return {complete:state.lines.every(l=>l.valid)&&ctx.goal(),goalReached:!!ctx.goal(),context:ctx}}
  return {parse,grade,diagram,context,permutations,relationKey};

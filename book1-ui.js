@@ -23,7 +23,10 @@ function bookOneChoosePoint(name){
   let created=[],claims=[],[a,b,c,e]=inputs;
   const point=coordinate=>{let n=nextPointName();if(!n)throw Error('All 26 point names are used. Undo an unnecessary construction.');state.points[n]=coordinate;created.push(n);return n};
   if(mode==='line')addEdge(a,b);
-  else if(mode==='extend'){if(a===b)throw Error('Choose distinct points.');if(!state.rays.includes(a+b))state.rays.push(a+b)}
+  else if(mode==='extend'){if(a===b)throw Error('Choose distinct points.');if(!state.rays.includes(a+b))state.rays.push(a+b);
+   const task=(LESSONS[index].construction||[]).find(t=>t.ref==='P2'&&t.inputs.join('')===a+b&&t.outputs.length&&!state.points[t.outputs[0]]);
+   if(task){let next=LESSONS[index].construction[LESSONS[index].construction.indexOf(task)+1],length=next?.ref==='I3'&&next.inputs[1]===task.outputs[0]?distance(p(next.inputs[2]),p(next.inputs[3]))*1.4:Math.max(80,distance(p(a),p(b))*.45);let n=point(sum(p(b),scale(unit(sub(p(b),p(a))),length)));EuclidConstruction.support(state,a+b,n);state.facts.push('extend:'+a+':'+b+':'+n)}
+  }
   else if(mode==='circle'){if(a===b)throw Error('A circle needs a nonzero radius.');if(!state.circles.some(c=>c.a===a&&c.b===b))state.circles.push({a,b})}
   else if(mode==='equilateral'){if(a===b||distance(p(a),p(b))<1e-7)throw Error('Choose distinct endpoints.');let u=p(a),v=p(b),w=point([(u[0]+v[0])/2+(v[1]-u[1])*Math.sqrt(3)/2,(u[1]+v[1])/2-(v[0]-u[0])*Math.sqrt(3)/2]);addEdge(a,b);addEdge(a,w);addEdge(b,w);claims=[a+w+' = '+a+b,b+w+' = '+a+b,a+w+' = '+b+w,a+b+w+' is equilateral']}
   else if(mode==='copy'){
@@ -41,7 +44,7 @@ function bookOneChoosePoint(name){
   }
   else if(mode==='parallel'){if(EuclidLogic.diagram(state).collinear(a,b,c)||!EuclidConstruction.turn(state,a,b,c))throw Error('Choose a point outside the reference line.');let n=point(sum(p(a),scale(unit(sub(p(c),p(b))),160)));addEdge(a,n);claims=[a+n+' is parallel to '+b+c]}
   else if(mode==='copyAngle'){
-   let [u,v,w,origin,ray]=inputs;if(!EuclidConstruction.turn(state,u,v,w))throw Error('Choose a nonzero, nonstraight source angle.');let x=unit(sub(p(u),p(v))),y=unit(sub(p(w),p(v))),angle=Math.acos(Math.max(-1,Math.min(1,x[0]*y[0]+x[1]*y[1]))),basis=unit(sub(p(ray),p(origin))),rotate=t=>[basis[0]*Math.cos(t)-basis[1]*Math.sin(t),basis[0]*Math.sin(t)+basis[1]*Math.cos(t)],choices=[rotate(angle),rotate(-angle)].sort((x,y)=>x[1]-y[1]),n=point(sum(p(origin),scale(choices[0],160)));addEdge(origin,n);claims=['angle '+ray+origin+n+' = angle '+u+v+w];
+   let [u,v,w,origin,ray]=inputs;if(!EuclidConstruction.turn(state,u,v,w))throw Error('Choose a nonzero, nonstraight source angle.');let x=unit(sub(p(u),p(v))),y=unit(sub(p(w),p(v))),angle=Math.acos(Math.max(-1,Math.min(1,x[0]*y[0]+x[1]*y[1]))),basis=unit(sub(p(ray),p(origin))),rotate=t=>[basis[0]*Math.cos(t)-basis[1]*Math.sin(t),basis[0]*Math.sin(t)+basis[1]*Math.cos(t)],choices=[rotate(angle),rotate(-angle)].sort((x,y)=>x[1]-y[1]),n=point(sum(p(origin),scale(choices[0],LESSONS[index].id===24?400:160)));addEdge(origin,n);claims=['angle '+ray+origin+n+' = angle '+u+v+w];
   }
   else if(mode==='sss'){
    let [u,v,w,x,y,z,origin,ray]=inputs,base=distance(p(u),p(v)),r=distance(p(w),p(x)),s=distance(p(y),p(z));if(r+s<=base||base+s<=r||base+r<=s)throw Error('These lengths do not satisfy the triangle inequalities.');let basis=unit(sub(p(ray),p(origin))),normal=upNormal(basis),along=(base*base+r*r-s*s)/(2*base),height=Math.sqrt(Math.max(0,r*r-along*along)),n=point(sum(p(origin),scale(basis,base))),m=point(sum(p(origin),sum(scale(basis,along),scale(normal,height))));addEdge(origin,n);addEdge(origin,m);addEdge(n,m);EuclidConstruction.support(state,origin+ray,n);claims=[origin+n+' = '+u+v,origin+m+' = '+w+x,n+m+' = '+y+z];

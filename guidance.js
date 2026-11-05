@@ -13,8 +13,8 @@ const LESSON_ARGUMENTS={
 25:'The included angles cannot be equal: matching two sides and their included angle would imply BC = EF. The angle BAC cannot be smaller: the comparison of bases opposite unequal included angles with the two triangles interchanged would imply BC < EF. Both contradict BC > EF, leaving angle BAC > angle EDF.',
 27:'Temporary assumption for contradiction: suppose AB and CD meet at a point X when extended on one side of GH. X is a hypothetical point, not a missing construction point. Triangle XGH would then have an exterior angle equal to an opposite interior angle, by the given alternate-angle equality. An exterior angle must be strictly greater, so that meeting is impossible. The same argument excludes a meeting on the other side. Therefore AB and CD never meet and are parallel. Do not try to mark X in the actual diagram; its existence is precisely what this argument disproves.',
 36:'The construction joins AH and BG to form connecting parallelogram ABGH. It shares base AB and the same parallels with ABCD, and shares base GH and the same parallels with EFGH. Each original parallelogram therefore has the same area as ABGH, so their areas are equal.',
-37:'The construction completes ABC to parallelogram ABCF and ABD to parallelogram ABDH. CF and DH lie on the line CD, parallel to AB. The parallelograms share base AB and lie between the same parallels, so their areas are equal. Each original triangle is half its corresponding constructed parallelogram. Halves of equal areas are equal.',
-38:'The construction completes ABC to parallelogram BCAH and DEF to parallelogram EFDJ. Their bases BC and EF are equal, and their opposite sides AH and DJ lie on the line AD, parallel to the bases. The constructed parallelograms therefore have equal areas. Each original triangle is half its parallelogram, so the triangle areas are equal.',
+37:'The construction completes ABC to parallelogram ABCF and ABD to parallelogram ABHD. CF and DH lie on the line CD, parallel to AB. The parallelograms share base AB and lie between the same parallels, so their areas are equal. Each original triangle is half its corresponding constructed parallelogram. Halves of equal areas are equal.',
+38:'The construction completes ABC to parallelogram BCAH and DEF to parallelogram DEFJ. Their bases BC and EF are equal, and their opposite sides AH and DJ lie on the line AD, parallel to the bases. The constructed parallelograms therefore have equal areas. Each original triangle is half its parallelogram, so the triangle areas are equal.',
 39:'CE is constructed through C parallel to AB. Temporary assumption for contradiction: suppose D were off that parallel. One side of triangle ABD would then meet the parallel at a hypothetical X. Triangles ABX and ABC would have equal areas, while one of ABX and ABD would be a proper part of the other. This contradicts the given equal areas. Thus D lies on CE and CD is parallel to AB. X belongs only to the temporary assumption; do not add it to the actual construction.',
 40:'AG is constructed through A parallel to BC. Temporary assumption for contradiction: suppose D were off that parallel. Its intersection with a side of DEF would produce a hypothetical replacement triangle on EF with the same area as ABC. That replacement would be a proper part or enlargement of DEF, contradicting the equal areas. Thus D lies on AG and AD is parallel to BC. The replacement triangle exists only inside the temporary assumption and is not an actual construction step.',
 41:'Draw diagonal AC. A diagonal bisects the parallelogram, so area ABCD = 2 area ABC. Triangles ABC and ABE share base AB, and C and E lie on a line parallel to AB, so area ABC = area ABE. Substitute this equality in the doubled area.',
@@ -29,7 +29,9 @@ const AREA_ARGUMENTS={
 47:'The constructed line AJ meets BC at K and DE at L, dividing square BCDE into rectangles BKLE and KCDL. AE, CF, AD, and BH are drawn. The square sides give AB = BF and BE = BC, and the included angles ABE and FBC are equal (each adds the same angle to a right angle). Matching two sides and their included angle equates triangles ABE and FBC. The rectangle and square are each twice the area of the corresponding triangle, so the rectangle adjacent to B has the same area as square ABFG. Repeat on the C side with square ACHI. Adding the two rectangle areas gives the whole square BCDE, so BC^2 = AB^2 + AC^2. This conclusion needs the full area argument. A single addition step would require the intermediate area equalities to be established first.'
 };
 function proofStepReason(lesson,step){
+ if(step.r)return step.r;
  const precise=lateBookStepReason(lesson,step);if(precise)return precise;
+ const sourceReason=sourceStepReason(lesson,step);if(sourceReason)return sourceReason;
  if(lesson.id===45&&step.j==='I14')return 'The preceding line proves that the adjacent angles add to two right angles. Their outer rays are on opposite sides of the shared ray, so they form one straight line. This alignment must be proved before treating the two pieces as one parallelogram.';
  if(lesson.id===47&&step.j==='I14')return 'One angle is right by the hypothesis and the other is right by a constructed square. Their established sum is two right angles, and the outer rays lie on opposite sides. Therefore the named points lie on one straight line.';
  if(lesson.id===47&&step.j==='I41')return 'Identify the common base of this parallelogram and triangle. Use the established collinearity to put the third vertex on the opposite parallel. The parallelogram has twice the triangle area.';
@@ -53,11 +55,11 @@ function hintProofAction(statement,line){return (line>=0?'Use Edit on line '+(li
 // These explanations describe the current line, not the whole lesson's ending.
 const LATE_STEP_REASONS={
 38:{
- 'area BCAH = area EFDJ':'The completed parallelograms stand on the given equal bases BC and EF. Their opposite sides AH and DJ lie on AD, parallel to the common base line.',
+ 'area BCAH = area DEFJ':'The completed parallelograms stand on the given equal bases BC and EF. Their opposite sides AH and DJ lie on AD, parallel to the common base line.',
  'area ABC = area ABH':'Diagonal AB divides parallelogram BCAH into triangles ABC and ABH of equal area.',
- 'area DEF = area DEJ':'Diagonal DE divides parallelogram EFDJ into triangles DEF and DEJ of equal area.',
+ 'area DEF = area DFJ':'Diagonal DF divides parallelogram DEFJ into triangles DEF and DFJ of equal area.',
  '2 area ABC = area BCAH':'Add the two equal halves ABC and ABH. Together they form the completed parallelogram BCAH.',
- '2 area DEF = area EFDJ':'Add the two equal halves DEF and DEJ. Together they form the completed parallelogram EFDJ.',
+ '2 area DEF = area DEFJ':'Add the two equal halves DEF and DFJ. Together they form the completed parallelogram DEFJ.',
  '2 area ABC = 2 area DEF':'Both doubled triangle areas equal the two parallelogram areas already proved equal. Substitute those equalities.',
  'area ABC = area DEF':'The preceding equality equates twice each triangle area. Cancel the common positive factor two; no new geometric theorem is needed.'
 },
@@ -174,5 +176,58 @@ function lateBookStepReason(lesson,step){
  if(step.j==='P4')return 'Identify the named angles as right angles using the hypothesis, perpendicular, or recorded square, then equate those right angles: '+step.s+'.';
  if(step.j==='I4'||step.j==='I8')return 'Take the corresponding part of the earlier congruent triangles, preserving their recorded vertex correspondence: '+step.s+'.';
  if(step.j==='Logic'&&/area .*\^2/.test(step.s))return 'The named figure is a recorded square. Express its area as the square of its side length: '+step.s+'.';
+ return null;
+}
+
+// Each prompt describes the current source step, including its local premises.
+function sourceStepReason(lesson,step){
+ if(lesson.id>40)return null;
+ const n=lesson.id,s=step.s,j=step.j;
+ if(j==='Given')return 'This is one of the supplied hypotheses. Keep it before the steps which use it: '+s+'.';
+ if(n===27)return LESSON_ARGUMENTS[27];
+ if(n===19||n===25)return LESSON_ARGUMENTS[n];
+ if(n===39||n===40)return lateBookStepReason(lesson,step);
+ const exact={
+  13:{'CE is perpendicular to AB':'Use the perpendicular raised at C. It divides the straight angle ACB into two equal adjacent right angles.','angle ACE is right':'CE is perpendicular to the straight line AB at C. Its adjacent angle ACE is right by the definition of perpendicular.','angle ECB is right':'The other adjacent angle ECB is right by the same definition.','angle ACE + angle ECB = 2 right angles':'Both summands have already been identified as one right angle each. Add those equalities.'},
+  21:{'AB + AE + EC > BE + EC':'Add the same positive segment EC to both sides of AB + AE > BE.','BD + DE + EC > BD + DC':'Add BD to both sides of DE + EC > DC.'},
+  32:{'angle ACD = angle BAC + angle ABC':'CE is inside ACD. Add ACE = BAC and ECD = ABC; ACE and ECD together make the whole exterior angle ACD.','angle ACD + angle ACB = angle BAC + angle ABC + angle ACB':'Add the same interior angle ACB to the two equal sides of the exterior-angle identity.','angle BAC + angle ABC + angle ACB = 2 right angles':'The preceding two lines express the same exterior-plus-adjacent sum. Substitute two right angles for that sum.'},
+  34:{'angle DAB = angle BCD':'The diagonal splits DAB into DAC and CAB, and BCD into BCA and ACD. Add the two alternate-angle equalities already proved.'},
+  35:{'DF = CE':'DC = FE was proved. Add the common top segment CF: DC + CF is DF, and CF + FE is CE.','area ADF - area CFG = area BCE - area CFG':'Subtract the same overlapping triangle CFG from the two equal end triangles.','area ADCG = area BGFE':'Those two remainders are ADCG and BGFE on the recorded intersections and top line. They are equal after the subtraction.','area ADCG + area ABG = area BGFE + area ABG':'Add the common bottom triangle ABG to each equal remainder.','area ABCD = area ABEF':'The first remainder plus ABG is exactly ABCD. The second plus ABG is exactly ABEF. The equal additions give equal parallelograms.'},
+  36:{'AH = BG':'AB and GH are established equal and parallel. Their corresponding endpoint joins AH and BG are equal.','AH is parallel to BG':'The same equal, parallel sides AB and GH make their corresponding endpoint joins AH and BG parallel.','area ABCD = area ABGH':'Both parallelograms have base AB and their opposite sides on the same top parallel.','area ABGH = area EFGH':'Both parallelograms have base GH and their opposite sides on the same bottom parallel.'},
+  37:{'area ABC = area ABD':'The posted equalities make twice each triangle area equal. Cancel the common positive factor two; equal doubles have equal halves.'}
+ };
+ if(exact[n]?.[s])return exact[n][s];
+ const sas={5:'AF = AG, AC = AB, and the common angle at A',10:'CA = CB, the common side CD, and the equal bisected angles at C',16:s.includes('ABE')?'AE = CE, EB = EG, and the equal vertical angles at E':'AH = JH, BH = CH, and the equal vertical angles at H',24:'AB = DE, AC = DH, and BAC = EDH',26:'AB = DE, BC = EF, and ABC = DEF',33:'AB = DC, the common side BC, and ABC = DCB',35:'AD = BC, DF = CE, and ADF = BCE'};
+ if(j==='I4'&&/is congruent/.test(s))return 'Compare the named triangles using '+(sas[n]||'the two established equal side pairs and their equal included angles')+'. Preserve the vertex correspondence written in '+s+'.';
+ if(j==='I8'&&/is congruent/.test(s)){let m=s.match(/([A-Z]{3}) is congruent to ([A-Z]{3})/);return 'Match '+m[1]+' with '+m[2]+' in that vertex order. All three corresponding side pairs are equal: use the cutoff or radius equality, the equilateral sides if present, and the common side. Equal sides determine the included angles.'}
+ if(j==='I26')return 'The two alternate-angle pairs at the ends of the diagonal are established equal, and the adjoining diagonal is common. Match the two diagonal triangles in the stated vertex order.';
+ if(j==='I4'||j==='I8')return 'Take the corresponding part '+s+' from the established triangle comparison. Preserve the vertex order of those triangles.';
+ if(j==='I1')return 'The constructed triangle named here was made equilateral on its given base. Record that construction property before extracting its equal sides.';
+ if(j==='D20')return 'The equilateral triangle was established by its construction. Its three sides are equal by the definition, giving '+s+'.';
+ if(j==='D15')return 'The two named segments join the same center to points explicitly recorded on its circle. They are equal radii: '+s+'.';
+ if(j==='I2'||j==='I3')return 'Use the recorded length placement or cutoff. It establishes exactly '+s+'. A matching appearance without that construction record is insufficient.';
+ if(j==='I9')return 'Use the constructed bisector. It divides the angle at the common vertex into the two equal angles named here.';
+ if(j==='I10')return 'Use the constructed midpoint. The two portions of that same segment, on opposite sides of the midpoint, are equal.';
+ if(j==='I11')return 'Use the perpendicular raised at the specified point of the given straight line.';
+ if(j==='I5')return 'The two sides meeting at the isosceles vertex are established equal. Its opposite base angles are equal, giving '+s+'.';
+ if(j==='I13')return 'These are adjacent angles with a common ray. Their two outer rays are opposite parts of one recorded straight line, so their sum is two right angles.';
+ if(j==='I15')return 'The angles named here are vertically opposite at the intersection of two recorded straight lines. Their arms are opposite rays, so the angles are equal.';
+ if(j==='I16')return 'In the drawn triangle, one side continues through a vertex. Its exterior angle exceeds the named interior angle at a different vertex: '+s+'.';
+ if(j==='I19')return 'Use the strict angle inequality just established in this triangle. The side opposite the greater angle is greater: '+s+'.';
+ if(j==='I20')return 'Apply the triangle inequality to the three named sides of the drawn triangle. The two sides on the sum side together exceed the remaining side.';
+ if(j==='I23')return 'The construction copied the given angle onto the selected starting ray. Read the stated equality from that angle-copy record.';
+ if(j==='I27')return 'Use the established equality of the alternate angles made by the transversal. If the lines met on either side, an exterior angle of the resulting hypothetical triangle would equal an opposite interior angle, which is impossible. The lines are parallel.';
+ if(j==='I29')return 'Identify the two established parallel sides and the transversal crossing them. The named angles are an alternate or corresponding pair, so they are equal.';
+ if(j==='I31')return 'Use the parallel drawn through the selected point in the construction. It establishes the particular parallel pair written here.';
+ if(j==='I34')return 'In this established parallelogram, use the specified opposite side pair or the two halves separated by its drawn diagonal: '+s+'.';
+ if(j==='I35')return 'The two established parallelograms share the same base and their opposite sides lie on the same parallel. Their areas are equal.';
+ if(j==='CN1')return 'Use the earlier equalities of these quantities to the same quantity. Substitute them to obtain '+s+'. No new angle or area theorem is being assumed.';
+ if(j==='CN2')return 'Add the previously established equal quantities, or join the recorded adjacent pieces into their whole, to obtain '+s+'.';
+ if(j==='CN3')return 'Subtract the same quantity, or the already proved equal quantities, from the two equal wholes. The remaining quantities give '+s+'.';
+ if(j==='CN5')return 'The recorded order puts the smaller named angle strictly inside the larger named angle. The whole exceeds this proper part.';
+ if(j==='D10')return 'Use the established equal adjacent angles on a straight line. They are each right, and their common arm is perpendicular to that line.';
+ if(j==='P4')return 'The named angle has already been established as right. Every right angle equals the reference right angle.';
+ if(j==='D23')return 'Use the established parallel pair, changing endpoint names only along recorded straight lines.';
+ if(j==='Logic'&&/parallelogram/.test(s))return 'Both pairs of opposite sides of this quadrilateral are established parallel by the construction and preceding proof. This is a parallelogram.';
  return null;
 }

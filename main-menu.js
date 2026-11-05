@@ -8,12 +8,12 @@ function validateSave(data){
  for(let [key,value] of Object.entries(data.progress)){
   if(!/^\d+$/.test(key)||Number(key)>=LESSONS.length||!object(value)||!object(value.points)||Object.keys(value.points).length>26)fail();
   let points={};for(let [name,p] of Object.entries(value.points)){if(!/^[A-Z]$/.test(name)||!Array.isArray(p)||p.length!==2||!p.every(n=>Number.isFinite(n)&&Math.abs(n)<=10000))fail();points[name]=[...p]}
-  if(!Object.keys(LESSONS[Number(key)].points).every(n=>points[n]))fail();
+  if(!Object.keys(LESSONS[Number(key)].points).every(n=>points[n]||LESSONS[Number(key)].optionalInitialPoints?.includes(n)))fail();
   const segment=e=>typeof e==='string'&&/^[A-Z]{2}$/.test(e)&&e[0]!==e[1]&&points[e[0]]&&points[e[1]];
   for(let field of ['edges','rays'])if(!Array.isArray(value[field])||value[field].length>500||!value[field].every(segment))fail();
   if(!Array.isArray(value.circles)||value.circles.length>100||!value.circles.every(c=>object(c)&&segment(c.a+c.b)&&distance(points[c.a],points[c.b])>0))fail();
   const facts=new Set(['equilateral:D','copy:E','equalExtensions','superpose']);
-  if(!Array.isArray(value.facts)||value.facts.length>300||!value.facts.every(f=>typeof f==='string'&&(facts.has(f)||validBookCertificate(f,points)||/^(?:equilateral:[A-Z]:[A-Z]:[A-Z]|copy:[A-Z]:[A-Z]:[A-Z]:[A-Z]|cut:[A-Z]:[A-Z]:[A-Z]:[A-Z]|superpose:[A-Z]{3}:[A-Z]{3})$/.test(f)&&[...f.split(':').slice(1).join('')].every(n=>points[n]))))fail();
+  if(!Array.isArray(value.facts)||value.facts.length>300||!value.facts.every(f=>typeof f==='string'&&(facts.has(f)||validBookCertificate(f,points)||/^(?:extend:[A-Z]:[A-Z]:[A-Z]|equilateral:[A-Z]:[A-Z]:[A-Z]|copy:[A-Z]:[A-Z]:[A-Z]:[A-Z]|cut:[A-Z]:[A-Z]:[A-Z]:[A-Z]|superpose:[A-Z]{3}:[A-Z]{3})$/.test(f)&&[...f.split(':').slice(1).join('')].every(n=>points[n]))))fail();
   if(!Array.isArray(value.lines)||value.lines.length>500||!value.lines.every(l=>object(l)&&typeof l.s==='string'&&l.s.length<=500&&(l.j===null||justifications.has(l.j))))fail();
   if(value.topology&&!EuclidConstruction.valid(value.topology,points))fail();
   progress[key]={points,topology:value.topology?structuredClone(value.topology):undefined,edges:[...value.edges],rays:[...value.rays],circles:value.circles.map(c=>({a:c.a,b:c.b})),facts:[...value.facts],lines:value.lines.map(l=>({s:readableStatement(l.s,points),j:l.j})),completed:false,completionMode:typeof value.completionMode==='string'?value.completionMode:undefined};
