@@ -36,7 +36,7 @@ addEventListener('load',()=>{
      state.lines.push({s:step.s,j:step.j});
     }
     state.lines=lesson.proofGuide.map(r=>({s:r.s,j:r.j}));let result=EuclidLogic.grade(state,lesson),bad=state.lines.flatMap((l,n)=>l.valid?[]:[(n+1)+'. '+l.s+' ['+l.j+'] '+l.error]);
-    if([35,47].includes(lesson.id)){let overbroad=structuredClone(state);overbroad.lines.at(-1).j=lesson.id===35?'CN3':'CN2';EuclidLogic.grade(overbroad,lesson);check(!overbroad.lines.at(-1).valid,'E.'+lesson.id+' requires the full argument rather than an arithmetic shortcut')}
+    if([35,47].includes(lesson.id)){let overbroad=structuredClone(state);overbroad.lines=lesson.proofGuide.filter(step=>step.j==='Given'||/^I46$/.test(step.j)).map(step=>({s:step.s,j:step.j}));overbroad.lines.push({s:lesson.goals[0],j:lesson.id===35?'CN3':'CN2'});EuclidLogic.grade(overbroad,lesson);check(!overbroad.lines.at(-1).valid,'E.'+lesson.id+' requires the full argument rather than an arithmetic shortcut')}
     if(lesson.requireConstruction){
      check(constructionProgress(state,lesson).complete,'E.'+lesson.id+' records every actual auxiliary construction');
      let unfinished={...fresh(),lines:lesson.proofGuide.map(r=>({s:r.s,j:r.j}))};
@@ -79,7 +79,7 @@ addEventListener('load',()=>{
   check(!provenance.check(certStatement,'I41'),'E.41 rejects an equal-area claim transferred by E.44');
   check(!provenance.check('HI is parallel to JK','I39')&&!provenance.check('HI is parallel to JK','I40'),'Area converses cannot restate arbitrary known parallel lines');
   let auto45={...provenance.value,lines:LESSONS[44].proofGuide.map(l=>({s:l.s,j:null}))};
-  check(inferredProof(auto45,LESSONS[44]).complete&&auto45.lines.map(l=>l.autoJustification).join(',')==='I44,I44,I44,I44,D22,CN2,I44','E.45 automatic references preserve both E.44 construction sources');
+  check(inferredProof(auto45,LESSONS[44]).complete&&auto45.lines.slice(0,6).every(l=>l.autoJustification==='I44')&&['I29','I14','I30'].every(r=>auto45.lines.some(l=>l.autoJustification===r)),'E.45 preserves E.44 sources and explicitly uses E.29, E.14, and E.30');
   check(auto45.lines.filter(l=>l.autoJustification==='I44').every(l=>l.sourcePropositions.includes('I44')),'Construction source propositions survive automatic grading');
   let angleSum=theoremAudit(31);check(angleSum.check('angle ACD = angle BAC + angle ABC','I32')&&angleSum.check('angle BAC + angle ABC + angle ACB = 2 right angles','I32')&&!angleSum.check('angle BAC + angle ABC = 2 right angles','I32'),'E.32 checks its exterior-angle and three-angle formulas');
   let alternate=theoremAudit(26,[],true);check(alternate.check('AB is parallel to CD','I27')&&!alternate.check('AB is parallel to CD','I28'),'Alternate-angle and corresponding-angle tests retain distinct hypotheses');
@@ -95,12 +95,29 @@ addEventListener('load',()=>{
   let equalTriangles=theoremAudit(37);check(equalTriangles.check('area ABC = area DEF','I38')&&!equalTriangles.check('area ABC = area DEF','I37'),'Equal-base and same-base triangle theorems have distinct hypotheses');
   check(theoremAudit(38).check('CD is parallel to AB','I39')&&theoremAudit(39).check('AD is parallel to BC','I40'),'Area converses verify triangle equalities, base conditions, and same side');
   check(theoremAudit(40).check('area ABCD = 2 area ABE','I41'),'E.41 accepts the double-area relation on a common base and parallel');
-  check(theoremAudit(42).check('area GBHE = area FEKD','I43'),'E.43 accepts complements about the same recorded diagonal');
+  let complementAudit=theoremAudit(42);for(let text of ['EH is parallel to CK','HC is parallel to EK']){let ast=BookOneLogic.parse(text);if(complementAudit.c.check(ast,'I30').ok)complementAudit.c.accept(ast,'I30')}check(complementAudit.check('area GBHE = area FEKD','I43'),'E.43 accepts complements after their required parallels are established');
   let squareGiven=theoremAudit(47,[],true),rightGiven=theoremAudit(46);
   check(!squareGiven.check('BC^2 = AB^2 + AC^2','I47')&&rightGiven.check('BC^2 = AB^2 + AC^2','I47'),'E.47 requires an established right angle rather than only the conclusion');
   check(squareGiven.check('angle BAC is right','I48')&&!rightGiven.check('angle BAC is right','I48'),'E.48 requires a preceding Pythagorean identity rather than only a right angle');
   check(!rightGiven.check('angle BAC = angle BAC','I29'),'E.29 rejects unrelated angle reflexivity despite available parallels');
   check(theoremAudit(29).check('AB is parallel to EF','I30')&&!theoremAudit(28).check('AB is parallel to CD','I30'),'E.30 requires two established pairs sharing a third distinct line');
+  // Consequences obtained by composing constructions must be proved separately.
+  load(44);state={...fresh(),...suppliedConstruction(44)};
+  let raw45=structuredClone(state);raw45.topology.lines.push('HKM','IJL');
+  check(!EuclidLogic.diagram(raw45).collinear('H','K','M')&&!EuclidLogic.diagram(raw45).collinear('I','J','L'),'Legacy adjoining-area alignment records are not trusted as direct construction facts');
+  for(let omit of ['HKM are collinear','IJL are collinear','HI is parallel to ML']){
+   let incomplete=structuredClone(raw45);incomplete.lines=LESSONS[44].proofGuide.filter(l=>l.s!==omit).map(l=>({s:l.s,j:l.j}));EuclidLogic.grade(incomplete,LESSONS[44]);
+   check(!incomplete.lines.find(l=>l.s==='HILM is a parallelogram').valid,'E.45 combined parallelogram requires the explicit step: '+omit);
+  }
+  raw45.lines=LESSONS[44].proofGuide.map(l=>({s:l.s,j:l.j}));check(EuclidLogic.grade(raw45,LESSONS[44]).complete,'E.45 older geometry works after its alignment and parallel proofs');
+  let strictParallel=theoremAudit(29);check(!strictParallel.check('AB is parallel to EF','D23')&&strictParallel.check('AB is parallel to EF','I30'),'A definition cannot supply an unposted transitive parallel relationship');
+  load(33);state=fresh();state.lines=LESSONS[33].givens.map(s=>({s,j:'Given'}));state.lines.push({s:'AB = CD',j:'Logic'});EuclidLogic.grade(state,LESSONS[33]);check(!state.lines.at(-1).valid,'A compound parallelogram proof cannot skip its required diagonal construction');
+  load(45);state={...fresh(),...suppliedConstruction(45)};let squareShortcut=structuredClone(state);squareShortcut.lines=LESSONS[45].proofGuide.filter(l=>['AC is perpendicular to AB','AD = AB','DE is parallel to AB','BF is parallel to AD','ABGD is a parallelogram','angle DAB is right','ABGD is a square'].includes(l.s)).map(l=>({s:l.s,j:l.j}));EuclidLogic.grade(squareShortcut,LESSONS[45]);check(!squareShortcut.lines.at(-1).valid,'E.46 square definition requires all side and right-angle consequences, not just one corner');
+  load(46);state={...fresh(),...suppliedConstruction(46)};let unalignedSquares=structuredClone(state);unalignedSquares.lines=LESSONS[46].proofGuide.filter(l=>!['CAG are collinear','BAI are collinear'].includes(l.s)).map(l=>({s:l.s,j:l.j}));EuclidLogic.grade(unalignedSquares,LESSONS[46]);check(unalignedSquares.lines.filter(l=>l.j==='I41'&&/area ABFG|area ACHI/.test(l.s)).every(l=>!l.valid),'E.47 square/triangle area comparisons require the proved E.14 alignments');
+  let shortcutContext=BookOneLogic.context(state,LESSONS[46]);shortcutContext.accept(BookOneLogic.parse('angle BAC is right'),'Given');check(!shortcutContext.check(BookOneLogic.parse('BC^2 = AB^2 + AC^2'),'Logic').ok&&!shortcutContext.check(BookOneLogic.parse('BC^2 - AB^2 = AC^2'),'Logic').ok&&!shortcutContext.check(BookOneLogic.parse('area BCDE = area ABFG + area ACHI'),'Logic').ok,'Pythagorean area deduction cannot bypass missing square alignments by rearranging the equation');
+  load(12);state={...fresh(),...suppliedConstruction(12)};let definitionContext=BookOneLogic.context(state,{id:49,givens:[]});check(!definitionContext.check(BookOneLogic.parse('angle ACD + angle DCB = 2 right angles'),'D10').ok,'Right-angle definition does not silently prove the straight-angle sum theorem');
+  load(43);state={...fresh(),...suppliedConstruction(43)};check(EuclidLogic.diagram(state).between('A','B','I')&&LESSONS[43].proofGuide.some(l=>l.j==='I43')&&LESSONS[43].proofGuide.some(l=>l.j==='I15'),'E.44 places the auxiliary parallelogram beyond B and explicitly uses complements and vertical angles');
+  let migrationSettings={...settings},manual44=constructionGeometry(fresh());state.manualConstruction=structuredClone(manual44);state.rays=[];settings.skipConstruction=true;render();check(constructionProgress(state,LESSONS[43]).complete&&JSON.stringify(state.manualConstruction)===JSON.stringify(manual44),'Obsolete supplied construction is rebuilt without replacing the manual drawing');settings.skipConstruction=false;render();check(JSON.stringify(constructionGeometry(state))===JSON.stringify(manual44),'Turning off supplied geometry restores the retained manual drawing');Object.assign(settings,migrationSettings);
   check(referenceName('I1').startsWith('E.1'),'Proof justifications use E labels');
   check(displayReference('I1, I.48 and point I')==='E.1, E.48 and point I','Display labels preserve geometry names');
   check([...$('#chapters select').options].every(o=>o.textContent.startsWith('E.')),'Every navigation label uses E');

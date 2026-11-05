@@ -36,8 +36,11 @@ E.27 is the clearest example: an assumed meeting point X of the two lines would 
 | E.39-40 | Added the actual comparison parallel. Distinguished the contradiction-only replacement intersection/triangle from that actual line. |
 | E.41 | Added diagonal AC. |
 | E.42 | Added AG, needed for the half-triangle area comparison. |
-| E.43-46 | Required diagonals, complement figures, and adjoining parallelograms already exist in the given figure or construction steps. |
-| E.47 | Added the parallel partition, its intersections with the opposite square sides, and AE, CF, AD, BH for both triangle comparisons. |
+| E.43 | Added explicit transitive parallel steps needed by the inner parallelograms. |
+| E.44 | Corrected the auxiliary placement to the extension beyond B; the proof now uses the actual outer parallelogram, E.43 complements, and E.15 vertical angles. |
+| E.45 | Removed automatic outer alignment; E.29, E.14, and E.30 are explicit proof steps. |
+| E.46 | Establishes every side equality and right angle before applying the square definition. |
+| E.47 | Added the parallel partition, its intersections with the opposite square sides, and AE, CF, AD, BH for both triangle comparisons. The proof now includes both E.14 alignments, E.4 triangle comparisons, and E.41 area comparisons. |
 | E.48 | Added the perpendicular, copied length, recorded circle intersection F, and CF, forming actual right triangle FAC. |
 
 The comparison proofs in E.16, E.18, E.24, and E.48 now expose their auxiliary equalities, angle comparisons, or triangle congruences as proof lines. E.48 explicitly establishes equal squares before applying the nonnegative-root rule for segment lengths.

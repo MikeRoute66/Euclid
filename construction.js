@@ -6,19 +6,26 @@ const EuclidConstruction=(()=>{
  function permutation(s){let n=0;for(let i=0;i<s.length;i++)for(let j=i+1;j<s.length;j++)if(s[i]>s[j])n++;return n%2?-1:1}
  function initialize(state,lesson){state.topology={version:1,lines:[...(layouts[lesson.id]||[])],turns:{},directions:{},circles:[]};for(let n of Object.keys(state.points))point(state,n);
   // Replay only relationships implied by recorded operations in older saves.
-  let previous=[];for(let raw of state.facts||[])if(raw.startsWith('book:')){try{let r=JSON.parse(raw.slice(5));if(!certificate(r,state.points))continue;let [a,b,c]=r.inputs,[n,m]=r.outputs;
+  for(let raw of state.facts||[])if(raw.startsWith('book:')){try{let r=JSON.parse(raw.slice(5));if(!certificate(r,state.points))continue;let [a,b,c]=r.inputs,[n,m]=r.outputs;
    if(['cut','midpoint'].includes(r.operation))support(state,a+b,n);
    if(r.operation==='bisectAngle')support(state,a+c,n);
    if(r.operation==='sss')support(state,r.inputs[6]+r.inputs[7],n);
    if(r.operation==='perpendicular'){if(r.rule===12)support(state,a+b,n);else support(state,a+b,c)}
    if(r.operation==='copy'&&lesson.id===46&&a==='A'&&state.points.C)support(state,'AC',n);
    if(['equalArea','figureArea'].includes(r.operation))support(state,r.inputs.slice(-2).join(''),n);
-   if(r.operation==='applyArea')for(let p of previous)if(p.operation==='applyArea'&&p.inputs.slice(5).join('')===r.inputs.slice(5).join('')&&p.outputs[1]===a&&p.outputs[0]===b){support(state,p.inputs[0]+a,m);support(state,p.inputs[1]+b,n)}
-   previous.push(r);
   }catch{}}
   if(lesson.id===5&&state.facts?.some(f=>f==='equalExtensions'||f==='cut:A:F:A:G')){if(state.points.F)support(state,'AB','F');if(state.points.G)support(state,'AC','G')}
   return state.topology}
  function point(state,n){let t=state.topology;if(!t)return;const p=state.points;for(let a of Object.keys(p))if(a!==n){let key=sort(a+n);if(!(key in t.directions)){let [u,v]=[p[key[0]],p[key[1]]],dx=v[0]-u[0],dy=v[1]-u[1];t.directions[key]=Math.abs(dx)>1e-7?Math.sign(dx):Math.sign(dy)}}for(let a of Object.keys(p))for(let b of Object.keys(p))if(new Set(a+b+n).size===3){let key=sort(a+b+n);if(key in t.turns)continue;let [u,v,w]=[...key].map(k=>p[k]),cross=(v[0]-u[0])*(w[1]-u[1])-(v[1]-u[1])*(w[0]-u[0]);if(Math.abs(cross)>1e-7)t.turns[key]=Math.sign(cross)}}
+ // Joining equal-angle parallelograms does not construct their outer alignment.
+ // Old saves contain these inferred triples; ignore them until a proof line
+ // establishes the relationship. This applies to every use of the area tool.
+ function derivedAlignments(state){
+  let records=[];for(let raw of state.facts||[])if(raw.startsWith('book:'))try{let r=JSON.parse(raw.slice(5));if(r.operation==='applyArea'&&certificate(r,state.points))records.push(r)}catch{}
+  let result=[];for(let r of records)for(let p of records)if(p!==r&&p.inputs.slice(5).join('')===r.inputs.slice(5).join('')&&p.outputs[1]===r.inputs[0]&&p.outputs[0]===r.inputs[1])result.push(p.inputs[0]+r.inputs[0]+r.outputs[1],p.inputs[1]+r.inputs[1]+r.outputs[0]);
+  return [...new Set(result.map(sort))];
+ }
+ function directLines(state){let derived=derivedAlignments(state);return (state.topology?.lines||[]).filter(line=>!derived.some(triple=>[...triple].every(n=>line.includes(n))))}
  function support(state,line,n){if(!state.topology||line.includes(n))return;let key=sort(line+n);if(!state.topology.lines.some(s=>sort(s)===key))state.topology.lines.push(line+n)}
  function onCircle(state,c,n){if(!state.topology)return;let key=c.a+':'+c.b+':'+n;if(!state.topology.circles.includes(key))state.topology.circles.push(key)}
  function nearCircle(state,c,n){let p=state.points,r=Math.hypot(p[c.a][0]-p[c.b][0],p[c.a][1]-p[c.b][1]),s=Math.hypot(p[c.a][0]-p[n][0],p[c.a][1]-p[n][1]);return Math.abs(r-s)<1e-7*Math.max(1,r)}
@@ -47,5 +54,5 @@ const EuclidConstruction=(()=>{
   return r.claims.length===expected.length&&r.claims.every(s=>expected.includes(s));
  }
  function valid(t,points){const names=s=>typeof s==='string'&&[...s].every(n=>points[n]);return t?.version===1&&Array.isArray(t.lines)&&t.lines.length<=500&&t.lines.every(s=>names(s)&&s.length>=3&&s.length<=26)&&t.turns&&Object.keys(t.turns).length<=2600&&Object.entries(t.turns).every(([s,n])=>names(s)&&s.length===3&&new Set(s).size===3&&Math.abs(n)===1)&&t.directions&&Object.keys(t.directions).length<=325&&Object.entries(t.directions).every(([s,n])=>names(s)&&s.length===2&&new Set(s).size===2&&[-1,0,1].includes(n))&&Array.isArray(t.circles)&&t.circles.length<=2600&&t.circles.every(s=>typeof s==='string'&&/^[A-Z]:[A-Z]:[A-Z]$/.test(s)&&names(s.replace(/:/g,'')))}
- return {certificate,valid,initialize,point,support,onCircle,edge,intersection,radius,turn,direction};
+ return {certificate,valid,directLines,derivedAlignments,initialize,point,support,onCircle,edge,intersection,radius,turn,direction};
 })();

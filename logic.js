@@ -30,7 +30,7 @@ const EuclidLogic=(()=>{
  function relationKey(a,b){let forward=[...a].map((v,i)=>v+'='+b[i]).sort().join(','),reverse=[...b].map((v,i)=>v+'='+a[i]).sort().join(',');return [forward,reverse].sort()[0]}
  function diagram(state,established=[]){
   const points=state.points, names=Object.keys(points);
-  function collinear(a,b,c){if(new Set(a+b+c).size<3)return true;let groups=[...(state.topology?.lines||[]),...established.filter(f=>f.kind==='collinear').map(f=>f.points)];let merged=true;while(merged){merged=false;for(let i=0;i<groups.length;i++)for(let j=i+1;j<groups.length;j++)if([...groups[i]].filter(n=>groups[j].includes(n)).length>=2){groups[i]=[...new Set(groups[i]+groups[j])].join('');groups.splice(j,1);merged=true;j--}}return groups.some(g=>[a,b,c].every(n=>g.includes(n)))}
+  function collinear(a,b,c){if(new Set(a+b+c).size<3)return true;let groups=[...EuclidConstruction.directLines(state),...established.filter(f=>f.kind==='collinear').map(f=>f.points)];let merged=true;while(merged){merged=false;for(let i=0;i<groups.length;i++)for(let j=i+1;j<groups.length;j++)if([...groups[i]].filter(n=>groups[j].includes(n)).length>=2){groups[i]=[...new Set(groups[i]+groups[j])].join('');groups.splice(j,1);merged=true;j--}}return groups.some(g=>[a,b,c].every(n=>g.includes(n)))}
   const direction=(a,b)=>EuclidConstruction.direction(state,a,b),turn=(a,b,c)=>EuclidConstruction.turn(state,a,b,c);
   function sameRay(v,a,b){return a===b||collinear(v,a,b)&&direction(v,a)*direction(v,b)>0}
   function between(a,b,c){return new Set(a+b+c).size===3&&collinear(a,b,c)&&direction(b,a)*direction(b,c)<0}

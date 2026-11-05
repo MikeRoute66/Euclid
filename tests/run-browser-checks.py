@@ -29,7 +29,7 @@ try:
             '--user-data-dir=' + str(profile),
             '--window-size=' + str(args.width) + ',' + str(args.height),
             '--virtual-time-budget=15000', '--dump-dom', target.as_uri(),
-        ], capture_output=True, encoding='utf-8', errors='replace', timeout=90)
+        ], capture_output=True, encoding='utf-8', errors='replace', timeout=180)
         match = re.search(r'<pre id="(?:qa-result|results)">(.*?)</pre>', result.stdout, re.S)
         report = html.unescape(match.group(1)) if match else 'FAILED: no test result was rendered.'
         print(target.name + '\n' + report.encode('ascii', errors='replace').decode())

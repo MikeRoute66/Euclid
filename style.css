@@ -150,7 +150,7 @@ dialog{max-height:85dvh;overflow:auto}
 
 #lineform[hidden],.edit-line[hidden],.delete-line[hidden]{display:none}
 
-#main-menu.options-open h2{font-size:38px;line-height:1.2;margin:6px 0}#main-menu.options-open .menu-intro{font-size:11px;line-height:1.4;margin-bottom:6px}#main-menu.options-open .setting-row{padding:9px 0}#main-menu.options-open #settings-title{margin-top:8px}#main-menu.options-open .settings-list{max-height:48dvh}
+#main-menu.options-open h2{font-size:38px;line-height:1.2;margin:6px 0}#main-menu.options-open .menu-intro{font-size:11px;line-height:1.4;margin-bottom:6px}#main-menu.options-open .setting-row{padding:9px 0}#main-menu.options-open #settings-title{margin-top:8px}#main-menu.options-open .settings-list{max-height:min(48dvh,calc(100dvh - 330px))}
 
 /* Compact chrome leaves the viewport for construction and proof. */
 body{grid-template-rows:40px minmax(0,1fr) 20px}

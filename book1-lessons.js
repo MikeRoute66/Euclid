@@ -105,6 +105,40 @@ let parallelTransitivity=BOOK_ONE_ADDITIONS.find(l=>l.id===30);
 parallelTransitivity.construction=[build('P1',['A','F'],'Join A to F as a transversal.'),crossing('G',['AF','CD'],'Mark G where AF meets CD.')];parallelTransitivity.requireConstruction=true;
 parallelTransitivity.proofGuide=[guide('AB is parallel to CD','Given'),guide('CD is parallel to EF','Given'),guide('angle BAG = angle DGF','I29'),guide('angle DGF = angle GFE','I29'),guide('angle BAG = angle GFE','CN1'),guide('AB is parallel to EF','I27')];
 let appliedAreaProof=BOOK_ONE_ADDITIONS.find(l=>l.id===44).proofGuide;appliedAreaProof.splice(2,0,guide('angle KBI = angle FGH','I42'));
+// Keep consequences of combining figures in the proof, not in tool incidence.
+function reviseProof(id,steps){BOOK_ONE_ADDITIONS.find(l=>l.id===id).proofGuide=steps.map(([statement,reference])=>guide(statement,reference))}
+reviseProof(13,[['CE is perpendicular to AB','I11'],['angle ACE is right','D10'],['angle ECB is right','D10'],['angle ACE = right angle','P4'],['angle ECB = right angle','P4'],['angle ACD + angle DCB = 2 right angles','CN2']]);
+reviseProof(14,[['angle ACB + angle BCD = 2 right angles','Given'],['ACD are collinear','Logic']]);
+reviseProof(35,[['ABCD is a parallelogram','Given'],['ABEF is a parallelogram','Given'],['AD = BC','I34'],['DC = AB','I34'],['FE = AB','I34'],['DC = FE','CN1'],['DF = CE','CN3'],['angle ADF = angle BCE','I29'],['ADF is congruent to BCE','I4'],['area ADF = area BCE','I4'],['area ABED - area ADF = area ABED - area BCE','CN3'],['area ABCD = area ABEF','CN3']]);
+reviseProof(36,[['ABCD is a parallelogram','Given'],['EFGH is a parallelogram','Given'],['AB = EF','Given'],['EF = GH','I34'],['AB = GH','CN1'],['AB is parallel to GH','D23'],['AH = BG','I33'],['AH is parallel to BG','I33'],['ABGH is a parallelogram','D22'],['area ABCD = area ABGH','I35'],['area ABGH = area EFGH','I35'],['area ABCD = area EFGH','CN1']]);
+reviseProof(37,[['AB is parallel to CD','Given'],['ABCF is a parallelogram','D22'],['ABDH is a parallelogram','D22'],['area ABCF = area ABDH','I35'],['area ABC = area CAF','I34'],['area ABD = area DAH','I34'],['2 area ABC = area ABCF','CN2'],['2 area ABD = area ABDH','CN2'],['2 area ABC = 2 area ABD','CN1'],['area ABC = area ABD','Logic']]);
+reviseProof(38,[['BC = EF','Given'],['AD is parallel to BC','Given'],['BCAH is a parallelogram','D22'],['EFDJ is a parallelogram','D22'],['area BCAH = area EFDJ','I36'],['area ABC = area ABH','I34'],['area DEF = area DEJ','I34'],['2 area ABC = area BCAH','CN2'],['2 area DEF = area EFDJ','CN2'],['2 area ABC = 2 area DEF','CN1'],['area ABC = area DEF','Logic']]);
+reviseProof(41,[['ABCD is a parallelogram','Given'],['area ABC = area CDA','I34'],['area ABC = area ABE','I37'],['area ABCD = 2 area ABC','CN2'],['2 area ABC = 2 area ABE','CN2'],['area ABCD = 2 area ABE','CN1']]);
+reviseProof(42,[['BG = GC','I10'],['angle HGC = angle DEF','I23'],['AI is parallel to GC','I31'],['CJ is parallel to GH','I31'],['GCKL is a parallelogram','D22'],['angle LGC = angle DEF','CN1'],['area ABG = area AGC','I38'],['area ABC = 2 area AGC','CN2'],['area GCKL = 2 area AGC','I41'],['area GCKL = area ABC','CN1']]);
+reviseProof(44,[['BIJK is a parallelogram','I42'],['area BIJK = area CDE','I42'],['angle KBI = angle FGH','I42'],['ABQP is a parallelogram','D22'],['MJ is parallel to AB','D23'],['NP is parallel to AB','D23'],['MJ is parallel to NP','I30'],['PM is parallel to BK','I31'],['BK is parallel to JN','D23'],['PM is parallel to JN','I30'],['MJNP is a parallelogram','D22'],['area ABQP = area BIJK','I43'],['area ABQP = area CDE','CN1'],['angle ABQ = angle FGH','CN1']]);
+reviseProof(45,[
+ ['HIJK is a parallelogram','I44'],['area HIJK = area ABC','I44'],['KJLM is a parallelogram','I44'],['area KJLM = area ACD','I44'],
+ ['angle KHI = angle EFG','I44'],['angle MKJ = angle EFG','I44'],['angle KHI = angle MKJ','CN1'],
+ ['angle KHI + angle HKJ = 2 right angles','I29'],['angle KHI + angle HKJ = angle MKJ + angle HKJ','CN2'],['angle HKJ + angle JKM = 2 right angles','CN1'],['HKM are collinear','I14'],
+ ['angle MKJ = angle KJI','I29'],['angle MKJ + angle KJL = 2 right angles','I29'],['angle MKJ + angle KJL = angle KJI + angle KJL','CN2'],['angle IJK + angle KJL = 2 right angles','CN1'],['IJL are collinear','I14'],
+ ['HI is parallel to KJ','D23'],['KJ is parallel to ML','D23'],['HI is parallel to ML','I30'],['HM is parallel to IL','D23'],['HILM is a parallelogram','D22'],['area HILM = area ABCD','CN2'],['angle MHI = angle EFG','CN1']
+]);
+reviseProof(46,[['AC is perpendicular to AB','I11'],['AD = AB','I2'],['DE is parallel to AB','I31'],['BF is parallel to AD','I31'],['ABGD is a parallelogram','D22'],['AB = GD','I34'],['BG = DA','I34'],['angle ABG = angle GDA','I34'],['angle DAB = angle BGD','I34'],['angle DAB is right','D10'],['angle DAB = right angle','P4'],['angle DAB + angle ABG = 2 right angles','I29'],['angle ABG = right angle','CN3'],['angle GDA = right angle','CN1'],['angle BGD = right angle','CN1'],['BG = AB','CN1'],['ABGD is a square','D22']]);
+let appliedConstruction=BOOK_ONE_ADDITIONS.find(l=>l.id===44);appliedConstruction.construction.unshift(build('P2',['A','B'],'Extend AB beyond B so the first parallelogram lies beyond the given segment.'));appliedConstruction.construction[1].beyond='AB';appliedConstruction.requireConstruction=true;
+appliedConstruction.construction[1].text='Apply triangle CDE at B along the extension of AB beyond B, creating BIJK.';
+let complementProof=BOOK_ONE_ADDITIONS.find(l=>l.id===43).proofGuide;complementProof.splice(3,0,guide('EH is parallel to CK','I30'),guide('HC is parallel to EK','I30'));
+let appliedProof=BOOK_ONE_ADDITIONS.find(l=>l.id===44).proofGuide;appliedProof.splice(appliedProof.length-1,0,guide('angle ABQ = angle KBI','I15'));
+reviseProof(47,[
+ ['angle BAC is right','Given'],['BCDE is a square','I46'],['ABFG is a square','I46'],['ACHI is a square','I46'],
+ ['angle CAB = right angle','P4'],['angle BAG = right angle','P4'],['angle CAB + angle BAG = 2 right angles','CN2'],['CAG are collinear','I14'],
+ ['angle BAC = right angle','P4'],['angle CAI = right angle','P4'],['angle BAC + angle CAI = 2 right angles','CN2'],['BAI are collinear','I14'],
+ ['AB = BF','D22'],['BE = BC','D22'],['angle ABF = angle EBC','P4'],['angle ABE = angle FBC','CN2'],['ABE is congruent to FBC','I4'],['area ABE = area FBC','I4'],
+ ['BKLE is a parallelogram','D22'],['area BKLE = 2 area ABE','I41'],['area ABFG = 2 area FBC','I41'],['2 area ABE = 2 area FBC','CN2'],['area BKLE = area ABFG','CN1'],
+ ['AC = CH','D22'],['CD = CB','D22'],['angle BCD = angle ACH','P4'],['angle ACD = angle BCH','CN2'],['ACD is congruent to HCB','I4'],['area ACD = area BCH','I4'],
+ ['KL is parallel to CD','I30'],['KCDL is a parallelogram','D22'],['area KCDL = 2 area ACD','I41'],['area ACHI = 2 area BCH','I41'],['2 area ACD = 2 area BCH','CN2'],['area KCDL = area ACHI','CN1'],
+ ['area BCDE = area ABFG + area ACHI','CN2'],['area BCDE = BC^2','Logic'],['area ABFG = AB^2','Logic'],['area ACHI = AC^2','Logic'],['area ABFG + area ACHI = AB^2 + AC^2','CN2'],['BC^2 = AB^2 + AC^2','CN1']
+]);
+for(let lesson of BOOK_ONE_ADDITIONS)if(lesson.construction.length)lesson.requireConstruction=true;
 LESSONS.push(...BOOK_ONE_ADDITIONS);
 const BOOK_BUILD_MODES={I9:['bisectAngle',3],I10:['midpoint',2],I11:['perpendicular',3],I12:['perpendicular',3],I22:['sss',8],I23:['copyAngle',5],I31:['parallel',3],I42:['equalArea',8],I44:['applyArea',8],I45:['figureArea',9],I46:['square',2]};
 REFERENCES.propositions=LESSONS.map(l=>{

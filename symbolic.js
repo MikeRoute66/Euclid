@@ -29,8 +29,10 @@ function symbolicConsequence(target,context){
  // parallelogram. Discover the small figures appearing in the actual claim.
  const polygons=[target,...facts].flatMap(f=>f.kind==='eq'?[...f.left,...f.right].filter(v=>v.kind==='area').map(v=>v.term.slice(5,-1)):[]);
  function hull(names){let sorted=[...new Set(names)].sort((a,b)=>-d.direction(a,b));const turn=(a,b,c)=>d.collinear(a,b,c)?0:d.turn(a,b,c);let lower=[],upper=[];for(let p of sorted){while(lower.length>1&&turn(lower.at(-2),lower.at(-1),p)<=0)lower.pop();lower.push(p)}for(let p of [...sorted].reverse()){while(upper.length>1&&turn(upper.at(-2),upper.at(-1),p)<=0)upper.pop();upper.push(p)}return lower.slice(0,-1).concat(upper.slice(0,-1)).join('')}
+ if(context.discoverParallelograms!==false){
  for(let i=0;i<polygons.length;i++)for(let j=i;j<polygons.length;j++){let names=[...new Set(polygons[i]+polygons[j])];if(names.length!==4)continue;let p=hull(names);if(p.length===4&&context.isParallelogram(p))facts.push({kind:'shape',property:'parallelogram',polygon:p})}
  for(let i=0;i<d.names.length;i++)for(let j=i+1;j<d.names.length;j++)for(let k=j+1;k<d.names.length;k++)for(let l=k+1;l<d.names.length;l++){let p=hull([d.names[i],d.names[j],d.names[k],d.names[l]]);if(p.length===4&&context.isParallelogram(p))facts.push({kind:'shape',property:'parallelogram',polygon:p})}
+ }
 
  function put(p){if(p&&p.size){equations.push(p);if([...p.keys()].every(k=>!k.includes('*')))linear.push(p)}}
  function support(line,other){return [...other].every(n=>line.includes(n)||d.collinear(line[0],line[1],n))}
@@ -42,6 +44,7 @@ function symbolicConsequence(target,context){
    if(parallel(a,b)){let sign=d.direction(a[0],a[1])*d.direction(b[0],b[1]);put(add(u[0],v[0],-sign));put(add(u[1],v[1],-sign))}
   }
   if(f.kind==='shape'&&['parallelogram','square'].includes(f.property)){
+   if(f.property==='parallelogram'){if(context.allowParallelogramIdentity===false)continue;context.onUseTheorem?.(34)}
    let [a,b,c,e]=f.polygon;if(!e)continue;for(let axis of ['x','y'])put(add(add(coordinate(a,axis),coordinate(c,axis)),add(coordinate(b,axis),coordinate(e,axis)),-1));
    if(f.property==='square'){let u=difference(a,b),v=difference(a,e),sign=signOf(f.polygon);put(add(v[0],u[1],sign));put(add(v[1],u[0],-sign))}
   }

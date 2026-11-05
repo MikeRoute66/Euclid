@@ -39,7 +39,7 @@ function constructionProgress(value,lesson){
   if(task.ref==='P2')return value.rays.includes(task.inputs.join(''));
   if(task.ref==='P3')return circle(...task.inputs);
   if(task.ref==='D1'){let name=task.outputs[0]||task.inputs[0],supports=task.supports||(lesson.id===12?['circle:CA','AB']:INTERSECTION_SUPPORTS[lesson.id]?.[name]),d=EuclidLogic.diagram(value);return !!supports&&supports.every(s=>matchesConstructionSupport(value,name,s))&&(!task.beyond||d.between(task.beyond[0],task.beyond[1],name))&&(!task.within||d.between(task.within[0],name,task.within[1]))}
-  return value.facts.some(raw=>{if(!raw.startsWith('book:'))return false;try{let c=JSON.parse(raw.slice(5));return EuclidConstruction.certificate(c,value.points)&&c.rule===Number(task.ref.slice(1))&&sameConstructionInputs(c.operation,c.inputs,task.inputs)&&JSON.stringify(c.outputs)===JSON.stringify(task.outputs)}catch{return false}});
+  return value.facts.some(raw=>{if(!raw.startsWith('book:'))return false;try{let c=JSON.parse(raw.slice(5));return EuclidConstruction.certificate(c,value.points)&&c.rule===Number(task.ref.slice(1))&&sameConstructionInputs(c.operation,c.inputs,task.inputs)&&JSON.stringify(c.outputs)===JSON.stringify(task.outputs)&&(!task.beyond||EuclidLogic.diagram(value).between(task.beyond[0],task.beyond[1],c.outputs[0]))}catch{return false}});
  });
  return {complete:checks.every(Boolean),done:checks.filter(Boolean).length,total:checks.length,checks};
 }
@@ -65,7 +65,8 @@ function suppliedConstruction(lessonIndex){
  }finally{({index,state,tool,picks,history,buildingPractice}=previous)}
 }
 function ensurePracticeConstruction(){
- if(settings.skipConstruction&&!state.manualConstruction){let supplied=state.practiceConstruction||suppliedConstruction(index);delete state.practiceConstruction;state.manualConstruction=constructionGeometry(state);Object.assign(state,supplied)}
+ if(settings.skipConstruction&&state.manualConstruction&&!constructionProgress(state,LESSONS[index]).complete)Object.assign(state,suppliedConstruction(index));
+ if(settings.skipConstruction&&!state.manualConstruction){let supplied=state.practiceConstruction&&constructionProgress(state.practiceConstruction,LESSONS[index]).complete?state.practiceConstruction:suppliedConstruction(index);delete state.practiceConstruction;state.manualConstruction=constructionGeometry(state);Object.assign(state,supplied)}
  if(!settings.skipConstruction&&state.manualConstruction){let original=state.manualConstruction;state.practiceConstruction=constructionGeometry(state);delete state.manualConstruction;Object.assign(state,original)}
 }
 // Hypotheses are supplied premises, independent of the selected practice mode.
@@ -88,7 +89,7 @@ function inferredProof(value,lesson){
  const copy=structuredClone(value),context=lesson.id<=5?EuclidLogic.context(copy,lesson):BookOneLogic.context(copy,lesson),parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
  const available=Object.values(REFERENCES).flat().map(r=>r[1]).filter(r=>!/^I/.test(r)||Number(r.slice(1))<lesson.id);
  const references=['Given',...available.filter(r=>/^I/.test(r)),...available.filter(r=>!/^I/.test(r)),'Logic'];
- for(let line of copy.lines){let ast=parse(line.s),reference=ast&&[...new Set(['Given',...context.sourceReferences(ast),...references])].find(r=>context.check(ast,r).ok);line.j=reference||null;if(reference)context.accept(ast,reference)}
+ for(let line of copy.lines){let ast=parse(line.s),reference=ast&&[...new Set(['Given',...context.sourceReferences(ast),...(line.autoJustification?[line.autoJustification]:[]),...references])].find(r=>context.check(ast,r).ok);line.j=reference||null;if(reference)context.accept(ast,reference)}
  let result=EuclidLogic.grade(copy,lesson);for(let [i,line] of value.lines.entries()){line.autoJustification=copy.lines[i].j;for(let field of ['valid','error','dependencies','reason','derivation','sourcePropositions'])line[field]=copy.lines[i][field];if(!line.valid&&parse(line.s))line.error='This statement does not follow from the construction and earlier established statements.'}
  return {...result,complete:copy.lines.length>0&&result.complete};
 }

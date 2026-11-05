@@ -4,7 +4,7 @@
 
 The automatic checker prefers hypotheses and matching recorded construction propositions, then the proposition responsible for an earlier triangle congruence, then applicable earlier propositions, definitions/common notions, and explicit deduction. Every candidate is checked against the current construction and preceding accepted proof lines. Proof-guide answers are not consulted.
 
-For E.45, the seven automatic references are E.44, E.44, E.44, E.44, Definition 22, Common Notion 2, E.44. Construction-source metadata is retained in manual and automatic grading and shown by right-click proof inspection. Manual answers remain separate from automatic answers when practice settings change.
+E.45 cites E.44 for each constructed component, then explicitly uses E.29 and E.14 to establish both outer straight lines and E.30 to establish the outer parallel pair. Construction-source metadata is retained in manual and automatic grading and shown by right-click proof inspection. Manual answers remain separate from automatic answers when practice settings change.
 
 Common Notion 1 now uses posted equality premises rather than silently importing unposted construction certificate equalities. Parallel-line transitivity is checked by E.30, not by Common Notion 1. E.44's supplied proof explicitly posts its constructed angle equality before using equality transitivity. E.30 now includes its actual transversal and angle-based proof.
 
@@ -33,6 +33,8 @@ Construction propositions remain tied to their matching operation certificates. 
 
 ## Verification
 
-Browser regressions check positive and negative applications, including true statements that must be rejected under an unrelated theorem. E.45's exact automatic references are asserted. All 48 supplied constructions and proof guides, automatic justifications, practice-mode combinations, save/load restoration, and independence from moved display coordinates are exercised by the integration suite.
+Browser regressions check positive and negative applications, including true statements that must be rejected under an unrelated theorem. E.45's construction sources and its essential E.29, E.14, and E.30 references are asserted. All 48 supplied constructions and proof guides, automatic justifications, practice-mode combinations, save/load restoration, and independence from moved display coordinates are exercised by the integration suite.
 
 Primary statements were checked against the Clark University edition of Euclid's Elements, Book I, especially [E.33](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI33.html), [E.35](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI35.html), [E.38](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI38.html), [E.41](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI41.html), and [E.43](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI43.html).
+
+The construction-consequence audit in [construction-consequences-audit.md](construction-consequences-audit.md) documents the removal of automatically inferred alignment/transitivity and the expanded proof steps across the area and square propositions.
