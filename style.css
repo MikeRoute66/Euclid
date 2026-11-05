@@ -152,8 +152,31 @@ dialog{max-height:85dvh;overflow:auto}
 
 #main-menu.options-open h2{font-size:38px;line-height:1.2;margin:6px 0}#main-menu.options-open .menu-intro{font-size:11px;line-height:1.4;margin-bottom:6px}#main-menu.options-open .setting-row{padding:9px 0}#main-menu.options-open #settings-title{margin-top:8px}#main-menu.options-open .settings-list{max-height:48dvh}
 
-/* Keep the current learning step above the construction and proof. */
-.brief{flex-wrap:wrap;gap:8px}
-#learning-guidance{flex:0 0 100%;min-width:0;max-height:22dvh;overflow:auto;padding:9px 12px;background:#101a13;border-left:2px solid var(--green);scrollbar-width:thin}
+/* Compact chrome leaves the viewport for construction and proof. */
+body{grid-template-rows:40px minmax(0,1fr) 20px}
+.brand{font-size:26px;gap:8px}.brand span{font-size:14px}.brand small{display:none}
+#chapters select{padding:4px 7px}header button{padding:5px 9px;font-size:11px}
+main{gap:6px}
+.brief{padding:4px 0 0;flex-wrap:wrap;gap:5px}
+.brief>div:first-child{flex:1}
+.brief>div>.eyebrow{display:none}
+h1{font-size:23px;line-height:1.1;margin:0 0 3px}
+.brief p{font-size:11px;line-height:1.3}
+.brief .practice-status{margin-top:3px;line-height:1.3}
+.brief-actions button{padding:5px 8px;font-size:11px}
+.drawing,.proof{grid-template-rows:28px minmax(0,1fr)}
+.panelhead{height:28px;padding:0 10px}.panelhead button{padding:3px 6px}
+#learning-guidance{display:flex;align-items:baseline;gap:8px;flex:0 0 100%;min-width:0;max-height:min(80px,12dvh);overflow:auto;padding:5px 8px;background:#101a13;border-left:2px solid var(--green);scrollbar-width:thin}
 #learning-guidance[hidden]{display:none}
-#learning-guidance p{max-width:none;white-space:pre-line;margin:4px 0 0;color:var(--ink)}
+#learning-guidance>.eyebrow{flex-shrink:0;font-size:8px;letter-spacing:1px}
+#learning-guidance p{min-width:0;max-width:none;white-space:normal;margin:0;color:var(--ink);font-size:12px;line-height:1.35}
+@media(max-width:800px){
+ body{grid-template-rows:38px minmax(0,1fr) 18px}
+ .brand{font-size:23px}.brand span{font-size:12px}
+ h1{font-size:21px}.brief p{font-size:10px}
+ .brief-actions{gap:3px}.brief-actions button{font-size:10px;padding:4px 6px}
+ #learning-guidance{gap:6px;max-height:min(88px,12dvh)}
+ #learning-guidance p{font-size:11px;line-height:1.3}
+}
+
+.shelf{grid-template-rows:22px 34px}.shelfhead{padding:4px 10px}.tabs button{padding:6px 8px}#toolpopup{bottom:34px}
