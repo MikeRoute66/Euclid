@@ -16,7 +16,13 @@ addEventListener('load',()=>{
      if(task.ref==='D1'&&task.inputs.length)task.inputs.forEach(choosePoint);
      else if(task.ref==='D1'){
       let supports=task.text.match(/\b[A-Z]{2}\b/g)||[],coordinate;
-      if(supports.length>=2)coordinate=lineIntersection(supports[0],supports[1]);
+      if(task.supports){
+       let candidates=bookOneIntersections().filter(q=>task.supports.every(s=>{if(s.startsWith('circle:')){let [a,b]=s.slice(7);return Math.abs(distance(q,state.points[a])-distance(state.points[a],state.points[b]))<.001}let [a,b]=[state.points[s[0]],state.points[s[1]]];return Math.abs((b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]))<.001}));
+       if(task.beyond)candidates=candidates.filter(q=>{let a=state.points[task.beyond[0]],b=state.points[task.beyond[1]];return (q[0]-a[0])*(b[0]-a[0])+(q[1]-a[1])*(b[1]-a[1])>distance(a,b)**2});
+       if(task.within)candidates=candidates.filter(q=>distance(q,state.points[task.within[0]])<distance(state.points[task.within[0]],state.points[task.within[1]])&&distance(q,state.points[task.within[1]])<distance(state.points[task.within[0]],state.points[task.within[1]]));
+       coordinate=candidates.sort((a,b)=>a[1]-b[1])[0];
+      }
+      else if(supports.length>=2)coordinate=lineIntersection(supports[0],supports[1]);
       else {let circles=state.circles.slice(-2),candidates=bookOneIntersections().filter(p=>circles.every(c=>Math.abs(distance(p,state.points[c.a])-distance(state.points[c.a],state.points[c.b]))<.001));coordinate=candidates.sort((a,b)=>a[1]-b[1])[0]}
       if(!coordinate||!coordinate.every(Number.isFinite))throw Error('No indicated intersection: '+task.text);bookOneMark(coordinate);
      }else task.inputs.forEach(choosePoint);
@@ -31,6 +37,23 @@ addEventListener('load',()=>{
     }
     state.lines=lesson.proofGuide.map(r=>({s:r.s,j:r.j}));let result=EuclidLogic.grade(state,lesson),bad=state.lines.flatMap((l,n)=>l.valid?[]:[(n+1)+'. '+l.s+' ['+l.j+'] '+l.error]);
     if([35,47].includes(lesson.id)){let overbroad=structuredClone(state);overbroad.lines.at(-1).j=lesson.id===35?'CN3':'CN2';EuclidLogic.grade(overbroad,lesson);check(!overbroad.lines.at(-1).valid,'E.'+lesson.id+' requires the full argument rather than an arithmetic shortcut')}
+    if(lesson.requireConstruction){
+     check(constructionProgress(state,lesson).complete,'E.'+lesson.id+' records every actual auxiliary construction');
+     let unfinished={...fresh(),lines:lesson.proofGuide.map(r=>({s:r.s,j:r.j}))};
+     check(!EuclidLogic.grade(unfinished,lesson).complete,'E.'+lesson.id+' cannot finish without its auxiliary construction');
+     let markTask=lesson.construction.find(t=>t.supports?.some(s=>s.startsWith('circle:')));
+     if(markTask){let unrecorded=structuredClone(state);unrecorded.topology.circles=unrecorded.topology.circles.filter(s=>!s.endsWith(':'+markTask.outputs[0]));check(!constructionProgress(unrecorded,lesson).complete,'E.'+lesson.id+' requires recorded circle incidence, not an existing label');}
+    }
+    if(lesson.id===48){
+     check(state.lines.find(l=>l.s==='FC = BC')?.derivation?.name==='Equal squares of segment lengths','E.48 explains the nonnegative-root inference from equal squares');
+     let missingSquare=structuredClone(state);missingSquare.lines=missingSquare.lines.filter(l=>l.s!=='FC^2 = BC^2');EuclidLogic.grade(missingSquare,lesson);
+     check(!missingSquare.lines.find(l=>l.s==='FC = BC').valid,'E.48 equal-length inference requires the earlier square equality');
+    }
+    if(lesson.id===27){
+     let initialNames=Object.keys(state.points).join(''),context=BookOneLogic.context(state,lesson),hypothetical=context.check(BookOneLogic.parse('XG = XH'),'Logic');
+     check(!hypothetical.ok&&Object.keys(state.points).join('')===initialNames&&!state.points.X,'E.27 hypothetical intersection cannot become an actual premise');
+     check(state.lines.at(-1).derivation?.steps.some(s=>s.includes('hypothetical'))&&proofStepReason(lesson,lesson.proofGuide.at(-1)).includes('not a missing construction point'),'E.27 identifies its contradiction figure in both guidance and proof inspection');
+    }
     assertLabels('E.'+lesson.id);
     check(result.complete,'I.'+lesson.id+' construction and proof'+(bad.length?' — '+bad.join('; '):!result.goalReached?' — conclusion missing':''));
     for(let raw of state.facts.filter(f=>f.startsWith('book:'))){let record=JSON.parse(raw.slice(5));operations.add(record.operation);check(EuclidConstruction.certificate(record,state.points),'E.'+lesson.id+' validates '+record.operation+' contract');let isolated=structuredClone(state);isolated.lines=[];let withRecord=BookOneLogic.context(isolated,lesson).check(BookOneLogic.parse(record.claims[0]),'I'+record.rule).ok;isolated.facts=[];let withoutRecord=BookOneLogic.context(isolated,lesson).check(BookOneLogic.parse(record.claims[0]),'I'+record.rule).ok;check(withRecord&&!withoutRecord,'E.'+lesson.id+' '+record.operation+' requires its construction certificate')}

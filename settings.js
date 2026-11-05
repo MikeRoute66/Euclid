@@ -38,10 +38,10 @@ function constructionProgress(value,lesson){
   if(task.ref==='P1')return edge(...task.inputs);
   if(task.ref==='P2')return value.rays.includes(task.inputs.join(''));
   if(task.ref==='P3')return circle(...task.inputs);
-  if(task.ref==='D1'){let name=task.outputs[0]||task.inputs[0],supports=lesson.id===12?['circle:CA','AB']:INTERSECTION_SUPPORTS[lesson.id]?.[name];return !!supports&&supports.every(s=>matchesConstructionSupport(value,name,s))}
+  if(task.ref==='D1'){let name=task.outputs[0]||task.inputs[0],supports=task.supports||(lesson.id===12?['circle:CA','AB']:INTERSECTION_SUPPORTS[lesson.id]?.[name]),d=EuclidLogic.diagram(value);return !!supports&&supports.every(s=>matchesConstructionSupport(value,name,s))&&(!task.beyond||d.between(task.beyond[0],task.beyond[1],name))&&(!task.within||d.between(task.within[0],name,task.within[1]))}
   return value.facts.some(raw=>{if(!raw.startsWith('book:'))return false;try{let c=JSON.parse(raw.slice(5));return EuclidConstruction.certificate(c,value.points)&&c.rule===Number(task.ref.slice(1))&&sameConstructionInputs(c.operation,c.inputs,task.inputs)&&JSON.stringify(c.outputs)===JSON.stringify(task.outputs)}catch{return false}});
  });
- return {complete:checks.every(Boolean),done:checks.filter(Boolean).length,total:checks.length};
+ return {complete:checks.every(Boolean),done:checks.filter(Boolean).length,total:checks.length,checks};
 }
 function suppliedConstruction(lessonIndex){
  const previous={index,state,tool,picks,history,buildingPractice};
@@ -59,7 +59,7 @@ function suppliedConstruction(lessonIndex){
   else if(index===2){use('I2','A','C','D');use('P3','A','E');intersection(['AB','circle:AE'],null,'AB')}
   else if(index===3){tool=REFERENCES.notions.find(r=>r[1]==='CN4');superposeTriangles()}
   else if(index===4){use('P2','A','B');use('P2','A','C');use('I3','A');use('P1','F','C');use('P1','G','B')}
-  else for(let task of LESSONS[index].construction||[]){if(task.ref==='D1'&&task.inputs.length){tool=REFERENCES.definitions.find(r=>r[1]==='D1');task.inputs.forEach(choosePoint)}else if(task.ref==='D1')intersection(INTERSECTION_SUPPORTS[LESSONS[index].id][task.outputs[0]]);else use(task.ref,...task.inputs)}
+  else for(let task of LESSONS[index].construction||[]){if(task.ref==='D1'&&task.inputs.length){tool=REFERENCES.definitions.find(r=>r[1]==='D1');task.inputs.forEach(choosePoint)}else if(task.ref==='D1')intersection(task.supports||INTERSECTION_SUPPORTS[LESSONS[index].id][task.outputs[0]],task.beyond,task.within);else use(task.ref,...task.inputs)}
   if(!constructionProgress(state,LESSONS[index]).complete)throw Error('The supplied construction is incomplete.');
   return constructionGeometry(state);
  }finally{({index,state,tool,picks,history,buildingPractice}=previous)}

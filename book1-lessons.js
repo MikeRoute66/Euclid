@@ -61,6 +61,46 @@ bookLesson(48,'The converse of Pythagoras','If the square on one side equals the
 BOOK_ONE_ADDITIONS.find(l=>l.id===9).goalConstraints={insideAngle:{point:'F',angle:'BAC'}};
 BOOK_ONE_ADDITIONS.find(l=>l.id===10).goalConstraints={between:['A','D','B']};
 BOOK_ONE_ADDITIONS.find(l=>l.id===22).goalConstraints={triangle:'GHK'};
+// Actual auxiliaries belong to the construction; conditional figures do not.
+const crossing=(name,supports,text,position={})=>Object.assign(build('D1',[],text,[name]),{supports,...position});
+function auxiliaryLesson(id,tasks){let lesson=BOOK_ONE_ADDITIONS.find(l=>l.id===id);lesson.construction.push(...tasks);lesson.requireConstruction=true}
+auxiliaryLesson(7,[build('P1',['C','D'],'Join the two proposed apices C and D.')]);
+auxiliaryLesson(13,[build('I11',['A','B','C'],'Raise perpendicular CE to AB at C.',['E'])]);
+auxiliaryLesson(14,[build('P2',['A','C'],'Extend AC straight through C for the straight-angle comparison.')]);
+auxiliaryLesson(16,[
+ build('I10',['A','C'],'Bisect AC at E.',['E']),build('P1',['B','E'],'Join B to E.'),build('P2',['B','E'],'Extend BE beyond E.'),build('P3',['E','B'],'Draw the circle centered at E through B.'),crossing('F',['BE','circle:EB'],'Mark F on the extension of BE beyond E.',{beyond:'BE'}),build('P1',['C','F'],'Join C to F.'),
+ build('I10',['B','C'],'Bisect BC at G for the second comparison.',['G']),build('P1',['A','G'],'Join A to G.'),build('P2',['A','G'],'Extend AG beyond G.'),build('P3',['G','A'],'Draw the circle centered at G through A.'),crossing('H',['AG','circle:GA'],'Mark H on the extension of AG beyond G.',{beyond:'AG'}),build('P1',['C','H'],'Join C to H.'),build('P2',['A','C'],'Extend AC beyond C to show the vertical exterior angle.')
+]);
+auxiliaryLesson(18,[build('I3',['A','C','A','B'],'Cut AD from AC equal to AB.',['D']),build('P1',['B','D'],'Join B to D.')]);
+auxiliaryLesson(20,[
+ build('P2',['B','A'],'Extend BA beyond A.'),build('P3',['A','C'],'Draw the circle centered at A through C.'),crossing('D',['BA','circle:AC'],'Mark D beyond A on BA.',{beyond:'BA'}),build('P1',['C','D'],'Join C to D.'),
+ build('P2',['C','B'],'Extend CB beyond B.'),build('P3',['B','A'],'Draw the circle centered at B through A.'),crossing('E',['CB','circle:BA'],'Mark E beyond B on CB.',{beyond:'CB'}),build('P1',['A','E'],'Join A to E.'),
+ build('P2',['A','C'],'Extend AC beyond C.'),build('P3',['C','B'],'Draw the circle centered at C through B.'),crossing('F',['AC','circle:CB'],'Mark F beyond C on AC.',{beyond:'AC'}),build('P1',['B','F'],'Join B to F.')
+]);
+auxiliaryLesson(21,[build('P2',['B','D'],'Extend BD to meet AC.'),crossing('E',['BD','AC'],'Mark E where BD meets AC beyond D.',{beyond:'BD',within:'AC'})]);
+// Show a genuine smaller copied angle inside BAC in the hinge diagram.
+BOOK_ONE_ADDITIONS.find(l=>l.id===24).points={...bookPair,F:[630,240]};
+auxiliaryLesson(24,[build('I23',['E','D','F','A','B'],'Copy angle EDF inside BAC, creating ray AG.',['G']),build('I2',['A','A','C'],'Copy AC to AH.',['H']),build('P3',['A','H'],'Draw the circle centered at A through H.'),build('P2',['A','G'],'Extend AG to meet this circle.'),crossing('I',['AG','circle:AH'],'Mark I on ray AG with AI equal to AC.',{beyond:'AG'}),build('P1',['B','I'],'Join B to I.'),build('P1',['C','I'],'Join C to I.')]);
+auxiliaryLesson(36,[build('P1',['A','H'],'Join A to H.'),build('P1',['B','G'],'Join B to G, completing connecting parallelogram ABGH.')]);
+auxiliaryLesson(37,[
+ build('I31',['A','B','C'],'Draw AE through A parallel to BC.',['E']),build('P2',['A','E'],'Extend AE to the line CD.'),crossing('F',['AE','CD'],'Mark F where AE meets the line CD.'),build('P1',['C','F'],'Join C to F to complete parallelogram ABCF.'),build('P1',['A','F'],'Join A to F.'),
+ build('I31',['A','B','D'],'Draw AG through A parallel to BD.',['G']),build('P2',['A','G'],'Extend AG to the line CD.'),crossing('H',['AG','CD'],'Mark H where AG meets the line CD.'),build('P1',['D','H'],'Join D to H to complete parallelogram ABDH.'),build('P1',['A','H'],'Join A to H.')
+]);
+auxiliaryLesson(38,[
+ build('I31',['B','C','A'],'Draw BG through B parallel to CA.',['G']),build('P2',['B','G'],'Extend BG to the line AD.'),crossing('H',['BG','AD'],'Mark H where BG meets the line AD.'),build('P1',['H','A'],'Join H to A to complete parallelogram BCAH.'),build('P1',['B','H'],'Join B to H.'),
+ build('I31',['E','F','D'],'Draw EI through E parallel to FD.',['I']),build('P2',['E','I'],'Extend EI to the line AD.'),crossing('J',['EI','AD'],'Mark J where EI meets the line AD.'),build('P1',['J','D'],'Join J to D to complete parallelogram EFDJ.'),build('P1',['E','J'],'Join E to J.')
+]);
+auxiliaryLesson(39,[build('I31',['C','A','B'],'Draw CE through C parallel to AB.',['E'])]);
+auxiliaryLesson(40,[build('I31',['A','B','C'],'Draw AG through A parallel to BC.',['G'])]);
+auxiliaryLesson(41,[build('P1',['A','C'],'Draw diagonal AC.')]);
+let areaConstruction=BOOK_ONE_ADDITIONS.find(l=>l.id===42);areaConstruction.construction.splice(1,0,build('P1',['A','G'],'Join A to G.'));areaConstruction.requireConstruction=true;
+auxiliaryLesson(47,[build('I31',['A','E','B'],'Draw AJ through A parallel to EB, away from the square.',['J']),build('P2',['J','A'],'Extend JA through A across square BCDE.'),crossing('K',['JA','BC'],'Mark K where JA meets BC.'),crossing('L',['JA','DE'],'Mark L where JA meets DE.'),build('P1',['K','L'],'Join K to L to divide the square into rectangles.'),build('P1',['A','E'],'Join A to E.'),build('P1',['C','F'],'Join C to F.'),build('P1',['A','D'],'Join A to D.'),build('P1',['B','H'],'Join B to H.')]);
+auxiliaryLesson(48,[build('I11',['A','C','A'],'Raise perpendicular AD to AC at A, on the opposite side from B.',['D']),build('I2',['A','A','B'],'Copy AB to AE.',['E']),build('P3',['A','E'],'Draw the circle centered at A through E.'),build('P2',['A','D'],'Extend AD to meet the circle.'),crossing('F',['AD','circle:AE'],'Mark F beyond D on AD, so AF equals AB.',{beyond:'AD'}),build('P1',['C','F'],'Join C to F to complete the auxiliary right triangle FAC.')]);
+// Expose the recorded comparison triangles as proof premises, not just prose.
+BOOK_ONE_ADDITIONS.find(l=>l.id===16).proofGuide=[guide('AE = EC','I10'),guide('EF = EB','D15'),guide('angle AEB = angle CEF','I15'),guide('ABE is congruent to CFE','I4'),guide('angle BAE = angle ECF','I4'),guide('angle ACD > angle BAC','Logic'),guide('BG = GC','I10'),guide('GH = GA','D15'),guide('angle AGB = angle HGC','I15'),guide('ABG is congruent to HCG','I4'),guide('angle ABC = angle HCG','I4'),guide('angle ACD > angle ABC','Logic')];
+BOOK_ONE_ADDITIONS.find(l=>l.id===18).proofGuide=[guide('AC > AB','Given'),guide('AD = AB','I3'),guide('angle ABD = angle BDA','I5'),guide('angle BDA > angle BCD','I16'),guide('angle ABC > angle ACB','Logic')];
+BOOK_ONE_ADDITIONS.find(l=>l.id===24).proofGuide=[guide('AB = DE','Given'),guide('AC = DF','Given'),guide('angle BAC > angle EDF','Given'),guide('AH = AC','I2'),guide('AI = AH','D15'),guide('AI = AC','CN1'),guide('angle BAI = angle EDF','I23'),guide('ABI is congruent to DEF','I4'),guide('BI = EF','I4'),guide('BC > EF','Logic')];
+BOOK_ONE_ADDITIONS.find(l=>l.id===48).proofGuide=[guide('BC^2 = AB^2 + AC^2','Given'),guide('AD is perpendicular to AC','I11'),guide('AE = AB','I2'),guide('AF = AE','D15'),guide('AF = AB','CN1'),guide('angle FAC is right','D10'),guide('FC^2 = AF^2 + AC^2','I47'),guide('FC^2 = BC^2','Logic'),guide('FC = BC','Logic'),guide('FAC is congruent to BAC','I8'),guide('angle FAC = angle BAC','I8'),guide('angle BAC is right','Logic')];
 LESSONS.push(...BOOK_ONE_ADDITIONS);
 const BOOK_BUILD_MODES={I9:['bisectAngle',3],I10:['midpoint',2],I11:['perpendicular',3],I12:['perpendicular',3],I22:['sss',8],I23:['copyAngle',5],I31:['parallel',3],I42:['equalArea',8],I44:['applyArea',8],I45:['figureArea',9],I46:['square',2]};
 REFERENCES.propositions=LESSONS.map(l=>{
