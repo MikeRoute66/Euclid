@@ -37,6 +37,7 @@ function proofStepReason(lesson,step){
  if(lesson.id===13)return 'Use the constructed perpendicular CE at C. The definition of a right angle divides the straight angle ACB into two right angles. Whether CD is that perpendicular or falls to either side of it, adding the adjacent parts gives angle ACD + angle DCB = 2 right angles.';
  if(lesson.id===14&&step.j!=='Given')return 'Use the recorded extension of AC straight through C. The straight-angle sum makes the angles from CA to CB and from CB to this extension sum to two right angles. Subtract the shared angle ACB from that sum and from the given sum. The remaining angles coincide, so CD is the straight extension of AC and A,C,D are collinear.';
  if(step.j==='Given')return 'This is a hypothesis in the proposition: '+step.s+'. Record it before using it as a premise.';
+ if(lesson.id===27&&step.j==='I16')return LESSON_ARGUMENTS[27];
  if(step.j==='Logic')return LESSON_ARGUMENTS[lesson.id]||AREA_ARGUMENTS[lesson.id];
  if(AREA_ARGUMENTS[lesson.id]&&/area|\^2/.test(step.s))return AREA_ARGUMENTS[lesson.id];
  if(step.j==='I4'&&!/is congruent/.test(step.s))return 'Corresponding sides and angles of the triangles already established as congruent are equal. Match the vertices in the recorded correspondence.';

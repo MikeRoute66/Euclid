@@ -4,6 +4,7 @@ const EuclidConstruction=(()=>{
  const layouts={9:['ADB'],11:['ADCB'],13:['ACB'],15:['AEB','CED'],16:['BCD'],17:['BCD'],27:['AGB','CHD','EGHF'],28:['AGB','CHD','EGHF'],29:['AGB','CHD','EGHF'],32:['BCD'],35:['DCFE'],36:['ABEF','DCHG'],38:['BCEF'],40:['BCEF'],41:['DEC'],43:['AEC','FEH','GEK','AGB','BHC','CKD','DFA']};
  const sort=s=>[...s].sort().join('');
  function permutation(s){let n=0;for(let i=0;i<s.length;i++)for(let j=i+1;j<s.length;j++)if(s[i]>s[j])n++;return n%2?-1:1}
+ function restoreGivens(state,lesson){for(let line of layouts[lesson.id]||[])if([...line].every(n=>state.points[n])&&!state.topology.lines.includes(line))state.topology.lines.push(line)}
  function initialize(state,lesson){state.topology={version:1,lines:[...(layouts[lesson.id]||[])],turns:{},directions:{},circles:[]};for(let n of Object.keys(state.points))point(state,n);
   // Replay only relationships implied by recorded operations in older saves.
   for(let raw of state.facts||[])if(raw.startsWith('book:')){try{let r=JSON.parse(raw.slice(5));if(!certificate(r,state.points))continue;let [a,b,c]=r.inputs,[n,m]=r.outputs;
@@ -54,5 +55,5 @@ const EuclidConstruction=(()=>{
   return r.claims.length===expected.length&&r.claims.every(s=>expected.includes(s));
  }
  function valid(t,points){const names=s=>typeof s==='string'&&[...s].every(n=>points[n]);return t?.version===1&&Array.isArray(t.lines)&&t.lines.length<=500&&t.lines.every(s=>names(s)&&s.length>=3&&s.length<=26)&&t.turns&&Object.keys(t.turns).length<=2600&&Object.entries(t.turns).every(([s,n])=>names(s)&&s.length===3&&new Set(s).size===3&&Math.abs(n)===1)&&t.directions&&Object.keys(t.directions).length<=325&&Object.entries(t.directions).every(([s,n])=>names(s)&&s.length===2&&new Set(s).size===2&&[-1,0,1].includes(n))&&Array.isArray(t.circles)&&t.circles.length<=2600&&t.circles.every(s=>typeof s==='string'&&/^[A-Z]:[A-Z]:[A-Z]$/.test(s)&&names(s.replace(/:/g,'')))}
- return {certificate,valid,directLines,derivedAlignments,initialize,point,support,onCircle,edge,intersection,radius,turn,direction};
+ return {restoreGivens,certificate,valid,directLines,derivedAlignments,initialize,point,support,onCircle,edge,intersection,radius,turn,direction};
 })();

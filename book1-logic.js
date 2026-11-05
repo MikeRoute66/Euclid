@@ -29,6 +29,7 @@ const BookOneLogic=(()=>{
  const equality=(x,y)=>parse(x+' = '+y),atomic=t=>t?.kind==='eq'&&t.left.length===1&&t.right.length===1&&t.left[0].coefficient===1&&t.right[0].coefficient===1;
  const namesIn=t=>{if(!t)return [];let text=t.kind==='eq'||t.kind==='gt'?[...t.left,...t.right].map(v=>v.term.replace(/AREA\(|\)|RIGHT|\^2|\u2220/g,'')).join(''):t.kind==='right'?t.angle:t.kind==='shape'?t.polygon:t.kind==='collinear'?t.points:t.kind==='inside'?t.point+t.triangle:t.kind==='sameSide'?t.a+t.b+t.line:(t.a||'')+(t.b||'');return [...text].filter(n=>/[A-Z]/.test(n))};
  function context(state,lesson){
+  if(!state.topology)EuclidConstruction.initialize(state,lesson);else EuclidConstruction.restoreGivens(state,lesson);
   let facts=[],derivations=[],origins=new WeakMap(),symbolicDependencies=new Set(),d=EuclidLogic.diagram(state,facts);
   const scalarTerms=t=>t.kind==='eq'||t.kind==='gt'?[...t.left,...t.right].map(v=>v.term):[];
   function canonical(term){if(term==='RIGHT')return 'RIGHT';if(term.startsWith('AREA('))return 'AREA('+polygonKey(term.slice(5,-1))+')';if(term.endsWith('^2'))return sort(term.slice(0,2))+'^2';return d.canonical(term)}
@@ -113,7 +114,16 @@ const BookOneLogic=(()=>{
    return false;
   }
   function geometricAlgebra(t){return symbolicConsequence(t,{d,facts,certificateClaims,parallel,equal,isParallelogram,allowParallelogramIdentity:lesson.id>34,onUseTheorem:n=>symbolicDependencies.add(n)})}
-  function check(t,reference){
+  function check(t,reference,directOnly=false){
+   let result=checkDirect(t,reference);
+   if(result.ok||directOnly||!/^I\d+$/.test(reference)||Number(reference.slice(1))>=lesson.id)return result;
+   // A named source may support a validated compound argument, never an
+   // arbitrary symbolic consequence that merely happens to mention that source.
+   let derived=checkDirect(t,'Logic'),argument=derived.derivation;
+   if(derived.ok&&argument&&argument.name!=='Symbolic Euclidean deduction'&&argument.dependencies.includes(Number(reference.slice(1))))return {...derived,sourcePropositions:[...new Set([...derived.sourcePropositions,...argument.dependencies.map(n=>'I'+n)])]};
+   return result;
+  }
+  function checkDirect(t,reference){
    derivations.length=0;symbolicDependencies.clear();
    if(namesIn(t).some(n=>!d.points[n]))return {ok:false,error:'This statement names a point not in the construction.'};
    if(t.kind==='parallel'&&lineKey(t.a)===lineKey(t.b))return {ok:false,error:'Coincident lines are not distinct parallel lines.'};

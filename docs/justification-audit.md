@@ -38,3 +38,10 @@ Browser regressions check positive and negative applications, including true sta
 Primary statements were checked against the Clark University edition of Euclid's Elements, Book I, especially [E.33](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI33.html), [E.35](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI35.html), [E.38](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI38.html), [E.41](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI41.html), and [E.43](https://mathcs.clarku.edu/~djoyce/elements/bookI/propI43.html).
 
 The construction-consequence audit in [construction-consequences-audit.md](construction-consequences-audit.md) documents the removal of automatically inferred alignment/transitivity and the expanded proof steps across the area and square propositions.
+
+
+## Named sources for compound arguments
+
+Validated compound arguments accept an earlier proposition explicitly used in their derivation as the manual reference. Automatic justification selects a validated named source when available; the complete argument stays in right-click proof inspection. A proposition mentioned only in a generic symbolic constraint set is not sufficient for this alias. Current and future propositions remain unavailable, and every premise and construction prerequisite is still checked.
+
+E.27 now names and accepts E.16 for its contradiction argument. E.28's vertical-angle step uses E.15. Known given-line incidences are restored from the lesson in older topology records, so missing saved intersection records do not block that step. No new incidence is inferred from display coordinates.
