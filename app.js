@@ -85,7 +85,7 @@ bindReferenceInspection($('#given-tool'),GIVEN_REFERENCE);
 document.addEventListener('pointerdown',e=>{if(tab&&!e.target.closest('.shelf'))closeTools();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&tab){e.preventDefault();closeTools(true);}});
 $('#undo').onclick=()=>{if(history.length){state=JSON.parse(history.pop());picks=[];resetLineForm();render()}};$('#reset').onclick=()=>{snapshot();state=fresh();picks=[];resetLineForm();render()};
-function modal(k,t,body){$('#modalkicker').textContent=displayReference(k);$('#modaltitle').textContent=displayReference(t);$('#modalbody').replaceChildren();for(let text of body){let p=document.createElement('p');p.textContent=displayReference(text);$('#modalbody').append(p)}$('#modal').showModal()}
+function modal(k,t,body){$('#modal').classList.remove('play-guide');$('#modalkicker').textContent=displayReference(k);$('#modaltitle').textContent=displayReference(t);$('#modalbody').replaceChildren();for(let text of body){let p=document.createElement('p');p.textContent=displayReference(text);$('#modalbody').append(p)}$('#modal').showModal()}
 function nextHint(){
  if(evaluate())return settings.skipProof&&settings.skipJustifications?'This construction stage is complete. Continue when ready.':'This proposition is complete. Your conclusion follows from the justified proof.';
  if(editingLine!==null)return 'You are editing line '+(editingLine+1)+'. Finish the statement and click Save changes, or Cancel edit to return to the proof.';
@@ -112,6 +112,38 @@ function nextHint(){
  return hintProofAction(missing.s,-1)+'\n\nReasoning: '+reasoning;
 }
 $('#hint').onclick=()=>modal('NEXT STEP','What to do next',nextHint().split('\n\n'));
-$('#help').onclick=()=>modal('THE WORKSHOP','Construct. State. Justify.',['Choose a postulate, then click named points to draw. The point tool in Definitions marks intersections. Select earlier propositions to use their constructions. Given points are fixed; the drag interaction in I.4 demonstrates superposition.','Use [segment] = [segment], angle [vertices] = angle [vertices], [triangle] is equilateral, [triangle] is congruent to [triangle], or [triangle] is superposed on [triangle]. You can also add or subtract segment lengths and angles with + and -. Triangle names may use any vertex order for a property such as equilateral. Congruence and superposition accept matching reorderings of both triangles, preserving corresponding vertices. Formatting help uses only your own words and point names. The grader parses statements and checks inference rules against construction evidence and earlier justified premises. It supports equality, addition and subtraction of segments and angles, circle radii, equilateral triangles, and side-angle-side congruence; it is a Euclidean calculus rather than an unrestricted natural-language prover. Book I also supports parallel/perpendicular lines, collinearity, right angles, inequalities, area expressions, and squared lengths (use ^2). Deduction expands derived Euclidean arguments; right-click a justified line to inspect its reasoning. Deleting a line rechecks the proof and can be undone.','Additional formats: [line] is parallel to [line]; [line] is perpendicular to [line]; [vertices] are collinear; angle [vertices] is right; [polygon] is a parallelogram or square; area [polygon] = area [polygon]; [side]^2 = [side]^2 + [side]^2. Comparisons use =, >, or <.', 'Select a definition, common notion, or earlier proposition, then click a proof line to attach its justification. A red ! explains what is missing. Premises must occur earlier in the proof. Use Edit on any posted line to change its statement; its justification is retained and the proof is checked again. Equality accepts reversed sides and reversed segment endpoints. Undo removes the last edit. Progress saves in this browser.','Earlier propositions are available as assumed results when opening a later lesson directly. I.1 assumes circle intersection; I.4 uses Euclid’s superposition argument; shared angles and collinearity are implicit diagram facts.']);$('#closemodal').onclick=()=>$('#modal').close();
+function showHowToPlay(){
+ modal('QUICK START','How to play',[]);
+ $('#modal').classList.add('play-guide');
+ $('#modalbody').innerHTML=`
+  <ol class="play-steps">
+   <li><strong>Construct</strong><span>Open a tool menu below. Select a tool, then click its points in order. Two-point tools also accept a drag. Use the point tool to mark intersections.</span></li>
+   <li><strong>State</strong><span>Add a formal statement in the proof panel. The hypotheses are already filled in.</span></li>
+   <li><strong>Justify</strong><span>Select a reference below, then click the proof line it supports. Establish premises before using them.</span></li>
+  </ol>
+  <p class="play-goal">Finish the construction and establish the conclusion with valid proof lines to clear the stage.</p>
+  <details><summary>Writing statements</summary>
+   <p>Use point letters from your diagram. These examples show syntax, not answers.</p>
+   <dl class="play-formats">
+    <dt>Lengths &amp; angles</dt><dd><code>AB = CD</code><br><code>angle ABC = angle DEF</code></dd>
+    <dt>Triangle properties</dt><dd><code>ABC is equilateral</code><br><code>ABC is congruent to DEF</code></dd>
+    <dt>Lines &amp; figures</dt><dd><code>AB is parallel to CD</code><br><code>AB is perpendicular to CD</code><br><code>ABC are collinear</code><br><code>angle ABC is right</code><br><code>ABCD is a parallelogram</code><br><code>ABCD is a square</code></dd>
+    <dt>Areas &amp; squares</dt><dd><code>area ABC = area DEF</code><br><code>AB^2 = CD^2 + EF^2</code></dd>
+   </dl>
+   <p>Use <code>=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>+</code>, and <code>-</code> for comparisons and sums. Segment endpoints can be reversed. Triangle properties accept any vertex order; congruence must preserve matching vertices.</p>
+   <p><strong>Did you mean?</strong> helps format your own statement without choosing an answer for you.</p>
+  </details>
+  <details><summary>Tools, feedback &amp; corrections</summary>
+   <ul><li>Hover over a tool to see its name. Right-click it for the full reference.</li><li>A green check marks a valid line. A red exclamation mark explains what needs fixing.</li><li>Use <strong>Edit</strong> or <strong>Delete</strong> on a proof line. <strong>Undo</strong> reverses your last action.</li><li>Right-click a valid proof line to inspect its reasoning and source propositions.</li><li>Only recorded construction properties and established premises count as evidence. Appearance alone is not proof.</li></ul>
+  </details>
+  <details><summary>Hints &amp; practice settings</summary>
+   <ul><li><strong>A little guidance</strong> gives your next step. <strong>Learning mode</strong> keeps it visible automatically.</li><li><strong>Skip construction</strong> supplies the diagram.</li><li><strong>Skip proof</strong> supplies the statements and keeps them visible. You still choose justifications.</li><li><strong>Skip justifications</strong> chooses and displays valid references automatically.</li><li>Enable Skip proof and Skip justifications together to fill in both while you focus on construction.</li></ul>
+  </details>
+  <details><summary>Progress &amp; jumping ahead</summary>
+   <p>Progress saves automatically in this browser. Use <strong>Menu &gt; Load game</strong> for save points and save-file options. <strong>New game</strong> starts fresh; you can also jump to any proposition.</p>
+   <p>When you jump ahead, earlier propositions are available as established results. Circle intersections are assumed to exist when required; E.4 uses superposition, which accepts dragging A onto D or clicking A then D.</p>
+  </details>`;
+}
+$('#help').onclick=showHowToPlay;$('#closemodal').onclick=()=>$('#modal').close();
 let initialProposition=0;try{let value=Number(localStorage.getItem('euclid-workshop-active'));if(Number.isInteger(value)&&value>=0&&value<LESSONS.length)initialProposition=value}catch{}
 load(initialProposition);
