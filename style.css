@@ -151,3 +151,9 @@ dialog{max-height:85dvh;overflow:auto}
 #lineform[hidden],.edit-line[hidden],.delete-line[hidden]{display:none}
 
 #main-menu.options-open h2{font-size:38px;line-height:1.2;margin:6px 0}#main-menu.options-open .menu-intro{font-size:11px;line-height:1.4;margin-bottom:6px}#main-menu.options-open .setting-row{padding:9px 0}#main-menu.options-open #settings-title{margin-top:8px}#main-menu.options-open .settings-list{max-height:48dvh}
+
+/* Keep the current learning step above the construction and proof. */
+.brief{flex-wrap:wrap;gap:8px}
+#learning-guidance{flex:0 0 100%;min-width:0;max-height:22dvh;overflow:auto;padding:9px 12px;background:#101a13;border-left:2px solid var(--green);scrollbar-width:thin}
+#learning-guidance[hidden]{display:none}
+#learning-guidance p{max-width:none;white-space:pre-line;margin:4px 0 0;color:var(--ink)}

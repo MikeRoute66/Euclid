@@ -1,6 +1,6 @@
 const SETTINGS_KEY='euclid-workshop-settings-v1';
 const PRACTICE_MODES=['Full challenge','Review','Construction practice','Justification practice','Construction and justifications','Statement practice','Proof practice','Statements and construction'];
-const DEFAULT_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,largeLabels:false};
+const DEFAULT_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,learningMode:false,largeLabels:false};
 let settings={...DEFAULT_SETTINGS};try{let stored=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');for(let key of Object.keys(settings))if(typeof stored[key]==='boolean')settings[key]=stored[key]}catch{}
 let buildingPractice=false;
 function constructionGeometry(value){return structuredClone(Object.fromEntries(['points','edges','rays','circles','facts','topology'].map(key=>[key,value[key]])))}
@@ -97,7 +97,8 @@ function applyPracticeDisplay(completed){
  const constructionOnly=settings.skipProof&&settings.skipJustifications;
  document.querySelector('.proof').hidden=constructionOnly;document.querySelector('.workspace').classList.toggle('construction-only',constructionOnly);
  $('#lineform').hidden=settings.skipProof;
- $('#given-tool').hidden=$('#logic-tool').hidden=settings.skipJustifications;$('#hint').hidden=!settings.showHints;
+ $('#given-tool').hidden=$('#logic-tool').hidden=settings.skipJustifications;$('#hint').hidden=settings.learningMode||!settings.showHints;
+ updateLearningGuidance();
  document.querySelector('.proofnote').textContent=settings.skipProof?'Proof statements are supplied. Choose a reference, then click a line to justify it.':settings.skipJustifications?'Write formal statements. Their reasoning is checked automatically; justifications are not required.':'Write a formal statement, then select a reference below and click its line to justify it.';
  let progress=constructionProgress(state,LESSONS[index]);$('#practice-status').hidden=!modified;
  $('#practice-status').textContent=practiceMode()+' - '+(settings.skipConstruction&&constructionOnly?'Finished diagram supplied for review.':constructionOnly?(progress.total?progress.done+' / '+progress.total+' construction steps':'No drawing required for this stage.')+(completed?' Stage clear.':''):settings.skipProof?'Statements supplied. Justify each line.':settings.skipConstruction?'Diagram supplied. Write the proof.':'Justifications checked automatically.');
@@ -125,4 +126,9 @@ function practiceInstruction(){
  if(tool){if(settings.skipJustifications&&!tool[3])return 'Justifications are checked automatically in this mode.';return displayReference(toolText())}
  if(settings.skipConstruction)return settings.skipProof?(settings.skipJustifications?'Finished construction supplied for review.':'Choose references to justify the supplied statements.'):'Construction supplied. Work on the proof.';
  return settings.skipProof&&!settings.skipJustifications?'Build the figure, then justify the supplied statements.':'Select a construction tool below to begin.';
+}
+
+function updateLearningGuidance(){
+ const panel=$('#learning-guidance');panel.hidden=!settings.learningMode;
+ if(settings.learningMode)$('#learning-instructions').textContent=displayReference(nextHint());
 }
