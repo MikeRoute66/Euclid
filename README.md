@@ -1,6 +1,6 @@
 # Euclid workshop
 
-A buildless, browser-only workshop for all 48 propositions of Euclid's Elements, Book I. Open `index.html`, or serve the folder with `python -m http.server 8000` and visit http://localhost:8000.
+A buildless, browser-only workshop for all 62 propositions of Euclid's Elements, Books I and II. Open `index.html`, or serve the folder with `python -m http.server 8000` and visit http://localhost:8000.
 
 ## GitHub Pages
 
@@ -32,11 +32,11 @@ The hint button inspects the current construction and validated proof each time.
 
 Triangle statements use sentences: `ABC is equilateral`, `ABC is congruent to DEF`, and `ABC is superposed on DEF`. Equilateral accepts all six vertex orders. Congruence and superposition accept simultaneous reorderings that preserve corresponding vertices, and either triangle first. A `triangle` prefix and a final period are optional. Existing function-style saved statements are converted automatically.
 
-The main menu opens on startup and is available from Menu in the header. Continue resumes the last proposition; Jump to a proposition preserves existing work. Save point creates a named snapshot of progress in all 48 propositions. Load save opens a list of the current autosave and named snapshots, each showing its proposition, proof-line count, and timestamp. These saves live in this browser on this device. Start fresh resets the current workshop after confirmation but keeps named save points.
+The main menu opens on startup and is available from Menu in the header. Continue resumes the last proposition; Jump to a proposition preserves existing work. Save point creates a named snapshot of progress across all installed books. Load save opens a list of the current autosave and named snapshots, each showing its proposition, proof-line count, and timestamp. These saves live in this browser on this device. Start fresh resets the current workshop after confirmation but keeps named save points.
 
 Import file and Export file are separate options on the save-points screen for transferring versioned JSON files between browsers or devices. Loading either a save point or a file validates and regrades its contents before replacing current progress. Browser storage also remembers the last active proposition.
 
-The header proposition selector and the searchable main-menu list cover E.1-E.48. Earlier propositions are available as tools when studying a later proposition; current and later propositions cannot justify their own conclusions. Right-click a justified line to inspect its deduction or reference.
+The book and proposition selectors and the searchable main-menu list cover E1.1-E1.48 and E2.1-E2.14. Earlier propositions are available as tools when studying a later proposition; current and later propositions cannot justify their own conclusions. Right-click a justified line to inspect its deduction or reference.
 
 
 Construction provenance is saved with each proposition. Tools record line incidence, point order and orientation, and circle membership when those relationships are constructed. The proof checker does not read drawing coordinates. Every theorem tool has a checked operation contract; its recorded properties can be unpacked with definitions (for example D20 for sides of an E.1 triangle, and D22 for square properties). Circle equality requires endpoints recorded on the same circle, not points that happen to look equidistant. Use D1 to mark an intersection or explicitly mark an existing point on a circle; P3 records its defining endpoint. Merely joining an unrelated point does not establish circle membership.
@@ -52,7 +52,7 @@ The point tool uses the same intersection solver in every lesson, including the 
 Justifications are checked by rule: P4 compares established right angles, E.15 requires vertical-angle evidence, and CN2/CN3 require addition/subtraction of established equal magnitudes. More involved area arguments use Deduction with the accompanying explanation. D20 can unpack a recorded E.1 construction directly; an explicit equilateral proof line is optional when the tool already established that property.
 
 
-Hints describe the next geometric action and the reasoning for a proof statement without reference indices, menu names, or instructions naming the correct tool. Learners choose the tool or justification themselves. Point names, mathematical quantities, and proof-line numbers remain so the action is unambiguous. This applies to construction, proof, editing, and correction hints throughout all 48 lessons.
+Hints describe the next geometric action and the reasoning for a proof statement without reference indices, menu names, or instructions naming the correct tool. Learners choose the tool or justification themselves. Point names, mathematical quantities, and proof-line numbers remain so the action is unambiguous. This applies to construction, proof, editing, and correction hints throughout both books.
 
 
 Proof entries automatically capitalize labels belonging to the current construction while preserving ordinary words and the text cursor. For example, `ab = ac` becomes `AB = AC`, and `abcd is a square` becomes `ABCD is a square`. The same normalization applies to edited lines and loaded saves.
@@ -66,4 +66,18 @@ The arcade menu offers Continue, New game, Load game, Save game, Stage select, a
 - Skip proof together with Skip justifications gives construction-only practice. Skipping all three gives a finished-diagram review mode.
 - Show hints and Larger point labels control guidance and diagram readability.
 
-Practice clears are labeled separately from full proofs. Switching off supplied construction or proof restores the manual work; switching back resumes practice progress. Exported save files retain both sets of work. Construction-only completion checks actual recorded artifacts rather than point coordinates or names alone. All 48 supplied constructions and proofs, all eight practice-toggle combinations, and automatic statement checking are covered by browser regression checks.
+Practice clears are labeled separately from full proofs. Switching off supplied construction or proof restores the manual work; switching back resumes practice progress. Exported save files retain both sets of work. Construction-only completion checks actual recorded artifacts rather than point coordinates or names alone. The supplied constructions and proofs, all eight practice-toggle combinations, and automatic statement checking are covered by browser regression checks. The expansion suite also checks both Learning settings for each combination.
+
+## Books II and III expansion
+
+Book I has 48 stages and Book II has 14. Choose a book in the header or use Stage select. References use E1.1 and E2.1 notation; the reference menus group definitions and earlier propositions by book. Book II adds the contained rectangle and gnomon definitions, length products, selected semicircles, and reusable constructions for E2.11 and E2.14. Its teaching routes follow Euclid's geometric area and right-triangle arguments. See [the Book II source audit](docs/book2-source-audit.md) for scope and explicit elaborations.
+
+Products accept `AB*CD` or `rectangle contained by AB and CD`. A squared length uses `AB^2`; a polygon area uses `area ABCD`. These terms share area dimension and can be combined in equalities. Geometry and construction records establish their meaning; displayed measurements cannot prove them.
+
+Version 2 saves use stable book-qualified identities and still import version 1 files. New exports require this version of the workshop; older published clients cannot read the new format. Existing Book I progress and manual/practice backups are retained. The semicircle's selected side, diameter evidence, and intersection membership survive save round trips.
+
+Run `python tests/run-browser-checks.py --suite books --width 900 --height 600` for Book II migration, logical-rule, construction, and all 16 practice configurations. `--mask 0` through `--mask 7` select skip-toggle combinations; `--learning 0` or `--learning 1` selects Learning mode. `--report .browser-check-release/results.json` records case results and a source fingerprint. Run the default suite for Book I regressions and `--suite angles` for angle/color/highlight checks across both books.
+
+Book III remains planned and is not listed as a playable book. See [the expansion plan](docs/expansion.md).
+
+Book II release validation: all 224 practice-mode cases passed, with Book I regressions, 7,328 angle/color/highlight checks, and compact viewport checks. See [the validation record](docs/book2-validation.json).

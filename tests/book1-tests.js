@@ -5,7 +5,7 @@ addEventListener('load',()=>{
  function lineIntersection(a,b){let p=state.points[a[0]],q=state.points[a[1]],r=state.points[b[0]],s=state.points[b[1]],u=[q[0]-p[0],q[1]-p[1]],v=[s[0]-r[0],s[1]-r[1]],cross=(x,y)=>x[0]*y[1]-x[1]*y[0],t=cross([r[0]-p[0],r[1]-p[1]],v)/cross(u,v);return [p[0]+t*u[0],p[1]+t*u[1]]}
  try{
   $('#continue-menu').click();saved={};
-  check(LESSONS.length===48,'All 48 Book I propositions present');check(REFERENCES.propositions.length===48,'All proposition references present');
+  check(LESSONS.filter(l=>EuclidBooks.identity(l).book===1).length===48,'All 48 Book I propositions present');check(REFERENCES.propositions.filter(r=>/^I[1-9]\d*$/.test(r[1])).length===48,'All proposition references present');
   for(let i=5;i<48;i++){
    try{
     load(i);state=fresh();render();let lesson=LESSONS[i];
@@ -134,9 +134,9 @@ addEventListener('load',()=>{
   load(12);state={...fresh(),...suppliedConstruction(12)};let definitionContext=BookOneLogic.context(state,{id:49,givens:[]});check(!definitionContext.check(BookOneLogic.parse('angle ACD + angle DCB = 2 right angles'),'D10').ok,'Right-angle definition does not silently prove the straight-angle sum theorem');
   load(43);state={...fresh(),...suppliedConstruction(43)};check(EuclidLogic.diagram(state).between('A','B','I')&&LESSONS[43].proofGuide.some(l=>l.j==='I43')&&LESSONS[43].proofGuide.some(l=>l.j==='I15'),'E.44 places the auxiliary parallelogram beyond B and explicitly uses complements and vertical angles');
   let migrationSettings={...settings},manual44=constructionGeometry(fresh());state.manualConstruction=structuredClone(manual44);state.rays=[];settings.skipConstruction=true;render();check(constructionProgress(state,LESSONS[43]).complete&&JSON.stringify(state.manualConstruction)===JSON.stringify(manual44),'Obsolete supplied construction is rebuilt without replacing the manual drawing');settings.skipConstruction=false;render();check(JSON.stringify(constructionGeometry(state))===JSON.stringify(manual44),'Turning off supplied geometry restores the retained manual drawing');Object.assign(settings,migrationSettings);
-  check(referenceName('I1').startsWith('E.1'),'Proof justifications use E labels');
-  check(displayReference('I1, I.48 and point I')==='E.1, E.48 and point I','Display labels preserve geometry names');
-  check([...$('#chapters select').options].every(o=>o.textContent.startsWith('E.')),'Every navigation label uses E');
+  check(referenceName('I1').startsWith('E1.1'),'Proof justifications use E labels');
+  check(displayReference('I1, I.48 and point I')==='E1.1, E1.48 and point I','Display labels preserve geometry names');
+  check([...$('#proposition-select').options].every(o=>o.textContent.startsWith('E1.')),'Every navigation label uses E');
   load(5);state=fresh();state.lines=[{s:LESSONS[5].proofGuide[0].s,j:'Given'},{s:'AB = AC',j:null}];render();check(bookOneHint().includes('line 2')&&bookOneHint().includes('Choose a justification')&&bookOneHint().includes('Assume the sides differ'),'Pending deduction receives its argument and precise action');
   load(1);state=fresh();tool=REFERENCES.propositions[0];choosePoint('A');choosePoint('B');check(nextHint().includes('extend DB beyond B'),'E.2 hint recognizes the E.1 construction record');state.lines=[{s:'AD = DB',j:'D20'},{s:'BDA is equilateral',j:'D20'}];render();check(state.lines.every(l=>l.valid),'E.1 tool immediately supports D20 side equality and reordered triangle');
   let snapshotDocument=saveDocument();restoreSave(snapshotDocument);check(state.lines.every(l=>l.valid),'E.1 construction memory survives save and load');
@@ -230,8 +230,8 @@ addEventListener('load',()=>{
   load(47);check(state.lines.length===2,'Reloading does not duplicate hypotheses');
   settings.skipProof=true;render();settings.skipProof=false;render();check(state.lines[0].j==='Given'&&state.lines[1].s==='AB = AB','Switching proof practice preserves supplied hypotheses and manual work');
   Object.assign(settings,DEFAULT_SETTINGS);render();
-  load(47);let doc=saveDocument();restoreSave(doc);check(index===47,'Save/load accepts proposition 48');check($('#chapters select').options.length===48,'Header navigation handles 48 propositions');check(document.body.scrollWidth===document.body.clientWidth&&document.body.scrollHeight===document.body.clientHeight,'Expanded workshop fits the viewport');
-  openMainMenu();$('#jump-search').value='pythagorean';$('#jump-search').dispatchEvent(new Event('input'));check([...$('#jump-options').children].filter(b=>!b.hidden).some(b=>b.textContent.startsWith('E.47')),'Main-menu search locates I.47');$('#continue-menu').click();
+  load(47);let doc=saveDocument();restoreSave(doc);check(index===47,'Save/load accepts proposition 48');check($('#proposition-select').options.length===48,'Header navigation handles 48 propositions');check(document.body.scrollWidth===document.body.clientWidth&&document.body.scrollHeight===document.body.clientHeight,'Expanded workshop fits the viewport');
+  openMainMenu();$('#jump-search').value='pythagorean';$('#jump-search').dispatchEvent(new Event('input'));check([...$('#jump-options').children].filter(b=>!b.hidden).some(b=>b.textContent.startsWith('E1.47')),'Main-menu search locates I.47');$('#continue-menu').click();
  }catch(error){check(false,error.stack)}
  results.push(failures?'FAILED '+failures+' checks':'ALL CHECKS PASSED');let pre=document.createElement('pre');pre.id='qa-result';pre.textContent=results.join('\n');document.body.replaceChildren(pre);document.body.style.cssText='display:block;height:auto;overflow:auto;white-space:pre-wrap';
 });

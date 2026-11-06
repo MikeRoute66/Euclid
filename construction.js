@@ -3,9 +3,10 @@
 const EuclidConstruction=(()=>{
  const layouts={9:['ADB'],11:['ADCB'],13:['ACB'],15:['AEB','CED'],16:['BCD'],17:['BCD'],27:['AGB','CHD','EGHF'],28:['AGB','CHD','EGHF'],29:['AGB','CHD','EGHF'],32:['BCD'],35:['DCFE'],36:['ABEF','DCHG'],38:['BCEF'],40:['BCEF'],41:['DEC'],43:['AEC','FEH','GEK','AGB','BHC','CKD','DFA']};
  const sort=s=>[...s].sort().join('');
+ const initialLines=lesson=>[...(layouts[lesson.id]||[]),...(lesson.incidence||[])];
  function permutation(s){let n=0;for(let i=0;i<s.length;i++)for(let j=i+1;j<s.length;j++)if(s[i]>s[j])n++;return n%2?-1:1}
  function restoreGivens(state,lesson){
-  for(let line of layouts[lesson.id]||[])if([...line].every(n=>state.points[n])&&!state.topology.lines.includes(line))state.topology.lines.push(line);
+  for(let line of initialLines(lesson))if([...line].every(n=>state.points[n])&&!state.topology.lines.includes(line))state.topology.lines.push(line);
   // Older point tools recorded every displayed coincidence. For guided
   // intersections, retain the selected supports, not unrelated passing lines.
   state.topology.intersections??=[];
@@ -15,11 +16,11 @@ const EuclidConstruction=(()=>{
    if(entry){let lines=entry.supports.filter(s=>!s.startsWith('circle:'));state.topology.lines=state.topology.lines.filter(g=>g.at(-1)!==n||(layouts[lesson.id]||[]).includes(g)||lines.some(line=>[...line].every(v=>g.includes(v))))}
   }
  }
- function initialize(state,lesson){state.topology={version:1,lines:(layouts[lesson.id]||[]).filter(g=>[...g].every(n=>state.points[n])),turns:{},directions:{},circles:[],intersections:[]};for(let n of Object.keys(state.points))point(state,n);
+ function initialize(state,lesson){state.topology={version:1,lines:initialLines(lesson).filter(g=>[...g].every(n=>state.points[n])),turns:{},directions:{},circles:[],intersections:[]};for(let n of Object.keys(state.points))point(state,n);
   for(let raw of state.facts||[])if(/^extend:[A-Z]:[A-Z]:[A-Z]$/.test(raw)){let [,a,b,n]=raw.split(':');if([a,b,n].every(v=>state.points[v])&&state.rays.includes(a+b))support(state,a+b,n)}
   // Replay only relationships implied by recorded operations in older saves.
   for(let raw of state.facts||[])if(raw.startsWith('book:')){try{let r=JSON.parse(raw.slice(5));if(!certificate(r,state.points))continue;let [a,b,c]=r.inputs,[n,m]=r.outputs;
-   if(['cut','midpoint'].includes(r.operation))support(state,a+b,n);
+   if(['cut','midpoint','goldenDivide'].includes(r.operation))support(state,a+b,n);
    if(r.operation==='bisectAngle')support(state,a+c,n);
    if(r.operation==='sss')support(state,r.inputs[6]+r.inputs[7],n);
    if(r.operation==='perpendicular'){if(r.rule===12)support(state,a+b,n);else support(state,a+b,c)}
@@ -50,20 +51,22 @@ const EuclidConstruction=(()=>{
   if(!state.topology)return;point(state,n);
   // Clicking an existing point can mark circle membership. It does not prove
   // that the point also lies on every line at the same screen coordinates.
-  supports??=state.circles.filter(c=>nearCircle(state,c,n)).map(c=>'circle:'+c.a+c.b);
+  supports??=[...state.circles.filter(c=>nearCircle(state,c,n)&&(typeof EuclidCurves==='undefined'||!EuclidCurves.masked(state,c))).map(c=>'circle:'+c.a+c.b),...(state.arcs||[]).filter(a=>{let c=EuclidCurves.circle(state,a.circleId);return nearCircle(state,c,n)&&EuclidCurves.containsPosition(state,a,state.points[n])}).map(a=>'arc:'+a.id)];
   state.topology.intersections??=[];
   if(supports.length&&!state.topology.intersections.some(r=>r.point===n&&[...r.supports].sort().join(',')===[...supports].sort().join(',')))state.topology.intersections.push({point:n,supports:[...supports]});
-  for(let selected of supports)if(selected.startsWith('circle:')){let [a,b]=selected.slice(7);onCircle(state,{a,b},n)}else support(state,selected,n);
+  for(let selected of supports)if(selected.startsWith('arc:')){if(typeof EuclidCurves!=='undefined')EuclidCurves.mark(state,selected.slice(4),n)}else if(selected.startsWith('circle:')){let [a,b]=selected.slice(7);onCircle(state,{a,b},n)}else support(state,selected,n);
  }
 
- function radius(state,c,n){return n===c.b||!!state.topology?.circles.includes(c.a+':'+c.b+':'+n)}
+ function radius(state,c,n){return n===c.b||!!state.topology?.circles.includes(c.a+':'+c.b+':'+n)||(typeof EuclidCurves!=='undefined'&&EuclidCurves.radius(state,c,n))}
  function turn(state,a,b,c){return (state.topology?.turns[sort(a+b+c)]||0)*permutation(a+b+c)}
  function direction(state,a,b){return (state.topology?.directions[sort(a+b)]||0)*(a<b?1:-1)}
  function certificate(r,points){
-  const rules={equilateral:[1,2,1],copy:[2,3,1],cut:[3,4,1],bisectAngle:[9,3,1],midpoint:[10,2,1],perpendicular:[r.rule===12?12:11,3,1],sss:[22,8,2],copyAngle:[23,5,1],parallel:[31,3,1],equalArea:[42,8,3],applyArea:[44,8,2],figureArea:[45,9,3],square:[46,2,2]},contract=rules[r.operation];
-  if(!contract||r.rule!==contract[0]||r.inputs?.length!==contract[1]||r.outputs?.length!==contract[2]||![...r.inputs,...r.outputs].every(n=>/^[A-Z]$/.test(n)&&points[n])||!Array.isArray(r.claims))return false;
+  const rules={equilateral:[1,2,1],copy:[2,3,1],cut:[3,4,1],bisectAngle:[9,3,1],midpoint:[10,2,1],perpendicular:[r.rule===12?12:11,3,1],sss:[22,8,2],copyAngle:[23,5,1],parallel:[31,3,1],equalArea:[42,8,3],applyArea:[44,8,2],figureArea:[45,9,3],square:[46,2,2],goldenDivide:['E2.11',2,1],equalAreaSquare:['E2.14',r.inputs?.length,3]},contract=rules[r.operation];
+  if(!Array.isArray(r.inputs)||!Array.isArray(r.outputs)||r.operation==='equalAreaSquare'&&(r.inputs.length<4||r.inputs.length>27)||!contract||r.rule!==contract[0]||r.inputs?.length!==contract[1]||r.outputs?.length!==contract[2]||![...r.inputs,...r.outputs].every(n=>/^[A-Z]$/.test(n)&&points[n])||!Array.isArray(r.claims))return false;
   let [a,b,c,e]=r.inputs,[n,m,q]=r.outputs,expected=[];
   switch(r.operation){
+   case 'goldenDivide':expected=[a+b+'*'+b+n+' = '+a+n+'^2'];break;
+   case 'equalAreaSquare':{let shape=r.inputs.slice(0,-1).join(''),p=r.inputs.at(-1)+n+m+q;expected=[p+' is a square',p+' is a parallelogram','area '+p+' = area '+shape];break;}
    case 'equilateral':expected=[a+n+' = '+a+b,b+n+' = '+a+b,a+n+' = '+b+n,a+b+n+' is equilateral'];break;
    case 'copy':expected=[a+n+' = '+b+c];break;
    case 'cut':expected=[a+n+' = '+c+e];break;
@@ -78,6 +81,6 @@ const EuclidConstruction=(()=>{
   }
   return r.claims.length===expected.length&&r.claims.every(s=>expected.includes(s));
  }
- function valid(t,points){const names=s=>typeof s==='string'&&[...s].every(n=>points[n]);return t?.version===1&&(t.intersections===undefined||Array.isArray(t.intersections)&&t.intersections.length<=500&&t.intersections.every(r=>r&&names(r.point)&&r.point.length===1&&Array.isArray(r.supports)&&r.supports.length<=10&&r.supports.every(s=>typeof s==='string'&&/^(?:circle:)?[A-Z]{2}$/.test(s)&&names(s.replace('circle:','')))))&&Array.isArray(t.lines)&&t.lines.length<=500&&t.lines.every(s=>names(s)&&s.length>=3&&s.length<=26)&&t.turns&&Object.keys(t.turns).length<=2600&&Object.entries(t.turns).every(([s,n])=>names(s)&&s.length===3&&new Set(s).size===3&&Math.abs(n)===1)&&t.directions&&Object.keys(t.directions).length<=325&&Object.entries(t.directions).every(([s,n])=>names(s)&&s.length===2&&new Set(s).size===2&&[-1,0,1].includes(n))&&Array.isArray(t.circles)&&t.circles.length<=2600&&t.circles.every(s=>typeof s==='string'&&/^[A-Z]:[A-Z]:[A-Z]$/.test(s)&&names(s.replace(/:/g,'')))}
+ function valid(t,points){const names=s=>typeof s==='string'&&[...s].every(n=>points[n]);return t?.version===1&&(t.intersections===undefined||Array.isArray(t.intersections)&&t.intersections.length<=500&&t.intersections.every(r=>r&&names(r.point)&&r.point.length===1&&Array.isArray(r.supports)&&r.supports.length<=10&&r.supports.every(s=>typeof s==='string'&&(/^arc:a[1-9]\d*$/.test(s)||/^(?:circle:)?[A-Z]{2}$/.test(s)&&names(s.replace('circle:',''))))))&&Array.isArray(t.lines)&&t.lines.length<=500&&t.lines.every(s=>names(s)&&s.length>=3&&s.length<=26)&&t.turns&&Object.keys(t.turns).length<=2600&&Object.entries(t.turns).every(([s,n])=>names(s)&&s.length===3&&new Set(s).size===3&&Math.abs(n)===1)&&t.directions&&Object.keys(t.directions).length<=325&&Object.entries(t.directions).every(([s,n])=>names(s)&&s.length===2&&new Set(s).size===2&&[-1,0,1].includes(n))&&Array.isArray(t.circles)&&t.circles.length<=2600&&t.circles.every(s=>typeof s==='string'&&/^[A-Z]:[A-Z]:[A-Z]$/.test(s)&&names(s.replace(/:/g,'')))}
  return {restoreGivens,certificate,valid,directLines,derivedAlignments,initialize,point,support,onCircle,edge,intersection,radius,turn,direction};
 })();

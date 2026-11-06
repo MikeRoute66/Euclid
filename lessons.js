@@ -27,7 +27,7 @@ const REFERENCES={definitions:[
  ['Circle','D15','A circle is a plane figure enclosed by a curve whose points are all equally distant from one interior point. All its radii are equal.'],
  ['Center of a circle','D16','The interior point specified in Definition 15 is the center.'],
  ['Diameter','D17','A diameter passes through the center and ends on the circumference in both directions; it divides the circle in half.'],
- ['Semicircle','D18','A semicircle is bounded by a diameter and its arc. It shares the center of the full circle.'],
+ ['Semicircle','D18','A semicircle is bounded by a diameter and its arc. It shares the center of the full circle.','semicircle'],
  ['Rectilinear figures','D19','Straight lines enclose rectilinear figures: three sides make a trilateral figure, four a quadrilateral, and more than four a multilateral figure.'],
  ['Triangles classified by sides','D20','An equilateral triangle has three equal sides; an isosceles triangle has exactly two equal sides; a scalene triangle has three unequal sides.'],
  ['Triangles classified by angles','D21','A right-angled triangle has a right angle; an obtuse-angled triangle has an obtuse angle; an acute-angled triangle has three acute angles.'],

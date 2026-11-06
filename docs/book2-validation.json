@@ -1,0 +1,140 @@
+{
+  "date": "2026-11-05",
+  "scope": "Book II: all fourteen propositions, E2.1-E2.14",
+  "sourceFingerprint": "5685deda1974d2104d4fea177dd89eac4f64dd9920ab724ea210380555acd171",
+  "modeCases": 224,
+  "practiceRuns": [
+    {
+      "skipConstruction": false,
+      "skipProof": false,
+      "skipJustifications": false,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8962,
+      "passed": true
+    },
+    {
+      "skipConstruction": true,
+      "skipProof": false,
+      "skipJustifications": false,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8962,
+      "passed": true
+    },
+    {
+      "skipConstruction": false,
+      "skipProof": true,
+      "skipJustifications": false,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8134,
+      "passed": true
+    },
+    {
+      "skipConstruction": true,
+      "skipProof": true,
+      "skipJustifications": false,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8134,
+      "passed": true
+    },
+    {
+      "skipConstruction": false,
+      "skipProof": false,
+      "skipJustifications": true,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8962,
+      "passed": true
+    },
+    {
+      "skipConstruction": true,
+      "skipProof": false,
+      "skipJustifications": true,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8962,
+      "passed": true
+    },
+    {
+      "skipConstruction": false,
+      "skipProof": true,
+      "skipJustifications": true,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8134,
+      "passed": true
+    },
+    {
+      "skipConstruction": true,
+      "skipProof": true,
+      "skipJustifications": true,
+      "learningSettings": [
+        false,
+        true
+      ],
+      "cases": 28,
+      "assertions": 8134,
+      "passed": true
+    }
+  ],
+  "regressions": [
+    {
+      "suite": "book1",
+      "viewport": [
+        1280,
+        800
+      ],
+      "cases": 2,
+      "passed": true
+    },
+    {
+      "suite": "angles",
+      "viewport": [
+        900,
+        600
+      ],
+      "cases": 1,
+      "passed": true
+    },
+    {
+      "suite": "books",
+      "viewport": [
+        492,
+        844
+      ],
+      "cases": 1,
+      "passed": true
+    }
+  ],
+  "visualAssertions": 7328,
+  "sourceAudit": "book2-source-audit.md",
+  "notes": [
+    "Each mode case uses the real proof form and justification tools, checks current-step guidance, automatic source references, visible proofs, given hypotheses, frame fit, and save round trips.",
+    "Construction/rule checks include arbitrary labels, wrong references, missing construction records, edited proof lines, cache invalidation, selected semicircle evidence, and moved display coordinates.",
+    "The source fingerprint covers application JavaScript, HTML, CSS, JavaScript tests, the browser runner, and the source index. Raw browser reports remain local generated artifacts."
+  ]
+}

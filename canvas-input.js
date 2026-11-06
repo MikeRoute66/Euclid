@@ -57,5 +57,5 @@ function installCanvasInput(){
  window.addEventListener('pointercancel',e=>{if(drag?.id===e.pointerId)clearCanvasGesture()});
  canvas.addEventListener('lostpointercapture',e=>{if(drag?.id===e.pointerId)clearCanvasGesture()});
  window.addEventListener('blur',clearCanvasGesture);
- document.addEventListener('keydown',e=>{if(e.key==='Escape')clearCanvasGesture()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){clearCanvasGesture();if(tool?.[3]==='equalAreaSquare'&&picks.length){picks=[];render()}}});
 }

@@ -48,10 +48,13 @@ const AngleVisual=(()=>{
   const segments=new Set(),angles=new Set(),figures=new Set(),points=new Set(BookOneLogic.statementNames(ast));
   const polygon=p=>{figures.add(p);[...p].forEach(n=>points.add(n))},angle=a=>{angles.add(a);segments.add(a[0]+a[1]);segments.add(a[1]+a[2])};
   const squares=(value.lines||[]).filter(l=>l.valid).map(l=>BookOneLogic.parse(l.s)).filter(a=>a?.kind==='shape'&&a.property==='square').map(a=>a.polygon);
-  for(let raw of value.facts||[])if(raw.startsWith('book:')){try{const record=JSON.parse(raw.slice(5));if(record.operation==='square'&&EuclidConstruction.certificate(record,value.points))squares.push(record.inputs.join('')+record.outputs.join(''))}catch{}}
+  const productKey=term=>term.split('*').map(side=>[...side].sort().join('')).sort().join('*');
+  const knownProducts=[];for(let line of value.lines||[])if(line.valid){let equality=BookOneLogic.parse(line.s);if(equality?.kind==='eq'&&equality.left.length===1&&equality.right.length===1)for(let [area,product] of [[equality.left[0],equality.right[0]],[equality.right[0],equality.left[0]]])if(area.kind==='area'&&product.kind==='product'&&area.coefficient===1&&product.coefficient===1)knownProducts.push({key:productKey(product.term),polygon:area.term.slice(5,-1)})}
+  for(let raw of value.facts||[])if(raw.startsWith('book:')){try{const record=JSON.parse(raw.slice(5));if(EuclidConstruction.certificate(record,value.points))for(let claim of record.claims){let shape=BookOneLogic.parse(claim);if(shape?.kind==='shape'&&shape.property==='square')squares.push(shape.polygon)}}catch{}}
   if(ast.kind==='eq'||ast.kind==='gt'){
    for(let t of [...ast.left,...ast.right]){
     if(t.term.startsWith('\u2220')&&t.term!=='\u2220STRAIGHT')angle(t.term.slice(1));
+    else if(t.kind==='product'){t.term.split('*').forEach(side=>segments.add(side));for(let figure of knownProducts)if(figure.key===productKey(t.term))polygon(figure.polygon)}
     else if(t.kind==='area')polygon(t.term.slice(5,-1));
     else if(t.kind==='length'||t.kind==='square'){const side=t.term.slice(0,2);segments.add(side);if(t.kind==='square')for(let p of squares)if([...p].some((a,i)=>[a,p[(i+1)%p.length]].sort().join('')===[...side].sort().join('')))polygon(p)}
    }

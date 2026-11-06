@@ -208,3 +208,10 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 .angle-key>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;max-height:150px;overflow:auto;margin-top:8px;padding:2px}
 
 #canvas .proof-highlight-figure{fill:var(--ink);fill-opacity:.09;stroke:var(--ink);stroke-width:3.08;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+
+/* Book-qualified references must remain inside their compact cells. */
+#tools{grid-template-columns:repeat(auto-fit,minmax(min(58px,100%),1fr))}
+#book-select{flex:0 1 88px;min-width:0}
+@media(max-width:800px){#tools{grid-template-columns:repeat(auto-fit,minmax(min(45px,100%),1fr))}#book-select{flex-basis:65px}}
+
+#tools .tool-group{grid-column:1/-1;color:var(--muted);font-size:10px;padding:3px 1px;border-bottom:1px solid var(--line)}

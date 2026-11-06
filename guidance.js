@@ -1,6 +1,6 @@
 // Presentation labels deliberately leave saved rule identifiers unchanged.
-function displayReference(text){return String(text??'').replace(/\bI\.?([0-9]+)\b/g,'E.$1')}
-function hintFeedback(error){return String(error||'Check the premises and the construction evidence.').replace(/\b(?:CN|[DEIP])\.?\s*\d+\b/g,'the selected justification')}
+function displayReference(text){return String(text??'').replace(/\bI\.?([0-9]+)\b/g,'E1.$1').replace(/\bE\.([0-9]+)\b/g,'E1.$1').replace(/\bD([0-9]+)\b(?!\.\d)/g,'D1.$1')}
+function hintFeedback(error){return String(error||'Check the premises and the construction evidence.').replace(/\b(?:CN|[DEIP])\.?\s*\d+(?:\.\d+)?\b/g,'the selected justification')}
 function hintProofAction(statement,line){return (line>=0?'Use Edit on line '+(line+1)+' to enter: ':'Add the statement: ')+statement+'. '+(settings.skipJustifications?'Justification is automatic.':'Choose a justification. Click '+(line>=0?'that proof line':'the new proof line')+'.')}
 
 // These explanations describe the current line, not the whole lesson's ending.
@@ -132,6 +132,7 @@ function lateBookStepReason(lesson,step){
 
 // Short teaching prompts. Full derivations remain in proof inspection.
 function proofStepReason(lesson,step){
+ if(step.why)return step.why;
  const n=lesson.id,j=step.j,s=step.s,ast=BookOneLogic.parse(s);
  if(j==='Given')return 'This is given. You can use it in later lines.';
  const closedProofs={

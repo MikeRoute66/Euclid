@@ -1,0 +1,6478 @@
+{
+  "description": "Source index for implementation review. Pending entries are not verified lessons.",
+  "source": "https://mathcs.clarku.edu/~djoyce/elements/",
+  "propositions": [
+    {
+      "key": "2.1",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII1.html",
+      "title": "Proposition E2.1",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "A",
+            "BC",
+            "D",
+            "E"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A",
+            "BC",
+            "BD",
+            "DE",
+            "EC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "A",
+            "B",
+            "BC",
+            "BF",
+            "BG",
+            "C",
+            "CH",
+            "D",
+            "DK",
+            "E",
+            "EL",
+            "G",
+            "GH"
+          ],
+          "references": [
+            "E1.11",
+            "E1.3",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BH",
+            "BK",
+            "DL",
+            "EH"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "A",
+            "BC",
+            "BD",
+            "BG",
+            "BH",
+            "BK",
+            "DE",
+            "DK",
+            "DL",
+            "EC",
+            "EH",
+            "GB"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "A",
+            "BC",
+            "BD",
+            "DE",
+            "EC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.11",
+        "E1.3",
+        "E1.31",
+        "E1.34"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.2",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII2.html",
+      "title": "Proposition E2.2",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB",
+            "AC",
+            "BA",
+            "BC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AD",
+            "ADEB",
+            "AE",
+            "AF",
+            "BE",
+            "C",
+            "CE",
+            "CF"
+          ],
+          "references": [
+            "E1.46",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AB",
+            "AC",
+            "AD",
+            "AE",
+            "AF",
+            "BA",
+            "BC",
+            "BE",
+            "CE",
+            "DA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AC",
+            "BA",
+            "BC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.46",
+        "E1.31"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.3",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII3.html",
+      "title": "Proposition E2.3",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB",
+            "AC",
+            "BC",
+            "CB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "A",
+            "AF",
+            "BE",
+            "CB",
+            "CD",
+            "CDEB",
+            "ED",
+            "F"
+          ],
+          "references": [
+            "E1.46",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AD",
+            "AE",
+            "CE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AC",
+            "AD",
+            "AE",
+            "BC",
+            "BE",
+            "CB",
+            "DB",
+            "DC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AB",
+            "AC",
+            "BC",
+            "CB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.46",
+        "E1.31"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.4",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII4.html",
+      "title": "Proposition E2.4",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB",
+            "AC",
+            "CB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AD",
+            "ADEB",
+            "BD",
+            "C",
+            "CF",
+            "DE",
+            "EB",
+            "G",
+            "HK"
+          ],
+          "references": [
+            "E1.46",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AD",
+            "ADB",
+            "BD",
+            "CF",
+            "CGB"
+          ],
+          "references": [
+            "E1.29"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ABD",
+            "AD",
+            "ADB",
+            "BA",
+            "BC",
+            "CG",
+            "CGB",
+            "GBC"
+          ],
+          "references": [
+            "E1.5",
+            "E1.6"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "CB",
+            "CG",
+            "CGKB",
+            "GK",
+            "KB"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "BK",
+            "CG",
+            "GCB",
+            "KBC"
+          ],
+          "references": [
+            "E1.29"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "BCG",
+            "CGK",
+            "GKB",
+            "KBC"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "CB",
+            "CGKB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AC",
+            "CB",
+            "HF",
+            "HG",
+            "KC"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "AC",
+            "AG",
+            "CB",
+            "GC",
+            "GE"
+          ],
+          "references": [
+            "E1.43"
+          ]
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "AC",
+            "AG",
+            "CB",
+            "CK",
+            "GE",
+            "HF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "AB",
+            "ADEB",
+            "AG",
+            "CK",
+            "GE",
+            "HF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "AB",
+            "AC",
+            "CB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.46",
+        "E1.31",
+        "E1.29",
+        "E1.5",
+        "E1.6",
+        "E1.34",
+        "E1.43"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.5",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII5.html",
+      "title": "Proposition E2.5",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C",
+            "D"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AD",
+            "CB",
+            "CD",
+            "DB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "A",
+            "AB",
+            "AK",
+            "BE",
+            "BF",
+            "BM",
+            "CB",
+            "CE",
+            "CEFB",
+            "CL",
+            "D",
+            "DG",
+            "EF",
+            "H",
+            "KM"
+          ],
+          "references": [
+            "E1.46",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "CH",
+            "CM",
+            "DF",
+            "DM",
+            "HF"
+          ],
+          "references": [
+            "E1.43"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AC",
+            "AH",
+            "AL",
+            "CB",
+            "CH",
+            "CM",
+            "DF",
+            "NOP"
+          ],
+          "references": [
+            "E1.36"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AD",
+            "AH",
+            "DB",
+            "DH",
+            "NOP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AD",
+            "CD",
+            "DB",
+            "LG",
+            "NOP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "CB",
+            "CEFB",
+            "LG",
+            "NOP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AD",
+            "CB",
+            "CD",
+            "DB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.46",
+        "E1.31",
+        "E1.43",
+        "E1.36"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.6",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII6.html",
+      "title": "Proposition E2.6",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "BD",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AD",
+            "CB",
+            "CD",
+            "DB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "A",
+            "AB",
+            "AK",
+            "B",
+            "BG",
+            "CD",
+            "CEFD",
+            "CL",
+            "DE",
+            "DF",
+            "DM",
+            "EC",
+            "EF",
+            "H",
+            "KM"
+          ],
+          "references": [
+            "E1.46",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AC",
+            "AL",
+            "CB",
+            "CH",
+            "HF"
+          ],
+          "references": [
+            "E1.36",
+            "E1.43"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AM",
+            "CM",
+            "NOP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AD",
+            "AM",
+            "DB",
+            "DM",
+            "NOP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AD",
+            "BC",
+            "CB",
+            "DB",
+            "LG",
+            "NOP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "CD",
+            "CEFD",
+            "LG",
+            "NOP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AD",
+            "CB",
+            "CD",
+            "DB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.46",
+        "E1.31",
+        "E1.36",
+        "E1.43"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.7",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII7.html",
+      "title": "Proposition E2.7",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB",
+            "BC",
+            "CA",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "ADEB"
+          ],
+          "references": [
+            "E1.46",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AF",
+            "AG",
+            "CE",
+            "CF",
+            "GE"
+          ],
+          "references": [
+            "E1.43"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AF",
+            "CE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AF",
+            "CE",
+            "CF",
+            "KLM"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AB",
+            "AF",
+            "BC",
+            "BF",
+            "CF",
+            "KLM"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AB",
+            "AC",
+            "BC",
+            "BG",
+            "DG",
+            "GD",
+            "KLM"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AB",
+            "ADEB",
+            "BC",
+            "BG",
+            "CF",
+            "GD",
+            "KLM"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AB",
+            "BC",
+            "CA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.46",
+        "E1.31",
+        "E1.43"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.8",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII8.html",
+      "title": "Proposition E2.8",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB",
+            "AC",
+            "BC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AD",
+            "AEFD",
+            "BD",
+            "CB"
+          ],
+          "references": [
+            "E1.3",
+            "E1.46",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BD",
+            "CB",
+            "GK",
+            "KN"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "QR",
+            "RP"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "BC",
+            "BD",
+            "CK",
+            "GK",
+            "GR",
+            "KD",
+            "KN",
+            "RN"
+          ],
+          "references": [
+            "E1.36"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "CK",
+            "CP",
+            "DK",
+            "GR",
+            "KD",
+            "RN"
+          ],
+          "references": [
+            "E1.43"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "BD",
+            "BK",
+            "CB",
+            "CG",
+            "GK",
+            "GQ"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AG",
+            "CG",
+            "GQ",
+            "MQ",
+            "QL",
+            "QR",
+            "RF",
+            "RP"
+          ],
+          "references": [
+            "E1.36"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AG",
+            "AK",
+            "CK",
+            "GR",
+            "KD",
+            "ML",
+            "MQ",
+            "QL",
+            "RF",
+            "RN",
+            "STU"
+          ],
+          "references": [
+            "E1.43"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AB",
+            "AK",
+            "BD",
+            "BK"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "AB",
+            "AK",
+            "BD",
+            "STU"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "AB",
+            "AC",
+            "BD",
+            "OH",
+            "STU"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "AB",
+            "AC",
+            "AD",
+            "AEFD",
+            "BD",
+            "OH",
+            "STU"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "BC",
+            "BD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [
+            "AB",
+            "AC",
+            "AD",
+            "BC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 17,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.3",
+        "E1.46",
+        "E1.31",
+        "E1.34",
+        "E1.36",
+        "E1.43"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.9",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII9.html",
+      "title": "Proposition E2.9",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C",
+            "D"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AC",
+            "AD",
+            "CD",
+            "DB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AC",
+            "AF",
+            "C",
+            "CB",
+            "CE",
+            "D",
+            "DF",
+            "EA",
+            "EB",
+            "EC",
+            "F",
+            "FG"
+          ],
+          "references": [
+            "E1.11",
+            "E1.3",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AC",
+            "AEC",
+            "CE",
+            "EAC"
+          ],
+          "references": [
+            "E1.5"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AEC",
+            "C",
+            "EAC"
+          ],
+          "references": [
+            "E1.32"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "CAE",
+            "CEA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AEB",
+            "CEB",
+            "EBC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "ECB",
+            "EFG",
+            "EG",
+            "EGF",
+            "GEF",
+            "GF"
+          ],
+          "references": [
+            "E1.29",
+            "E1.32",
+            "E1.6"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "B",
+            "BFD",
+            "DB",
+            "DFB",
+            "ECB",
+            "FD",
+            "FDB"
+          ],
+          "references": [
+            "E1.29",
+            "E1.32",
+            "E1.6"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AC",
+            "CE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AC",
+            "ACE",
+            "CE",
+            "EA"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "EG",
+            "GF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "EF",
+            "EG",
+            "GF"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "CD",
+            "EF",
+            "GF"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "AC",
+            "AE",
+            "CD",
+            "EA",
+            "EF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [
+            "AC",
+            "AE",
+            "AEF",
+            "AF",
+            "CD",
+            "EF"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 17,
+          "labels": [
+            "AC",
+            "AD",
+            "AF",
+            "CD",
+            "D",
+            "DF"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 18,
+          "labels": [
+            "DB",
+            "DF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 19,
+          "labels": [
+            "AC",
+            "AD",
+            "CD",
+            "DB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 20,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.11",
+        "E1.3",
+        "E1.31",
+        "E1.5",
+        "E1.32",
+        "E1.29",
+        "E1.6",
+        "E1.47",
+        "E1.34"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.10",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII10.html",
+      "title": "Proposition E2.10",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "BD",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AC",
+            "AD",
+            "CD",
+            "DB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AC",
+            "AD",
+            "C",
+            "CB",
+            "CE",
+            "D",
+            "E",
+            "EA",
+            "EB",
+            "EF",
+            "FD"
+          ],
+          "references": [
+            "E1.11",
+            "E1.3",
+            "E1.31"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "CEF",
+            "EC",
+            "EF",
+            "EFD",
+            "FD",
+            "FEB"
+          ],
+          "references": [
+            "E1.29"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "B",
+            "D",
+            "EB",
+            "FD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AG",
+            "G"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AC",
+            "AEC",
+            "C",
+            "CE",
+            "EAC"
+          ],
+          "references": [
+            "E1.5",
+            "E1.32"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AEB",
+            "CEB",
+            "EBC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "BD",
+            "BDG",
+            "DBG",
+            "DCE",
+            "DGB",
+            "EBC",
+            "GD"
+          ],
+          "references": [
+            "E1.15",
+            "E1.29",
+            "E1.32",
+            "E1.6"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "C",
+            "EF",
+            "EGF",
+            "F",
+            "FEG",
+            "GF"
+          ],
+          "references": [
+            "E1.34",
+            "E1.32",
+            "E1.6"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AC",
+            "CA",
+            "EA",
+            "EC"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "EF",
+            "EG",
+            "FE",
+            "FG",
+            "GF"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "AC",
+            "AE",
+            "CD",
+            "EA",
+            "EF",
+            "EG"
+          ],
+          "references": [
+            "E1.34"
+          ]
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "AC",
+            "AD",
+            "AE",
+            "AG",
+            "CD",
+            "DG",
+            "EG"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "AC",
+            "AD",
+            "CD",
+            "DB",
+            "DG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.11",
+        "E1.3",
+        "E1.31",
+        "E1.29",
+        "E1.5",
+        "E1.32",
+        "E1.15",
+        "E1.6",
+        "E1.34",
+        "E1.47"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.11",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII11.html",
+      "title": "Proposition E2.11",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "ABDC",
+            "AC",
+            "BE",
+            "E"
+          ],
+          "references": [
+            "E1.46",
+            "E1.10"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AF",
+            "BE",
+            "CA",
+            "EF",
+            "F",
+            "FH",
+            "GH",
+            "K"
+          ],
+          "references": [
+            "E1.3",
+            "E1.46"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AH",
+            "BH",
+            "H",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AC",
+            "AE",
+            "CF",
+            "E",
+            "EF",
+            "FA"
+          ],
+          "references": [
+            "E2.6"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AE",
+            "CF",
+            "EB",
+            "EF",
+            "FA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "A",
+            "AE",
+            "BA",
+            "CF",
+            "EB",
+            "FA"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AB",
+            "AE",
+            "CF",
+            "FA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AB",
+            "AD",
+            "AF",
+            "CF",
+            "FA",
+            "FG",
+            "FK"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AK",
+            "FH",
+            "HD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "AB",
+            "AH",
+            "BD",
+            "BH",
+            "FH",
+            "HA",
+            "HD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "AB",
+            "BH",
+            "H",
+            "HA"
+          ],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.46",
+        "E1.10",
+        "E1.3",
+        "E2.6",
+        "E1.47"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.12",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII12.html",
+      "title": "Proposition E2.12",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "B",
+            "BAC",
+            "BD",
+            "CA"
+          ],
+          "references": [
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AC",
+            "AD",
+            "BA",
+            "BC",
+            "CA",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "A",
+            "AD",
+            "CA",
+            "CD",
+            "DC"
+          ],
+          "references": [
+            "E2.4"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AD",
+            "CA",
+            "CD",
+            "DB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AD",
+            "CA",
+            "CB",
+            "CD",
+            "D",
+            "DB"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.12",
+        "E2.4",
+        "E1.47"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.13",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII13.html",
+      "title": "Proposition E2.13",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "A",
+            "ABC",
+            "AD",
+            "B",
+            "BC"
+          ],
+          "references": [
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AC",
+            "BA",
+            "BD",
+            "CB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "BD",
+            "CB",
+            "D",
+            "DC"
+          ],
+          "references": [
+            "E2.7"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AD",
+            "BD",
+            "CB",
+            "DA",
+            "DC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AC",
+            "AD",
+            "BA",
+            "BD",
+            "CB",
+            "D",
+            "DA",
+            "DC"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.12",
+        "E2.7",
+        "E1.47"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "2.14",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookII/propII14.html",
+      "title": "Proposition E2.14",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "A"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "A",
+            "BD"
+          ],
+          "references": [
+            "E1.45"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "A",
+            "BD",
+            "BE",
+            "ED"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "BE",
+            "ED"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "BE",
+            "BF",
+            "ED",
+            "EF",
+            "F",
+            "G"
+          ],
+          "references": [
+            "E1.3",
+            "E1.10"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "BHF",
+            "DE",
+            "G",
+            "GB",
+            "GF",
+            "GH",
+            "H"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "BE",
+            "BF",
+            "E",
+            "EF",
+            "EG",
+            "G",
+            "GF"
+          ],
+          "references": [
+            "E2.5"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "BE",
+            "EF",
+            "GE",
+            "GF",
+            "GH"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "BE",
+            "EF",
+            "EG",
+            "GE",
+            "GH",
+            "HE"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "BE",
+            "EF",
+            "EH",
+            "GE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "BD",
+            "BE",
+            "ED",
+            "EF",
+            "HE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "A",
+            "BD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "A",
+            "EH"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "A",
+            "EH"
+          ],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.45",
+        "E1.3",
+        "E1.10",
+        "E2.5",
+        "E1.47"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book2-source-audit.md"
+    },
+    {
+      "key": "3.1",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII1.html",
+      "title": "Proposition E3.1",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ABC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "CE",
+            "D",
+            "DC",
+            "E",
+            "F"
+          ],
+          "references": [
+            "E1.10",
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "F",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "G",
+            "GA",
+            "GB",
+            "GD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AD",
+            "ADG",
+            "BD",
+            "DB",
+            "DG",
+            "GA",
+            "GB",
+            "GDB"
+          ],
+          "references": [
+            "E1.8"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "GDB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "ABC",
+            "FDB",
+            "G",
+            "GDB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "F"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "ABC",
+            "F"
+          ],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.10",
+        "E1.11",
+        "E1.8"
+      ],
+      "hasCorollary": true,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.2",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII2.html",
+      "title": "Proposition E3.2",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "A",
+            "ABC",
+            "B"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A",
+            "B",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABC",
+            "AEB",
+            "D",
+            "DA",
+            "DB",
+            "DFE"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "DA",
+            "DAE",
+            "DB",
+            "DBE"
+          ],
+          "references": [
+            "E1.5"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AEB",
+            "DAE",
+            "DEB"
+          ],
+          "references": [
+            "E1.16"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "DAE",
+            "DB",
+            "DBE",
+            "DE",
+            "DEB",
+            "DF"
+          ],
+          "references": [
+            "E1.19"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "A",
+            "B"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.5",
+        "E1.16",
+        "E1.19"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.3",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII3.html",
+      "title": "Proposition E3.3",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "ABC",
+            "CD",
+            "F"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABC",
+            "E",
+            "EA",
+            "EB"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AF",
+            "AFE",
+            "BFE",
+            "EA",
+            "EB",
+            "FB",
+            "FE"
+          ],
+          "references": [
+            "E1.8"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AFE",
+            "BFE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AB",
+            "CD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AB",
+            "CD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AF",
+            "FB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "EA",
+            "EAF",
+            "EB",
+            "EBF"
+          ],
+          "references": [
+            "E1.5"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AFE",
+            "BFE",
+            "EAF",
+            "EBF",
+            "EF"
+          ],
+          "references": [
+            "E1.26"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AF",
+            "FB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.8",
+        "E1.5",
+        "E1.26"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.4",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII4.html",
+      "title": "Proposition E3.4",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD",
+            "AC",
+            "BD",
+            "E"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABCD",
+            "AE",
+            "BE",
+            "EC",
+            "ED",
+            "F",
+            "FE"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AC",
+            "FE",
+            "FEA"
+          ],
+          "references": [
+            "E3.3"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "BD",
+            "FE",
+            "FEB"
+          ],
+          "references": [
+            "E3.3"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "FEA",
+            "FEB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AC",
+            "BD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E3.3"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.5",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII5.html",
+      "title": "Proposition E3.5",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "B",
+            "C",
+            "CDG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "E",
+            "EC",
+            "EFG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "CDG",
+            "E",
+            "EC",
+            "EF",
+            "EG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "EC",
+            "EF",
+            "EG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABC",
+            "CDG",
+            "E"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.6",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII6.html",
+      "title": "Proposition E3.6",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "C",
+            "CDE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "F",
+            "FC",
+            "FEB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "CDE",
+            "F",
+            "FB",
+            "FC",
+            "FE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "FB",
+            "FC",
+            "FE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABC",
+            "CDE",
+            "F"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.7",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII7.html",
+      "title": "Proposition E3.7",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD",
+            "AD",
+            "E",
+            "F",
+            "FB",
+            "FC",
+            "FG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "FA",
+            "FB",
+            "FC",
+            "FD",
+            "FG",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "BE",
+            "CE",
+            "GE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BF",
+            "EB",
+            "EF"
+          ],
+          "references": [
+            "E1.20"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AE",
+            "AF",
+            "BE",
+            "BF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "BE",
+            "BEF",
+            "BF",
+            "CE",
+            "CEF",
+            "CF",
+            "EF",
+            "FE"
+          ],
+          "references": [
+            "E1.24"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "CF",
+            "GF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "ED",
+            "EG",
+            "FE",
+            "GF"
+          ],
+          "references": [
+            "E1.20"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "EF",
+            "FD",
+            "GF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "FA",
+            "FB",
+            "FC",
+            "FD",
+            "FG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "ABCD",
+            "F",
+            "FD",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "E",
+            "EF",
+            "FEH",
+            "FH",
+            "GEF"
+          ],
+          "references": [
+            "E1.23"
+          ]
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "EF",
+            "EH",
+            "FG",
+            "FH",
+            "GE",
+            "GEF",
+            "HE",
+            "HEF"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "F",
+            "FG",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "FK"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [
+            "FG",
+            "FH",
+            "FK"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 17,
+          "labels": [
+            "F",
+            "GF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 18,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.20",
+        "E1.24",
+        "E1.23",
+        "E1.4"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.8",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII8.html",
+      "title": "Proposition E3.8",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "D",
+            "DA",
+            "DC",
+            "DE",
+            "DF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AEFC",
+            "AG",
+            "DA",
+            "DC",
+            "DE",
+            "DF",
+            "DG",
+            "DH",
+            "DK",
+            "DL",
+            "HLKG",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABC",
+            "M",
+            "MC",
+            "ME",
+            "MF",
+            "MH",
+            "MK",
+            "ML"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AD",
+            "AM",
+            "EM",
+            "MD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AD",
+            "ED",
+            "EM",
+            "MD"
+          ],
+          "references": [
+            "E1.20"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ED",
+            "EM",
+            "EMD",
+            "FD",
+            "FM",
+            "FMD",
+            "MD",
+            "ME",
+            "MF"
+          ],
+          "references": [
+            "E1.24"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "CD",
+            "DA",
+            "DC",
+            "DE",
+            "DF",
+            "FD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "GD",
+            "KD",
+            "MD",
+            "MG",
+            "MK"
+          ],
+          "references": [
+            "E1.20"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "DK",
+            "DL",
+            "KD",
+            "LD",
+            "MD",
+            "MK",
+            "ML",
+            "MLD"
+          ],
+          "references": [
+            "E1.21"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "DG",
+            "DH",
+            "DK",
+            "DL"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "D",
+            "DG",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "DB",
+            "DMB",
+            "KMD",
+            "M",
+            "MD"
+          ],
+          "references": [
+            "E1.23"
+          ]
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "BM",
+            "BMD",
+            "DB",
+            "DK",
+            "KM",
+            "KMD",
+            "MB",
+            "MD",
+            "MK"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "D",
+            "DK",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "DB",
+            "DG",
+            "DK",
+            "DN"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [
+            "ABC",
+            "D",
+            "DG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 17,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.20",
+        "E1.24",
+        "E1.21",
+        "E1.23",
+        "E1.4"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.9",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII9.html",
+      "title": "Proposition E3.9",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "D",
+            "DA",
+            "DB",
+            "DC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ABC",
+            "D",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "BC",
+            "E",
+            "ED",
+            "F",
+            "FD",
+            "G",
+            "H",
+            "K",
+            "L"
+          ],
+          "references": [
+            "E1.10"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AE",
+            "AED",
+            "BE",
+            "BED",
+            "DA",
+            "DB",
+            "EB",
+            "ED"
+          ],
+          "references": [
+            "E1.8"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AED",
+            "BED",
+            "GK"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "GK"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "ABC",
+            "HL"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "ABC",
+            "D",
+            "GK",
+            "HL"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.10",
+        "E1.8",
+        "E3.1"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.10",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII10.html",
+      "title": "Proposition E3.10",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "B",
+            "DEF",
+            "F",
+            "G",
+            "H"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A",
+            "BG",
+            "BH",
+            "E",
+            "K",
+            "KC",
+            "L",
+            "LM"
+          ],
+          "references": [
+            "E1.10",
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABC",
+            "AC",
+            "BG",
+            "BH",
+            "NO"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "AC",
+            "NO",
+            "P"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ABC",
+            "DEF",
+            "P"
+          ],
+          "references": [
+            "E3.5"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.10",
+        "E1.11",
+        "E3.1",
+        "E3.5"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.11",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII11.html",
+      "title": "Proposition E3.11",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "A",
+            "ABC",
+            "ADE",
+            "F",
+            "G"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A",
+            "F",
+            "G",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AF",
+            "AG",
+            "FGH"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AG",
+            "FA",
+            "FG",
+            "FH",
+            "GF",
+            "GH"
+          ],
+          "references": [
+            "E1.20"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AG",
+            "GD",
+            "GH"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "A",
+            "F",
+            "G"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.20"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.12",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII12.html",
+      "title": "Proposition E3.12",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "A",
+            "ABC",
+            "ADE",
+            "F",
+            "G"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A",
+            "F",
+            "G",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AF",
+            "AG",
+            "FCDG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "F",
+            "FA",
+            "FC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ADE",
+            "G",
+            "GA",
+            "GD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AG",
+            "FA",
+            "FC",
+            "FG",
+            "GD"
+          ],
+          "references": [
+            "E1.20"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "A",
+            "F",
+            "G"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.20"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.13",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII13.html",
+      "title": "Proposition E3.13",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABDC",
+            "B",
+            "D",
+            "EBFD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ABDC",
+            "EBFD",
+            "G",
+            "H"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "B",
+            "D",
+            "G",
+            "H"
+          ],
+          "references": [
+            "E3.11"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BGHD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ABCD",
+            "BG",
+            "BH",
+            "G",
+            "GD",
+            "HD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "BH",
+            "EBFD",
+            "H",
+            "HD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "A",
+            "ABDC",
+            "AC",
+            "ACK",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "A",
+            "ABCD",
+            "ABDC",
+            "ACK",
+            "C"
+          ],
+          "references": [
+            "E3.2"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E3.11",
+        "E3.2"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.14",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII14.html",
+      "title": "Proposition E3.14",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "ABDC",
+            "CD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB",
+            "CD",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "ABDC",
+            "AE",
+            "CD",
+            "E",
+            "EC",
+            "EF",
+            "EG"
+          ],
+          "references": [
+            "E3.1",
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AB",
+            "AF",
+            "EF",
+            "FB"
+          ],
+          "references": [
+            "E3.3"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AF",
+            "CD",
+            "CG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AE",
+            "AF",
+            "CG",
+            "EC",
+            "EF",
+            "EG",
+            "F",
+            "FE",
+            "G",
+            "GC",
+            "GE"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AB",
+            "CD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AB",
+            "CD",
+            "EF",
+            "EG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AB",
+            "CD",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AB",
+            "AE",
+            "AF",
+            "CD",
+            "CE",
+            "CG",
+            "EF",
+            "EG",
+            "FA",
+            "GC"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AB",
+            "AF",
+            "CD",
+            "CG",
+            "EF",
+            "EG",
+            "FA",
+            "GC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.12",
+        "E3.3",
+        "E1.47"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.15",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII15.html",
+      "title": "Proposition E3.15",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD",
+            "AD",
+            "BC",
+            "E",
+            "FG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AD",
+            "BC",
+            "FG",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "BC",
+            "E",
+            "EH",
+            "EK",
+            "FG"
+          ],
+          "references": [
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BC",
+            "EH",
+            "EK",
+            "FG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "EG",
+            "EH",
+            "EK",
+            "EL",
+            "EN",
+            "FE",
+            "L",
+            "LM",
+            "ME",
+            "N"
+          ],
+          "references": [
+            "E1.3",
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "BC",
+            "EH",
+            "EL",
+            "MN"
+          ],
+          "references": [
+            "E3.14"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AD",
+            "AE",
+            "ED",
+            "EM",
+            "EN",
+            "ME"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AD",
+            "BC",
+            "EN",
+            "ME",
+            "MN"
+          ],
+          "references": [
+            "E1.20"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "EG",
+            "EN",
+            "FE",
+            "FEG",
+            "FG",
+            "ME",
+            "MEN",
+            "MN"
+          ],
+          "references": [
+            "E1.24"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "BC",
+            "MN"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AD",
+            "BC",
+            "FG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.12",
+        "E1.3",
+        "E1.11",
+        "E3.14",
+        "E1.20",
+        "E1.24"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.16",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII16.html",
+      "title": "Proposition E3.16",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "ABC",
+            "D"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A",
+            "AB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "CA",
+            "DC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ACD",
+            "DA",
+            "DAC",
+            "DC"
+          ],
+          "references": [
+            "E1.5"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ACD",
+            "DAC"
+          ],
+          "references": [
+            "E1.17"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "A",
+            "BA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AE",
+            "CHA",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "D",
+            "DG",
+            "FA"
+          ],
+          "references": [
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AD",
+            "AGD",
+            "DAG",
+            "DG"
+          ],
+          "references": [
+            "E1.17",
+            "E1.19"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "DA",
+            "DG",
+            "DH"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "AE",
+            "BA",
+            "CHA",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "AE",
+            "BA",
+            "CHA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "AE",
+            "BA",
+            "CHA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.5",
+        "E1.17",
+        "E1.12",
+        "E1.19"
+      ],
+      "hasCorollary": true,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.17",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII17.html",
+      "title": "Proposition E3.17",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "A",
+            "BCD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "A",
+            "BCD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AE",
+            "AFG",
+            "D",
+            "DF",
+            "E",
+            "EA",
+            "EF"
+          ],
+          "references": [
+            "E3.1",
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "A",
+            "AB",
+            "BCD",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AE",
+            "AFG",
+            "BCD",
+            "BEA",
+            "DEF",
+            "DF",
+            "E",
+            "EA",
+            "EB",
+            "EBA",
+            "ED",
+            "EDF",
+            "EF",
+            "FE"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "EBA",
+            "EDF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AB",
+            "BCD",
+            "EB"
+          ],
+          "references": [
+            "E3.16"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "A",
+            "AB",
+            "BCD"
+          ],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.11",
+        "E1.4",
+        "E3.16"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.18",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII18.html",
+      "title": "Proposition E3.18",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "C",
+            "DE",
+            "F",
+            "FC"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "DE",
+            "FC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "DE",
+            "F",
+            "FG"
+          ],
+          "references": [
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "FC",
+            "FCG",
+            "FG",
+            "FGC"
+          ],
+          "references": [
+            "E1.17",
+            "E1.19"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "FB",
+            "FC",
+            "FG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "DE",
+            "FG"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "DE",
+            "FC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.12",
+        "E1.17",
+        "E1.19"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.19",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII19.html",
+      "title": "Proposition E3.19",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "C",
+            "CA",
+            "DE"
+          ],
+          "references": [
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "CF",
+            "F"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "DE",
+            "FC",
+            "FCE"
+          ],
+          "references": [
+            "E3.18"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ACE",
+            "FCE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABC",
+            "F"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.11",
+        "E3.18"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.20",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII20.html",
+      "title": "Proposition E3.20",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "BAC",
+            "BC",
+            "BEC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "BAC",
+            "BEC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AE",
+            "F"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "EA",
+            "EAB",
+            "EB",
+            "EBA"
+          ],
+          "references": [
+            "E1.5"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "BEF",
+            "EAB",
+            "EBA"
+          ],
+          "references": [
+            "E1.32"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "EAC",
+            "FEC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "BAC",
+            "BEC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "BDC",
+            "DE",
+            "G"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "BDC",
+            "BEC",
+            "EDB",
+            "EDC",
+            "GEB",
+            "GEC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.5",
+        "E1.32"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.21",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII21.html",
+      "title": "Proposition E3.21",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD",
+            "BAD",
+            "BAED",
+            "BED"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "BAD",
+            "BED",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABCD",
+            "BF",
+            "F",
+            "FD"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BAD",
+            "BCD",
+            "BFD"
+          ],
+          "references": [
+            "E3.20"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "BAD",
+            "BED",
+            "BFD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E3.20"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.22",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII22.html",
+      "title": "Proposition E3.22",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AC",
+            "BD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "BCA",
+            "CAB"
+          ],
+          "references": [
+            "E1.32"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ACB",
+            "ADB",
+            "ADC",
+            "ADCB",
+            "BAC",
+            "BADC",
+            "BDC",
+            "CAB"
+          ],
+          "references": [
+            "E3.21"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABC",
+            "ACB",
+            "ADC",
+            "BAC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "BAD",
+            "DCB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.32",
+        "E3.21"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.23",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII23.html",
+      "title": "Proposition E3.23",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "ACB",
+            "ACD",
+            "ADB",
+            "CB",
+            "DB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ACB",
+            "ADB"
+          ],
+          "references": [
+            "E1.16"
+          ]
+        },
+        {
+          "paragraph": 3,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.16"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.24",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII24.html",
+      "title": "Proposition E3.24",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "AEB",
+            "CD",
+            "CFD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AEB",
+            "CFD",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "A",
+            "AB",
+            "AEB",
+            "B",
+            "C",
+            "CD",
+            "CFD",
+            "D"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AB",
+            "AEB",
+            "CD",
+            "CFD",
+            "CGD"
+          ],
+          "references": [
+            "E3.23",
+            "E3.10"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AEB",
+            "CD",
+            "CFD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.23",
+        "E3.10"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.25",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII25.html",
+      "title": "Proposition E3.25",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ABC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AC",
+            "D",
+            "DB"
+          ],
+          "references": [
+            "E1.10",
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABD",
+            "BAD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "A",
+            "ABD",
+            "BA",
+            "BAE",
+            "DB",
+            "E",
+            "EC"
+          ],
+          "references": [
+            "E1.23"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABE",
+            "BAE",
+            "EA",
+            "EB"
+          ],
+          "references": [
+            "E1.6"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AD",
+            "ADE",
+            "AE",
+            "CD",
+            "CDE",
+            "CE",
+            "DC",
+            "DE"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AE",
+            "BE",
+            "CE",
+            "EB",
+            "EC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AE",
+            "E",
+            "EB",
+            "EC"
+          ],
+          "references": [
+            "E3.9"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "ABC",
+            "E"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "ABC",
+            "ABD",
+            "AD",
+            "BAD",
+            "BD",
+            "D",
+            "DA",
+            "DB",
+            "DC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "A",
+            "ABC",
+            "ABD",
+            "BA",
+            "BAD",
+            "DB"
+          ],
+          "references": [
+            "E1.23"
+          ]
+        },
+        {
+          "paragraph": 14,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.10",
+        "E1.11",
+        "E1.23",
+        "E1.6",
+        "E1.4",
+        "E3.9"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.26",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII26.html",
+      "title": "Proposition E3.26",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "BAC",
+            "BGC",
+            "DEF",
+            "EDF",
+            "EHF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "BKC",
+            "ELF",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "BC",
+            "EF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "DEF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "BC",
+            "BG",
+            "EF",
+            "EH",
+            "G",
+            "GC",
+            "H",
+            "HF"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "A",
+            "BAC",
+            "D",
+            "EDF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "ABC",
+            "BAC",
+            "BKC",
+            "DEF",
+            "EDF",
+            "ELF"
+          ],
+          "references": [
+            "E3.24"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.4",
+        "E3.24"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.27",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII27.html",
+      "title": "Proposition E3.27",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "BAC",
+            "BC",
+            "BGC",
+            "DEF",
+            "EDF",
+            "EF",
+            "EHF",
+            "G",
+            "H"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "BAC",
+            "BGC",
+            "EDF",
+            "EHF",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "BG",
+            "BGC",
+            "BGK",
+            "EHF",
+            "G"
+          ],
+          "references": [
+            "E1.23"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BK",
+            "EF"
+          ],
+          "references": [
+            "E1.26"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "BC",
+            "BK",
+            "EF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "BGC",
+            "EHF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "A",
+            "BGC",
+            "D",
+            "EHF"
+          ],
+          "references": [
+            "E3.20"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.23",
+        "E1.26",
+        "E3.20"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.28",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII28.html",
+      "title": "Proposition E3.28",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "ABC",
+            "ACB",
+            "AGB",
+            "DE",
+            "DEF",
+            "DFE",
+            "DHE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ACB",
+            "AGB",
+            "DFE",
+            "DHE",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AK",
+            "DL",
+            "K",
+            "KB",
+            "L",
+            "LE"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AB",
+            "AK",
+            "AKB",
+            "DE",
+            "DL",
+            "DLE",
+            "KB",
+            "LE"
+          ],
+          "references": [
+            "E1.8"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AGB",
+            "DHE"
+          ],
+          "references": [
+            "E3.26"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABC",
+            "ACB",
+            "DEF",
+            "DFE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.8",
+        "E3.26"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.29",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII29.html",
+      "title": "Proposition E3.29",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "BC",
+            "BGC",
+            "DEF",
+            "EF",
+            "EHF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "BC",
+            "EF",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "BK",
+            "EL",
+            "K",
+            "KC",
+            "L",
+            "LF"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "BGC",
+            "BKC",
+            "EHF",
+            "ELF"
+          ],
+          "references": [
+            "E3.27"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ABC",
+            "BC",
+            "BK",
+            "DEF",
+            "EF",
+            "EL",
+            "KC",
+            "LF"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E3.27",
+        "E1.4"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.30",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII30.html",
+      "title": "Proposition E3.30",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ADB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ADB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AB",
+            "AD",
+            "C",
+            "CD",
+            "DB"
+          ],
+          "references": [
+            "E1.10",
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "AC",
+            "ACD",
+            "AD",
+            "BC",
+            "BCD",
+            "CB",
+            "CD",
+            "DB"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AD",
+            "DB"
+          ],
+          "references": [
+            "E3.28"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "D"
+          ],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.10",
+        "E1.11",
+        "E1.4",
+        "E3.28"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.31",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII31.html",
+      "title": "Proposition E3.31",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD",
+            "AC",
+            "AD",
+            "BA",
+            "BC",
+            "DC",
+            "E"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ABC",
+            "ADC",
+            "BAC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AE",
+            "BA",
+            "F"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "ABE",
+            "ACB",
+            "ACE",
+            "BAC",
+            "BAE",
+            "BE",
+            "CAE",
+            "CE",
+            "EA"
+          ],
+          "references": [
+            "E1.5"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ABC",
+            "ACB",
+            "BAC",
+            "FAC"
+          ],
+          "references": [
+            "E1.32"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABC",
+            "BAC"
+          ],
+          "references": [
+            "E1.17"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "ABC",
+            "ABCD",
+            "ADC"
+          ],
+          "references": [
+            "E3.22"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "ABC",
+            "AC",
+            "ADC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "ABC",
+            "AC",
+            "BA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AC",
+            "ADC",
+            "AF",
+            "CA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.5",
+        "E1.32",
+        "E1.17",
+        "E3.22"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.32",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII32.html",
+      "title": "Proposition E3.32",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD",
+            "B",
+            "BD",
+            "EF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "BAD",
+            "BD",
+            "DCB",
+            "EBD",
+            "EF",
+            "FBD",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "AD",
+            "B",
+            "BA",
+            "BD",
+            "C",
+            "CB",
+            "DC",
+            "EF"
+          ],
+          "references": [
+            "E1.11"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABCD",
+            "B",
+            "BA",
+            "EF"
+          ],
+          "references": [
+            "E3.19"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ABCD",
+            "ADB",
+            "BA"
+          ],
+          "references": [
+            "E3.31"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABD",
+            "BAD"
+          ],
+          "references": [
+            "E1.32"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "ABD",
+            "ABF",
+            "BAD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "ABD",
+            "BAD",
+            "DBF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "ABCD"
+          ],
+          "references": [
+            "E3.22"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "BAD",
+            "BCD",
+            "DBE",
+            "DBF",
+            "DCB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.11",
+        "E3.19",
+        "E3.31",
+        "E1.32",
+        "E3.22"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.33",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII33.html",
+      "title": "Proposition E3.33",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "A",
+            "AB",
+            "BAD",
+            "C"
+          ],
+          "references": [
+            "E1.23"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AB",
+            "AE",
+            "DA",
+            "F",
+            "FG",
+            "GB"
+          ],
+          "references": [
+            "E1.10",
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AF",
+            "AFG",
+            "AG",
+            "BF",
+            "BFG",
+            "BG",
+            "FB",
+            "FG"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "B",
+            "G",
+            "GA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "ABE",
+            "EB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "A",
+            "ABE",
+            "AD",
+            "AE"
+          ],
+          "references": [
+            "E3.16"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "A",
+            "AB",
+            "ABE",
+            "AD",
+            "AEB",
+            "DAB"
+          ],
+          "references": [
+            "E3.32"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AEB",
+            "C",
+            "DAB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "AB",
+            "AEB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "AB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "AB",
+            "AEB",
+            "BAD",
+            "C",
+            "F",
+            "FA",
+            "FB"
+          ],
+          "references": [
+            "E1.23",
+            "E1.10"
+          ]
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "A",
+            "ABE",
+            "AD"
+          ],
+          "references": [
+            "E3.16"
+          ]
+        },
+        {
+          "paragraph": 16,
+          "labels": [
+            "AEB",
+            "BAD"
+          ],
+          "references": [
+            "E3.31"
+          ]
+        },
+        {
+          "paragraph": 17,
+          "labels": [
+            "AEB",
+            "BAD",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 18,
+          "labels": [
+            "AB",
+            "AEB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 19,
+          "labels": [
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 20,
+          "labels": [
+            "A",
+            "AB",
+            "AD",
+            "AE",
+            "BAD",
+            "C",
+            "F",
+            "FG",
+            "GB"
+          ],
+          "references": [
+            "E1.23",
+            "E1.11",
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 21,
+          "labels": [
+            "AF",
+            "AFG",
+            "AG",
+            "BF",
+            "BFG",
+            "BG",
+            "FB",
+            "FG"
+          ],
+          "references": [
+            "E1.4"
+          ]
+        },
+        {
+          "paragraph": 22,
+          "labels": [
+            "AEB",
+            "B",
+            "G",
+            "GA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 23,
+          "labels": [
+            "AD",
+            "AE",
+            "AEB"
+          ],
+          "references": [
+            "E3.16"
+          ]
+        },
+        {
+          "paragraph": 24,
+          "labels": [
+            "A",
+            "AB",
+            "AHB",
+            "BAD"
+          ],
+          "references": [
+            "E3.32"
+          ]
+        },
+        {
+          "paragraph": 25,
+          "labels": [
+            "BAD",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 26,
+          "labels": [
+            "AHB",
+            "C"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 27,
+          "labels": [
+            "AB",
+            "AHB",
+            "C"
+          ],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E1.23",
+        "E1.10",
+        "E1.12",
+        "E1.4",
+        "E3.16",
+        "E3.32",
+        "E3.31",
+        "E1.11"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.34",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII34.html",
+      "title": "Proposition E3.34",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "D"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ABC",
+            "D"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABC",
+            "B",
+            "D",
+            "EF",
+            "FB",
+            "FBC"
+          ],
+          "references": [
+            "E3.17",
+            "E1.23"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "B",
+            "BAC",
+            "BC",
+            "EF",
+            "FBC"
+          ],
+          "references": [
+            "E3.32"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "BAC",
+            "D",
+            "FBC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "ABC",
+            "BAC",
+            "D"
+          ],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.17",
+        "E1.23",
+        "E3.32"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.35",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII35.html",
+      "title": "Proposition E3.35",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABCD",
+            "AC",
+            "BD",
+            "E"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AE",
+            "DE",
+            "EB",
+            "EC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABCD",
+            "AC",
+            "AE",
+            "BD",
+            "DE",
+            "E",
+            "EB",
+            "EC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABCD",
+            "AC",
+            "DB",
+            "F",
+            "FB",
+            "FC",
+            "FE",
+            "FG",
+            "FH"
+          ],
+          "references": [
+            "E3.1",
+            "E1.12"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AC",
+            "AG",
+            "GC",
+            "GF"
+          ],
+          "references": [
+            "E3.3"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AC",
+            "AE",
+            "E",
+            "EC",
+            "EG",
+            "G",
+            "GC"
+          ],
+          "references": [
+            "E2.5"
+          ]
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AE",
+            "CG",
+            "EC",
+            "GE",
+            "GF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AE",
+            "CG",
+            "EC",
+            "EG",
+            "FC",
+            "FE",
+            "GF"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "AE",
+            "EC",
+            "EF",
+            "FB",
+            "FC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "DE",
+            "EB",
+            "FB",
+            "FE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AE",
+            "DE",
+            "EB",
+            "EC",
+            "FB",
+            "FE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "AE",
+            "DE",
+            "EB",
+            "EC",
+            "FE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 13,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.1",
+        "E1.12",
+        "E3.3",
+        "E2.5",
+        "E1.47"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.36",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII36.html",
+      "title": "Proposition E3.36",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "BD",
+            "D",
+            "DB",
+            "DCA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "AD",
+            "DB",
+            "DC",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "DCA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "ABC",
+            "F",
+            "FB",
+            "FBD"
+          ],
+          "references": [
+            "E3.18"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "AC",
+            "AD",
+            "CD",
+            "DC",
+            "F",
+            "FC",
+            "FD"
+          ],
+          "references": [
+            "E2.6"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AD",
+            "DC",
+            "FB",
+            "FC",
+            "FD"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "AD",
+            "BD",
+            "DC",
+            "FB",
+            "FD"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "AD",
+            "DB",
+            "DC",
+            "FB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "ABC",
+            "AC",
+            "DCA",
+            "E",
+            "EB",
+            "EC",
+            "ED",
+            "EF"
+          ],
+          "references": [
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "EBD"
+          ],
+          "references": [
+            "E3.18"
+          ]
+        },
+        {
+          "paragraph": 11,
+          "labels": [
+            "AC",
+            "AF",
+            "EF",
+            "FC"
+          ],
+          "references": [
+            "E3.3"
+          ]
+        },
+        {
+          "paragraph": 12,
+          "labels": [
+            "AC",
+            "AD",
+            "CD",
+            "DC",
+            "F",
+            "FC",
+            "FD"
+          ],
+          "references": [
+            "E2.6"
+          ]
+        },
+        {
+          "paragraph": 13,
+          "labels": [
+            "AD",
+            "CF",
+            "DC",
+            "FD",
+            "FE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 14,
+          "labels": [
+            "AD",
+            "CF",
+            "DC",
+            "DF",
+            "EC",
+            "ED",
+            "EFC",
+            "FE"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 15,
+          "labels": [
+            "AD",
+            "DC",
+            "EB",
+            "EC",
+            "ED"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 16,
+          "labels": [
+            "AD",
+            "BD",
+            "DC",
+            "EB",
+            "EBD",
+            "ED"
+          ],
+          "references": [
+            "E1.47"
+          ]
+        },
+        {
+          "paragraph": 17,
+          "labels": [
+            "AD",
+            "DB",
+            "DC",
+            "EB"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 18,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.18",
+        "E2.6",
+        "E1.47",
+        "E3.1",
+        "E3.3"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    },
+    {
+      "key": "3.37",
+      "source": "https://mathcs.clarku.edu/~djoyce/elements/bookIII/propIII37.html",
+      "title": "Proposition E3.37",
+      "sourceSteps": [
+        {
+          "paragraph": 1,
+          "labels": [
+            "ABC",
+            "ACB",
+            "AD",
+            "D",
+            "DB",
+            "DC",
+            "DCA"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 2,
+          "labels": [
+            "ABC",
+            "DB",
+            "I"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 3,
+          "labels": [
+            "ABC",
+            "DE",
+            "F",
+            "FB",
+            "FD",
+            "FE"
+          ],
+          "references": [
+            "E3.17",
+            "E3.1"
+          ]
+        },
+        {
+          "paragraph": 4,
+          "labels": [
+            "FED"
+          ],
+          "references": [
+            "E3.18"
+          ]
+        },
+        {
+          "paragraph": 5,
+          "labels": [
+            "ABC",
+            "AD",
+            "DC",
+            "DCA",
+            "DE"
+          ],
+          "references": [
+            "E3.36"
+          ]
+        },
+        {
+          "paragraph": 6,
+          "labels": [
+            "AD",
+            "DB",
+            "DC",
+            "DE"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 7,
+          "labels": [
+            "BF",
+            "DB",
+            "DBF",
+            "DE",
+            "DEF",
+            "EF",
+            "FB",
+            "FD",
+            "FE"
+          ],
+          "references": [
+            "E1.8"
+          ]
+        },
+        {
+          "paragraph": 8,
+          "labels": [
+            "DBF",
+            "DEF"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 9,
+          "labels": [
+            "DB",
+            "FB"
+          ],
+          "references": [
+            "E3.16"
+          ]
+        },
+        {
+          "paragraph": 10,
+          "labels": [
+            "AC"
+          ],
+          "references": []
+        },
+        {
+          "paragraph": 11,
+          "labels": [],
+          "references": []
+        }
+      ],
+      "dependencies": [
+        "E3.17",
+        "E3.1",
+        "E3.18",
+        "E3.36",
+        "E1.8",
+        "E3.16"
+      ],
+      "hasCorollary": false,
+      "auditStatus": "pending"
+    }
+  ]
+}
