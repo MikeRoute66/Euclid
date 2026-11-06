@@ -1,8 +1,14 @@
 const SETTINGS_KEY='euclid-workshop-settings-v1';
 const PRACTICE_MODES=['Full challenge','Review','Construction practice','Justification practice','Construction and justifications','Statement practice','Proof practice','Statements and construction'];
-const DEFAULT_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,learningMode:false,largeLabels:false};
+const DEFAULT_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,learningMode:false,largeLabels:false,showDefinitionNames:true,showPostulateNames:true,showCommonNotionNames:true,showPropositionNames:true};
 let settings={...DEFAULT_SETTINGS};try{let stored=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');for(let key of Object.keys(settings))if(typeof stored[key]==='boolean')settings[key]=stored[key]}catch{}
 let buildingPractice=false;
+function toolNamesVisible(reference){
+ const id=EuclidBooks.runtimeRule(Array.isArray(reference)?reference[1]:reference);
+ const group=Object.keys(REFERENCES).find(group=>REFERENCES[group].some(r=>r[1]===id));
+ const key={definitions:'showDefinitionNames',postulates:'showPostulateNames',notions:'showCommonNotionNames',propositions:'showPropositionNames'}[group];
+ return !key||settings[key];
+}
 function constructionGeometry(value){return structuredClone(Object.fromEntries(['points','edges','rays','circles','arcs','facts','topology'].map(key=>[key,key==='arcs'?(value[key]||[]):value[key]])))}
 const INTERSECTION_SUPPORTS={22:{K:['circle:GI','circle:HJ']},42:{K:['CJ','AI'],L:['GH','AI']},44:{M:['AL','KJ'],N:['MB','IJ'],P:['NO','AL'],Q:['NO','BK']},46:{G:['DE','BF']}};
 function sameConstructionInputs(operation,left,right){
@@ -169,6 +175,7 @@ function installSettings(){
 }
 
 function practiceInstruction(){
+ if(tool&&!toolNamesVisible(tool))return 'Selected: '+displayReference(tool[1])+'.';
  if(tool){if(settings.skipJustifications&&!tool[3])return 'Justifications are checked automatically in this mode.';return displayReference(toolText())}
  if(settings.skipConstruction)return settings.skipProof?(settings.skipJustifications?'Finished construction supplied for review.':'Choose references to justify the supplied statements.'):'Construction supplied. Work on the proof.';
  return settings.skipProof&&!settings.skipJustifications?'Build the figure, then justify the supplied statements.':'Select a construction tool below to begin.';

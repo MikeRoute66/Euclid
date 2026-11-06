@@ -83,3 +83,5 @@ Book III remains planned and is not listed as a playable book. See [the expansio
 Book II release validation: all 224 practice-mode cases passed, with Book I regressions, 7,328 angle/color/highlight checks, and compact viewport checks. See [the validation record](docs/book2-validation.json).
 
 For proof-entry and autosave-reload regressions, run `python tests/run-browser-checks.py --suite entry`. Run the same checks in Firefox with `python tests/run-firefox-entry-checks.py`; it uses Firefox's built-in Marionette protocol and an isolated profile, with no additional Python dependencies.
+
+Options includes independent Show definition names, Show postulate names, Show common notion names, and Show proposition names toggles. Turning one off hides that category?s hover/focus names, selection instructions, proof-reference names, and full-reference previews; its reference codes remain visible. These preferences persist in this browser.

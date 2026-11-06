@@ -41,7 +41,7 @@ with socket.socket() as reserve:
 capture = '<script>window.PROOF_ENTRY_ERRORS=[];addEventListener("error",e=>PROOF_ENTRY_ERRORS.push(e.error?.stack||e.message));</script>'
 source = (root/'index.html').read_text(encoding='utf-8')
 page.write_text(source.replace('<head>', '<head>'+capture).replace(
-    '</body>', '<script src="tests/proof-entry-tests.js"></script></body>'), encoding='utf-8')
+    '</body>', '<script src="tests/tool-name-tests.js"></script><script src="tests/proof-entry-tests.js"></script></body>'), encoding='utf-8')
 
 class QuietServer(http.server.ThreadingHTTPServer):
     def handle_error(self, request, client_address):

@@ -66,6 +66,8 @@ try:
                 script = '<script>window.SOURCE_DEPENDENCIES=' + json.dumps(dependencies) + '</script>' + script
                 script = '<script>window.AUDIT_LESSON=' + str(lesson or 0) + ';window.AUDIT_PHASE=' + repr(args.phase) + ';window.AUDIT_MASK=' + str(book_mask if book_mask is not None else -1) + ';window.AUDIT_LEARNING=' + str(book_learning if book_learning is not None else -1) + '</script>' + script
             source = (workspace / 'index.html').read_text(encoding='utf-8')
+            if args.suite in ['book1','entry']:
+                script = '<script src="tests/tool-name-tests.js"></script>'+script
             if args.suite == 'entry':
                 source = source.replace('<head>','<head><script>window.PROOF_ENTRY_ERRORS=[];addEventListener("error",e=>PROOF_ENTRY_ERRORS.push(e.error?.stack||e.message));</script>')
             page.write_text(source.replace('</body>', script + '</body>'), encoding='utf-8')
