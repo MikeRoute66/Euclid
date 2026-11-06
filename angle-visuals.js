@@ -45,22 +45,44 @@ const AngleVisual=(()=>{
  function clear(svg){svg.querySelectorAll('.proof-highlight').forEach(e=>{e.classList.remove('proof-highlight');e.removeAttribute('transform')});svg.querySelectorAll('.proof-highlight-overlay').forEach(e=>e.remove())}
  function highlight(svg,text,value,lesson){
   clear(svg);let ast=BookOneLogic.parse(resolve(text,lesson));if(!ast)return;
-  let segments=new Set(),angles=new Set(),polygon=p=>{for(let i=0;i<p.length;i++)segments.add(p[i]+p[(i+1)%p.length])},angle=a=>{angles.add(a);segments.add(a[0]+a[1]);segments.add(a[1]+a[2])};
-  if(ast.kind==='eq'||ast.kind==='gt')for(let t of [...ast.left,...ast.right]){if(t.term.startsWith('\u2220')&&t.term!=='\u2220STRAIGHT')angle(t.term.slice(1));else if(t.kind==='area')polygon(t.term.slice(5,-1));else if(t.kind==='length'||t.kind==='square')segments.add(t.term.slice(0,2))}
-  else if(ast.kind==='right')angle(ast.angle);
+  const segments=new Set(),angles=new Set(),figures=new Set(),points=new Set(BookOneLogic.statementNames(ast));
+  const polygon=p=>{figures.add(p);[...p].forEach(n=>points.add(n))},angle=a=>{angles.add(a);segments.add(a[0]+a[1]);segments.add(a[1]+a[2])};
+  const squares=(value.lines||[]).filter(l=>l.valid).map(l=>BookOneLogic.parse(l.s)).filter(a=>a?.kind==='shape'&&a.property==='square').map(a=>a.polygon);
+  for(let raw of value.facts||[])if(raw.startsWith('book:')){try{const record=JSON.parse(raw.slice(5));if(record.operation==='square'&&EuclidConstruction.certificate(record,value.points))squares.push(record.inputs.join('')+record.outputs.join(''))}catch{}}
+  if(ast.kind==='eq'||ast.kind==='gt'){
+   for(let t of [...ast.left,...ast.right]){
+    if(t.term.startsWith('\u2220')&&t.term!=='\u2220STRAIGHT')angle(t.term.slice(1));
+    else if(t.kind==='area')polygon(t.term.slice(5,-1));
+    else if(t.kind==='length'||t.kind==='square'){const side=t.term.slice(0,2);segments.add(side);if(t.kind==='square')for(let p of squares)if([...p].some((a,i)=>[a,p[(i+1)%p.length]].sort().join('')===[...side].sort().join('')))polygon(p)}
+   }
+  }else if(ast.kind==='right')angle(ast.angle);
   else if(ast.kind==='shape')polygon(ast.polygon);
   else if(ast.kind==='congruence'){polygon(ast.a);polygon(ast.b);for(let p of [ast.a,ast.b])for(let i=0;i<3;i++)angle(p[(i+2)%3]+p[i]+p[(i+1)%3])}
   else if(ast.kind==='collinear'){for(let a of ast.points)for(let b of ast.points)if(a!==b)segments.add(a+b)}
   else if(ast.kind==='sameSide')segments.add(ast.line);
   else if(ast.kind==='inside')polygon(ast.triangle);
-  else if(ast.a&&ast.b){segments.add(ast.a);segments.add(ast.b)}
-  const d=diagram(value),done=new Set();for(let name of segments){let id=[...name].sort().join('');if(name.length!==2||done.has(id)||!value.points[name[0]]||!value.points[name[1]]||!d.drawn(...name))continue;done.add(id);
+  else if(ast.kind==='parallel'||ast.kind==='perpendicular'||ast.kind==='intersection'){segments.add(ast.a);segments.add(ast.b)}
+  const enlarge=(node,p)=>{node.classList.add('proof-highlight');node.setAttribute('transform',`translate(${p}) scale(1.1) translate(${-p[0]} ${-p[1]})`)};
+  const d=diagram(value);
+  for(let name of figures){
+   const sides=[...name].map((a,i)=>a+name[(i+1)%name.length]);
+   if(![...name].every(n=>value.points[n])||!sides.every(e=>d.drawn(...e))){sides.forEach(e=>segments.add(e));continue}
+   const vertices=[...name].map(n=>value.points[n]),center=[0,1].map(i=>vertices.reduce((sum,p)=>sum+p[i],0)/vertices.length);
+   const overlay=el('polygon',{points:vertices.map(p=>p.join(',')).join(' '),class:'proof-highlight-figure proof-highlight-overlay','data-figure':name});
+   enlarge(overlay,center);svg.insertBefore(overlay,svg.firstChild);
+  }
+  for(let name of points){
+   if(!value.points[name])continue;
+   const point=svg.querySelector('.point[data-point="'+name+'"]');if(point)enlarge(point,value.points[name]);
+   const label=svg.querySelector('.point-label-group[data-label="'+name+'"]');if(label){const box=label.getBBox();enlarge(label,[box.x+box.width/2,box.y+box.height/2])}
+  }
+  const done=new Set();for(let name of segments){let id=[...name].sort().join('');if(name.length!==2||done.has(id)||!value.points[name[0]]||!value.points[name[1]]||!d.drawn(...name))continue;done.add(id);
    let [a,b]=[value.points[name[0]],value.points[name[1]]],e=[...svg.querySelectorAll('.edge[data-segment]')].find(e=>[...e.dataset.segment].sort().join('')===id);
    if(!e){e=el('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:'edge proof-highlight-overlay'});svg.append(e)}
-   let mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];e.classList.add('proof-highlight');e.setAttribute('transform',`translate(${mid}) scale(1.05) translate(${-mid[0]} ${-mid[1]})`);
+   enlarge(e,[(a[0]+b[0])/2,(a[1]+b[1])/2]);
   }
   for(let path of svg.querySelectorAll('.angle-sector'))if([...angles].some(a=>{let b=path.dataset.angle;return a[1]===b[1]&&(d.sameRay(a[1],a[0],b[0])&&d.sameRay(a[1],a[2],b[2])||d.sameRay(a[1],a[0],b[2])&&d.sameRay(a[1],a[2],b[0]))})){
-   let p=value.points[path.dataset.vertex];path.classList.add('proof-highlight');path.setAttribute('transform',`translate(${p}) scale(1.05) translate(${-p[0]} ${-p[1]})`);
+   enlarge(path,value.points[path.dataset.vertex]);
   }
  }
  function bind(row,text,svg,value,lesson){row.addEventListener('mouseenter',()=>highlight(svg,text,value,lesson));row.addEventListener('mouseleave',()=>clear(svg));row.addEventListener('focus',()=>highlight(svg,text,value,lesson));row.addEventListener('blur',()=>clear(svg))}

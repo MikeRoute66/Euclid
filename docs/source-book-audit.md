@@ -79,3 +79,9 @@ The source mode suite covers 40 propositions ? 16 practice/learning combinations
 Saved diagrams retain their construction records. Where a source route now uses different auxiliaries (notably E16, E20, E22, E24, E35, E37, and E38), start a fresh attempt to follow the revised construction; old records are not relabeled or silently replaced.
 
 Verified: all 40 source-mode cases and all 40 construction cases passed (9,532 and 2,259 assertions respectively). The Book I integration and foundational logic suites passed. The angle suite passed 901 checks, and E16 passed its 16 mode combinations at 820 ? 640. Browser previews of E16 and E35 were inspected for construction/proof layout.
+
+## Guidance wording and hover feedback
+
+Learning mode and the hint button now use short actions and a brief ?Why? explanation. Routine prompts avoid repeated instructions and unnecessary technical wording. Imagined points in contradiction arguments remain clearly separate from construction steps; full formal arguments remain available on right-click. The statement sequence and grading rules are unchanged.
+
+Hovering a statement highlights all its referenced points and labels, whole figures and areas, lines, and angles at 110% size. Area figures get a light fill and grow about their centers. Squared-length expressions highlight matching squares only when those squares have construction records or proved square properties. All effects clear on exit and leave saved proof/construction data unchanged. The interaction suite checks every supplied proof statement across all 48 lessons.

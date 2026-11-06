@@ -30,9 +30,9 @@ addEventListener('load',()=>{
     }
     for(let step of lesson.proofGuide){
      EuclidLogic.grade(state,lesson);let hint=bookOneHint();
-     check(hint.includes('complete')||(hint.includes('Reasoning:')&&hint.includes('click ')),'E.'+lesson.id+' actionable hint for '+step.s);
+     check(hint.includes('complete')||(hint.includes('Why:')&&/click /i.test(hint)),'E.'+lesson.id+' actionable hint for '+step.s);
      check(cleanHint(hint)&&cleanHint(proofStepReason(lesson,step)),'E.'+lesson.id+' proof hint has no reference answer');
-     check(proofStepReason(lesson,step)?.length>30,'E.'+lesson.id+' explains '+step.s);
+     check(proofStepReason(lesson,step)?.length>=15,'E.'+lesson.id+' explains '+step.s);
      state.lines.push({s:step.s,j:step.j});
     }
     state.lines=lesson.proofGuide.map(r=>({s:r.s,j:r.j}));let result=EuclidLogic.grade(state,lesson),bad=state.lines.flatMap((l,n)=>l.valid?[]:[(n+1)+'. '+l.s+' ['+l.j+'] '+l.error]);
@@ -137,7 +137,7 @@ addEventListener('load',()=>{
   check(referenceName('I1').startsWith('E.1'),'Proof justifications use E labels');
   check(displayReference('I1, I.48 and point I')==='E.1, E.48 and point I','Display labels preserve geometry names');
   check([...$('#chapters select').options].every(o=>o.textContent.startsWith('E.')),'Every navigation label uses E');
-  load(5);state=fresh();state.lines=[{s:LESSONS[5].proofGuide[0].s,j:'Given'},{s:'AB = AC',j:null}];render();check(bookOneHint().includes('line 2')&&bookOneHint().includes('Choose a justification')&&bookOneHint().includes('Suppose AB'),'Pending deduction receives its argument and precise action');
+  load(5);state=fresh();state.lines=[{s:LESSONS[5].proofGuide[0].s,j:'Given'},{s:'AB = AC',j:null}];render();check(bookOneHint().includes('line 2')&&bookOneHint().includes('Choose a justification')&&bookOneHint().includes('Assume the sides differ'),'Pending deduction receives its argument and precise action');
   load(1);state=fresh();tool=REFERENCES.propositions[0];choosePoint('A');choosePoint('B');check(nextHint().includes('extend DB beyond B'),'E.2 hint recognizes the E.1 construction record');state.lines=[{s:'AD = DB',j:'D20'},{s:'BDA is equilateral',j:'D20'}];render();check(state.lines.every(l=>l.valid),'E.1 tool immediately supports D20 side equality and reordered triangle');
   let snapshotDocument=saveDocument();restoreSave(snapshotDocument);check(state.lines.every(l=>l.valid),'E.1 construction memory survives save and load');
   load(8);state=fresh();tool=REFERENCES.propositions[0];choosePoint('A');choosePoint('B');let apex=Object.keys(state.points).at(-1);state.lines=[{s:'A'+apex+' = B'+apex,j:'D20'}];render();check(state.lines[0].valid,'Later lessons extract equilateral sides with D20');

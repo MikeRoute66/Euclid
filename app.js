@@ -99,7 +99,7 @@ function nextHint(){
   [step(state.rays.includes('AB'),'Click A and B to extend AB beyond B.'),step(state.rays.includes('AC'),'Click A and C to extend AC beyond C.'),step(fact('equalExtensions'),'Click A to mark F and G at equal distances from A on the extensions.'),step(fact('edge:FC'),'Click F and C to join them.'),step(fact('edge:GB'),'Click G and B to join them.')]
  ];
  const construction=(plans[index]||[]).find(s=>!s.done);
- if(construction)return construction.text+' Choose a tool that performs this construction.';
+ if(construction)return construction.text+'';
  if(index>=5)return bookOneHint();
  const valid=new Set(state.lines.filter(l=>l.valid).map(l=>norm(l.s)));
  const missing=LESSONS[index].hintSteps.find(r=>!valid.has(norm(r.s)));
@@ -108,9 +108,9 @@ function nextHint(){
  const existing=state.lines.findIndex(l=>norm(l.s)===norm(missing.s));
  const reasoning=proofStepReason(LESSONS[index],missing);
  const earliestBad=state.lines.findIndex(l=>!l.valid);
- if(existing>=0){const dependencies=missing.deps.filter(d=>!state.lines.slice(0,existing).some(l=>l.valid&&norm(l.s)===norm(d)));if(dependencies.length)return 'Line '+(existing+1)+' needs '+dependencies.join('; ')+' established earlier. Use Edit to place the missing premise first, then add the dependent statement again afterward.';return 'Justify line '+(existing+1)+' ('+state.lines[existing].s+').\n\nReasoning: '+reasoning+(settings.skipJustifications?'\n\nThe statement is checked automatically.':'\n\nChoose a justification that matches this reasoning, then click that proof line.');}
- if(earliestBad>=0)return hintProofAction(missing.s,earliestBad)+' This premise must come before the later reasoning.\n\nReasoning: '+reasoning;
- return hintProofAction(missing.s,-1)+'\n\nReasoning: '+reasoning;
+ if(existing>=0){const dependencies=missing.deps.filter(d=>!state.lines.slice(0,existing).some(l=>l.valid&&norm(l.s)===norm(d)));if(dependencies.length)return 'Put '+dependencies.join('; ')+' before line '+(existing+1)+'. Use Edit, then add the later step again.';return 'Justify line '+(existing+1)+' ('+state.lines[existing].s+').\n\nWhy: '+reasoning+(settings.skipJustifications?'\n\nJustification is automatic.':'\n\nChoose a justification. Click this proof line to apply it.');}
+ if(earliestBad>=0)return hintProofAction(missing.s,earliestBad)+' Put this line before the step that uses it.\n\nWhy: '+reasoning;
+ return hintProofAction(missing.s,-1)+'\n\nWhy: '+reasoning;
 }
 $('#hint').onclick=()=>modal('NEXT STEP','What to do next',nextHint().split('\n\n'));
 function showHowToPlay(){
@@ -129,7 +129,7 @@ function showHowToPlay(){
     <dt>Lengths &amp; angles</dt><dd><code>AB = CD</code><br><code>angle ABC = angle DEF</code></dd>
     <dt>Triangle properties</dt><dd><code>ABC is equilateral</code><br><code>ABC is congruent to DEF</code></dd>
     <dt>Lines &amp; figures</dt><dd><code>AB is parallel to CD</code><br><code>AB is perpendicular to CD</code><br><code>ABC are collinear</code><br><code>AB meets CD at E</code><br><code>angle ABC is right</code><br><code>ABCD is a parallelogram</code><br><code>ABCD is a square</code></dd>
-    <dt>Angle colors</dt><dd>Hover an angle or open <strong>Angle colors</strong> in the construction to find its name. Use a color in place of its angle, for example <code>red = blue</code>. Hover a proof line to enlarge its referenced geometry by 5%.</dd><dt>Areas &amp; squares</dt><dd><code>area ABC = area DEF</code><br><code>AB^2 = CD^2 + EF^2</code></dd>
+    <dt>Angle colors</dt><dd>Hover an angle or open <strong>Angle colors</strong> in the construction to find its name. Use a color in place of its angle, for example <code>red = blue</code>. Hover a proof line to enlarge its referenced geometry by 10%.</dd><dt>Areas &amp; squares</dt><dd><code>area ABC = area DEF</code><br><code>AB^2 = CD^2 + EF^2</code></dd>
    </dl>
    <p>Use <code>=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>+</code>, and <code>-</code> for comparisons and sums. Segment endpoints can be reversed. Triangle properties accept any vertex order; congruence must preserve matching vertices.</p>
    <p><strong>Did you mean?</strong> helps format your own statement without choosing an answer for you.</p>

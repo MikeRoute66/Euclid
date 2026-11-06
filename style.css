@@ -198,11 +198,13 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 
 /* Angle colors describe figures; they never alter construction records. */
 #canvas .angle-sector{fill-opacity:.16;stroke-width:1.5;vector-effect:non-scaling-stroke}
-#canvas .edge.proof-highlight{stroke-width:2.94}
-#canvas .ghost.proof-highlight{stroke-width:1.89}
-#canvas .angle-sector.proof-highlight{stroke-width:1.575;fill-opacity:.24}
+#canvas .edge.proof-highlight{stroke-width:3.08}
+#canvas .ghost.proof-highlight{stroke-width:1.98}
+#canvas .angle-sector.proof-highlight{stroke-width:1.65;fill-opacity:.24}
 #canvas .proof-highlight-overlay{pointer-events:none}
 .angle-reference{text-decoration:underline;text-decoration-color:currentColor;text-underline-offset:3px;text-decoration-thickness:1px}
 .angle-key{position:absolute;right:10px;bottom:34px;z-index:2;max-width:min(270px,90%);font-size:11px;background:#080b09ed;border:1px solid var(--line);border-radius:5px;padding:6px 9px}
 .angle-key summary{cursor:pointer;color:var(--muted)}
 .angle-key>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;max-height:150px;overflow:auto;margin-top:8px;padding:2px}
+
+#canvas .proof-highlight-figure{fill:var(--ink);fill-opacity:.09;stroke:var(--ink);stroke-width:3.08;vector-effect:non-scaling-stroke;stroke-linejoin:round}
