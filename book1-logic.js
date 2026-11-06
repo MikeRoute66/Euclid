@@ -170,6 +170,7 @@ const BookOneLogic=(()=>{
   }
   function geometricAlgebra(t){return symbolicConsequence(t,{d,facts,certificateClaims,parallel,equal,isParallelogram,allowParallelogramIdentity:lesson.id>34,onUseTheorem:n=>symbolicDependencies.add(n)})}
   function check(t,reference,directOnly=false){
+   if(!t)return {ok:false,error:'Unrecognized format. Use the keyword-based format help or the statement grammar in How to play.'};
    reference=EuclidBooks.runtimeRule(reference);
    if(/^E2\./.test(reference)&&typeof BookTwoLogic!=='undefined'){if(EuclidBooks.earlier(reference,lesson)&&certificate(t,reference))return {ok:true,explanation:'Certified construction using '+reference+'.',sourcePropositions:[reference]};return BookTwoLogic.check(t,reference,{d,equal,right,perpendicular,acute:angle=>strictLinear(parse('angle '+angle+' < right angle'))},lesson)}
    let result=checkDirect(t,reference);

@@ -108,9 +108,11 @@ function inferredProof(value,lesson){
  const teachingContext=lesson.id<=5?BookOneLogic.context(copy,lesson):context;
  const teachingKey=s=>teachingContext.key(BookOneLogic.parse(s));
  for(let line of copy.lines.slice(start)){
+  let ast=parse(line.s);
+  if(!ast){line.j=null;continue}
   const route=lesson.proofGuide||lesson.hintSteps,taught=(route.find(step=>norm(step.s)===norm(line.s))||route.find(step=>teachingKey(step.s)===teachingKey(line.s)))?.j;
-  const taughtValid=taught&&context.check(parse(line.s),taught).ok?taught:null;
-  let ast=parse(line.s),reference=ast&&[...new Set(['Given',...(taughtValid?[taughtValid]:[]),...(context.preferredReferences?.(ast)||[]),...context.sourceReferences(ast),...(line.autoJustification?[line.autoJustification]:[]),...references])].find(r=>r===taughtValid||context.check(ast,r,true).ok);
+  const taughtValid=taught&&context.check(ast,taught).ok?taught:null;
+  let reference=[...new Set(['Given',...(taughtValid?[taughtValid]:[]),...(context.preferredReferences?.(ast)||[]),...context.sourceReferences(ast),...(line.autoJustification?[line.autoJustification]:[]),...references])].find(r=>r===taughtValid||context.check(ast,r,true).ok);
   if(ast&&reference==='Logic'&&taughtValid!=='Logic'){
    let result=context.check(ast,'Logic'),argument=result.derivation;
    if(argument&&argument.name!=='Symbolic Euclidean deduction')reference=[...argument.dependencies].reverse().map(EuclidBooks.dependencyRule).find(r=>context.check(ast,r).ok)||reference;

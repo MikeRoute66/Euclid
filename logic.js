@@ -117,6 +117,7 @@ const EuclidLogic=(()=>{
   function sourceReferences(ast){return [...new Set([...['I1','I2','I3'].filter(r=>Number(r.slice(1))<lesson.id&&(certifiedEqualities(r).some(f=>sameFact(ast,f))||r==='I1'&&ast.kind==='property'&&ast.property==='equilateral'&&state.facts.some(f=>{let p=f.split(':');return p[0]==='equilateral'&&segment(ast.triangle)===segment(p[1]+(p[2]||'A')+(p[3]||'B'))})&&d.proper(ast.triangle))),...congruences().filter(f=>partsMatch(ast,f)).map(f=>origins.get(f)).filter(r=>/^I/.test(r||''))])]}
   function accept(ast,reference){origins.set(ast,reference);accepted.push(ast)}
   function check(ast,rule){
+   if(!ast)return {ok:false,error:'Unrecognized format. Use the keyword-based format help or the statement grammar in How to play.'};
    if(termsOf(ast).some(t=>![...t.replace(ANG,'')].every(n=>d.points[n]))||(ast.kind==='property'&&![...ast.triangle].every(n=>d.points[n]))||(ast.kind==='relation'&&![...ast.a,...ast.b].every(n=>d.points[n])))return {ok:false,error:'This statement names a point that is not in the construction.'};
    if(/^I[1-4]$/.test(rule)&&Number(rule.slice(1))>=lesson.id)return {ok:false,error:'This proposition has not yet been established. Use an earlier proposition.'};
    let ok=false,explanation='';

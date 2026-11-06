@@ -81,3 +81,5 @@ Run `python tests/run-browser-checks.py --suite books --width 900 --height 600` 
 Book III remains planned and is not listed as a playable book. See [the expansion plan](docs/expansion.md).
 
 Book II release validation: all 224 practice-mode cases passed, with Book I regressions, 7,328 angle/color/highlight checks, and compact viewport checks. See [the validation record](docs/book2-validation.json).
+
+For proof-entry and autosave-reload regressions, run `python tests/run-browser-checks.py --suite entry`. Run the same checks in Firefox with `python tests/run-firefox-entry-checks.py`; it uses Firefox's built-in Marionette protocol and an isolated profile, with no additional Python dependencies.

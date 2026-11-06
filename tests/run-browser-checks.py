@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--report',help='Write case results and source fingerprint to a workspace JSON file')
 parser.add_argument('--width', type=int, default=1280)
 parser.add_argument('--height', type=int, default=800)
-parser.add_argument('--suite', choices=['book1', 'late', 'angles', 'source', 'books'], default='book1')
+parser.add_argument('--suite', choices=['book1', 'late', 'angles', 'source', 'books', 'entry'], default='book1')
 parser.add_argument('--phase', choices=['modes', 'construction'], default='modes')
 parser.add_argument('--lesson', type=int, choices=range(1, 100))
 parser.add_argument('--learning',type=int,choices=[0,1],help='Run one Learning setting in the books suite')
@@ -32,7 +32,7 @@ passed = True
 case_reports = []
 finished = False
 def fingerprint():
-    files = sorted([*workspace.glob('*.js'), workspace/'index.html', workspace/'style.css', *workspace.glob('tests/*.js'), Path(__file__).resolve(), workspace/'docs/books-2-3-sources.json'])
+    files = sorted([*workspace.glob('*.js'), workspace/'index.html', workspace/'style.css', *workspace.glob('tests/*.js'), *workspace.glob('tests/*.py'), workspace/'docs/books-2-3-sources.json'])
     digest = hashlib.sha256()
     for file in files:
         digest.update(str(file.relative_to(workspace)).encode())
@@ -43,7 +43,7 @@ source_fingerprint = fingerprint()
 try:
     source = (workspace / 'index.html').read_text(encoding='utf-8')
     lessons = [args.lesson] if args.lesson else list(range(args.start, args.end+1)) if args.suite == 'source' else list(range(38, 49))
-    targets = lessons if args.suite in ['late','source'] else [None] if args.suite in ['angles','books'] else [None, 'logic']
+    targets = lessons if args.suite in ['late','source'] else [None] if args.suite in ['angles','books','entry'] else [None, 'logic']
     book_stages = {int(i): f'E{b}.{p}' for file in workspace.glob('book[23]-lessons.js') for i,b,p in re.findall(r'id:\s*(\d+),book:\s*(\d+),proposition:\s*(\d+)', file.read_text(encoding='utf-8'))}
     if args.suite == 'books':
         selected = [args.lesson] if args.lesson else sorted(book_stages)
@@ -60,12 +60,14 @@ try:
         if lesson == 'logic':
             target = workspace / 'tests/logic.html'
         else:
-            script = ('<script>window.AUDIT_LESSON=' + str(lesson) + ';window.AUDIT_PHASE=' + repr(args.phase) + '</script><script src="tests/' + 'late-book-tests.js' + '"></script>') if args.suite in ['late','source'] else '<script src="tests/' + ('books-tests.js' if args.suite == 'books' else 'angle-tests.js' if args.suite == 'angles' else 'book1-tests.js') + '"></script>'
+            script = ('<script>window.AUDIT_LESSON=' + str(lesson) + ';window.AUDIT_PHASE=' + repr(args.phase) + '</script><script src="tests/' + 'late-book-tests.js' + '"></script>') if args.suite in ['late','source'] else '<script src="tests/' + ('books-tests.js' if args.suite == 'books' else 'angle-tests.js' if args.suite == 'angles' else 'proof-entry-tests.js' if args.suite == 'entry' else 'book1-tests.js') + '"></script>'
             if args.suite == 'books':
                 dependencies = {r['key']: r['dependencies'] for r in json.loads((workspace / 'docs/books-2-3-sources.json').read_text(encoding='utf-8'))['propositions']}
                 script = '<script>window.SOURCE_DEPENDENCIES=' + json.dumps(dependencies) + '</script>' + script
                 script = '<script>window.AUDIT_LESSON=' + str(lesson or 0) + ';window.AUDIT_PHASE=' + repr(args.phase) + ';window.AUDIT_MASK=' + str(book_mask if book_mask is not None else -1) + ';window.AUDIT_LEARNING=' + str(book_learning if book_learning is not None else -1) + '</script>' + script
             source = (workspace / 'index.html').read_text(encoding='utf-8')
+            if args.suite == 'entry':
+                source = source.replace('<head>','<head><script>window.PROOF_ENTRY_ERRORS=[];addEventListener("error",e=>PROOF_ENTRY_ERRORS.push(e.error?.stack||e.message));</script>')
             page.write_text(source.replace('</body>', script + '</body>'), encoding='utf-8')
             target = page
         result = subprocess.run([
