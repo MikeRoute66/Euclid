@@ -44,6 +44,7 @@ addEventListener('load',()=>{
   check(state.lines.length===3&&state.lines.every(line=>line.valid),'corrected proof survives save restoration and navigation away and back');
   check((window.PROOF_ENTRY_ERRORS||[]).length===0,'the entire input, reload, edit, and navigation flow has no uncaught errors');
   runToolNameChecks(check);
+  runMobileLayoutChecks(check);
  }catch(e){check(false,e.stack)}
  finish();
 });

@@ -85,3 +85,5 @@ Book II release validation: all 224 practice-mode cases passed, with Book I regr
 For proof-entry and autosave-reload regressions, run `python tests/run-browser-checks.py --suite entry`. Run the same checks in Firefox with `python tests/run-firefox-entry-checks.py`; it uses Firefox's built-in Marionette protocol and an isolated profile, with no additional Python dependencies.
 
 Options includes independent Show definition names, Show postulate names, Show common notion names, and Show proposition names toggles. Turning one off hides that category?s hover/focus names, selection instructions, proof-reference names, and full-reference previews; its reference codes remain visible. These preferences persist in this browser.
+
+On mobile, Construction and Proof occupy separate full-width panels. Swipe left to see the proof and right to return to construction, or use the panel buttons. Drags beginning at named construction points keep operating the selected tool. Proof drafts remain intact when switching panels. Each tool category opens a compact vertical list that scrolls above its own button. Desktop keeps both panels side by side.

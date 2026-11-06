@@ -215,3 +215,29 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 @media(max-width:800px){#tools{grid-template-columns:repeat(auto-fit,minmax(min(45px,100%),1fr))}#book-select{flex-basis:65px}}
 
 #tools .tool-group{grid-column:1/-1;color:var(--muted);font-size:10px;padding:3px 1px;border-bottom:1px solid var(--line)}
+
+/* Phones show one full-width work panel and compact lists above each tool tab. */
+.mobile-views,.mobile-play-tip{display:none}
+@media(max-width:800px),(pointer:coarse) and (max-height:600px){
+ .workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:34px minmax(0,1fr);touch-action:pan-y}
+ .mobile-views{display:flex;grid-column:1;grid-row:1;border-bottom:1px solid var(--line)}
+ .mobile-play-tip{display:block}
+ .mobile-views button{flex:1;min-width:0;border:0;border-radius:0;padding:7px 8px;font-size:11px}
+ .mobile-views button[aria-pressed="true"]{background:#18241c;color:var(--green);box-shadow:inset 0 -2px var(--green)}
+ .workspace>.drawing,.workspace>.proof{grid-column:1;grid-row:2;border:0}
+ .workspace[data-mobile-view="construction"]>.proof,.workspace[data-mobile-view="proof"]>.drawing{display:none}
+ .proofline strong{font-size:18px}.given p{font-size:16px}
+ #toolpopup{max-height:min(30dvh,228px);grid-template-rows:auto minmax(0,1fr)}
+ #tools{grid-template-columns:minmax(0,1fr);gap:3px;padding:4px;overflow-y:auto;touch-action:pan-y}
+ #tools .tool{min-height:40px;padding:8px 3px;text-align:center}
+ #tools .tool-group{font-size:9px;text-align:center;padding:3px 0}
+ #toolpopup .reference-source{display:none}
+ #toolpopup .popuphead{justify-content:flex-end;padding:1px 3px}
+ #toolpopup .popuphead button{width:32px;height:32px}
+ #popup-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+}
+@media(max-width:420px){
+ .brand span{display:none}
+ #chapters{flex:1;max-width:none;margin:0 6px}
+ #book-select{flex:0 0 60px;padding:4px 2px}
+}

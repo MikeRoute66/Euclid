@@ -3,6 +3,7 @@
 Uses Firefox's built-in automation protocol and Python's standard library.
 An isolated profile keeps normal browser settings and saves untouched.
 """
+import argparse
 import http.server
 import json
 import os
@@ -16,6 +17,10 @@ import time
 import uuid
 
 root = Path(__file__).resolve().parents[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('--width',type=int,default=900)
+parser.add_argument('--height',type=int,default=600)
+options = parser.parse_args()
 candidates = [Path(os.environ.get(name, 'C:/Program Files'))/'Mozilla Firefox/firefox.exe'
               for name in ['ProgramFiles', 'ProgramFiles(x86)']]
 firefox = next((p for p in candidates if p.is_file()), None)
@@ -41,7 +46,7 @@ with socket.socket() as reserve:
 capture = '<script>window.PROOF_ENTRY_ERRORS=[];addEventListener("error",e=>PROOF_ENTRY_ERRORS.push(e.error?.stack||e.message));</script>'
 source = (root/'index.html').read_text(encoding='utf-8')
 page.write_text(source.replace('<head>', '<head>'+capture).replace(
-    '</body>', '<script src="tests/tool-name-tests.js"></script><script src="tests/proof-entry-tests.js"></script></body>'), encoding='utf-8')
+    '</body>', '<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/proof-entry-tests.js"></script></body>'), encoding='utf-8')
 
 class QuietServer(http.server.ThreadingHTTPServer):
     def handle_error(self, request, client_address):
@@ -104,7 +109,7 @@ try:
     connection.settimeout(60)
     receive()  # Protocol greeting.
     session = command('WebDriver:NewSession', {'capabilities': {}})
-    command('WebDriver:SetWindowRect', {'width': 900, 'height': 600})
+    command('WebDriver:SetWindowRect', {'width': options.width, 'height': options.height})
     command('WebDriver:Navigate', {'url': 'http://127.0.0.1:'+str(server.server_port)+'/'+page.name})
     report = ''
     for attempt in range(100):

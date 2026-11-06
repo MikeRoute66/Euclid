@@ -233,6 +233,7 @@ addEventListener('load',()=>{
   load(47);let doc=saveDocument();restoreSave(doc);check(index===47,'Save/load accepts proposition 48');check($('#proposition-select').options.length===48,'Header navigation handles 48 propositions');check(document.body.scrollWidth===document.body.clientWidth&&document.body.scrollHeight===document.body.clientHeight,'Expanded workshop fits the viewport');
   openMainMenu();$('#jump-search').value='pythagorean';$('#jump-search').dispatchEvent(new Event('input'));check([...$('#jump-options').children].filter(b=>!b.hidden).some(b=>b.textContent.startsWith('E1.47')),'Main-menu search locates I.47');$('#continue-menu').click();
   runToolNameChecks(check);
+  runMobileLayoutChecks(check);
  }catch(error){check(false,error.stack)}
  results.push(failures?'FAILED '+failures+' checks':'ALL CHECKS PASSED');let pre=document.createElement('pre');pre.id='qa-result';pre.textContent=results.join('\n');document.body.replaceChildren(pre);document.body.style.cssText='display:block;height:auto;overflow:auto;white-space:pre-wrap';
 });
