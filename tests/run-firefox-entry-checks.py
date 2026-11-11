@@ -137,7 +137,7 @@ try:
         assert not evaluate('document.body.classList.contains("mobile-proof-typing")')
         report = report.replace('ALL CHECKS PASSED', 'PASS native Firefox resize automatically opens and closes compact proof layout\nALL CHECKS PASSED')
     if 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
-        evaluate('document.querySelector("#qa-result")?.remove();openMainMenu();showSettings();let audioToggle=document.querySelector("[data-setting=soundEffects]");audioToggle.checked=true;audioToggle.dispatchEvent(new Event("change",{bubbles:true}));window.scheduledSounds=0;window.scheduledSoundTypes=[];const createOscillator=AudioContext.prototype.createOscillator;AudioContext.prototype.createOscillator=function(){const node=createOscillator.call(this),start=node.start.bind(node);node.start=(...args)=>{window.scheduledSounds++;window.scheduledSoundTypes.push(node.type);return start(...args)};return node};')
+        evaluate('document.querySelector("#qa-result")?.remove();openMainMenu();showSettings();let audioToggle=document.querySelector("[data-setting=soundEffects]");audioToggle.checked=true;audioToggle.dispatchEvent(new Event("change",{bubbles:true}));window.scheduledSounds=0;window.scheduledSoundTypes=[];for(let [method,type] of [["createOscillator",null],["createBufferSource","buffer"]]){const create=AudioContext.prototype[method];AudioContext.prototype[method]=function(){const node=create.call(this),start=node.start.bind(node);node.start=(...args)=>{window.scheduledSounds++;window.scheduledSoundTypes.push(type||node.type);return start(...args)};return node};}')
         element = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#test-sound'})['value']
         command('WebDriver:ElementClick', {'id': element['element-6066-11e4-a52e-4f735466cecf']})
         for attempt in range(30):
@@ -147,6 +147,10 @@ try:
             time.sleep(.1)
         assert audio['status'] == 'Audio ready.' and audio['scheduled'] == 1, audio
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox Test sound click starts audio and schedules an audible tone\nALL CHECKS PASSED')
+        preview = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#test-click'})['value']
+        command('WebDriver:ElementClick', {'id': preview['element-6066-11e4-a52e-4f735466cecf']})
+        assert evaluate('window.scheduledSounds') == 2 and evaluate('window.scheduledSoundTypes.at(-1)') == 'buffer'
+        report = report.replace('ALL CHECKS PASSED', 'PASS Test click previews the noise click separately from the beep\nALL CHECKS PASSED')
         evaluate('document.querySelector("#resume-menu").click();Object.assign(settings,DEFAULT_SETTINGS);saved={};load(0);window.scheduledSounds=0;window.scheduledSoundTypes=[];')
         for number, reference in enumerate([*['D'+str(i) for i in range(2,24)], 'D2.1', 'D2.2'], 1):
             if evaluate('tab') != 'definitions':
@@ -155,12 +159,12 @@ try:
             button = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#tools [data-reference="'+reference+'"]'})['value']
             command('WebDriver:ElementClick', {'id': button['element-6066-11e4-a52e-4f735466cecf']})
             assert evaluate('window.scheduledSounds') == number, reference+' did not schedule exactly one sound'
-            assert evaluate('window.scheduledSoundTypes.at(-1)') == 'sine', reference+' did not use the rejection click'
+            assert evaluate('window.scheduledSoundTypes.at(-1)') == 'buffer', reference+' did not use the rejection click'
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox clicks on every irrelevant or unavailable definition schedule rejection audio\nALL CHECKS PASSED')
         evaluate('closeTools();Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true});load(EuclidBooks.position("2.1"));setMobileWorkspaceView("proof");window.scheduledSounds=0;window.scheduledSoundTypes=[];')
         statements = [
             ('area BGNC = area BGLD + area DLME + area EMNC', 'triangle'),
-            ('not a statement', 'sine'),
+            ('not a statement', 'buffer'),
             ('BG = AX', 'triangle'),
         ]
         for number, (statement, tone) in enumerate(statements, 1):

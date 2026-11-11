@@ -95,3 +95,5 @@ Sound effects are on by default and can be muted in Options. A short low beep co
 If sound is silent, Options > Test sound makes a direct playback attempt and shows the audio status. Audio is initialized on a trusted tap, click, or keypress; pending feedback waits for startup instead of expiring after 300 ms. The latest pending sound is cancelled when muted.
 
 Every tool selection now gives feedback, including attempts to choose unavailable definitions or propositions (which remain blocked). Submitting or editing a proof statement checks whether it follows independently of assigning its manual justification: correct statements beep and incorrect or malformed ones click. Clicking a proof row without assigning a reference checks its statement too.
+
+The rejection sound is a quiet 25 ms burst of filtered noise with a fast decay, giving a non-tonal click. Options > Test click previews it separately from the confirmation beep.
