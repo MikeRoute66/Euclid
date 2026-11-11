@@ -9,7 +9,7 @@ addEventListener('load',()=>{
  try{
   let prior=JSON.parse(sessionStorage.getItem(key)||'null');
   if(!prior){
-   $('#continue-menu').click();saved={};Object.assign(settings,DEFAULT_SETTINGS,{learningMode:true,skipConstruction:true,skipJustifications:true,showDefinitionNames:false});
+   $('#continue-menu').click();saved={};Object.assign(settings,DEFAULT_SETTINGS,{learningMode:true,skipConstruction:true,skipJustifications:true,showDefinitionNames:false,soundEffects:false});
    localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));load(EuclidBooks.position('2.1'));
    check(norm(malformed)===norm(correct)&&!BookOneLogic.parse(malformed),'formatting variant matches the teaching key but is not a parsed statement');
    $('#statement').value=malformed;$('#statement').dispatchEvent(new Event('input',{bubbles:true}));
@@ -34,6 +34,7 @@ addEventListener('load',()=>{
   $('#continue-menu').click();
   check(settings.learningMode&&settings.skipConstruction&&settings.skipJustifications&&!settings.skipProof,'real reload retains the reported practice settings');
   check(settings.showDefinitionNames===false,'real reload retains the tool-name visibility preference');
+  check(settings.soundEffects===false,'real reload retains the muted sound preference');
   check(!$('#learning-guidance').hidden&&$('#learning-instructions').textContent.includes('Edit line 2'),'learning mode directs the player to correct the invalid line');
   $('#lines').children[1].querySelector('.edit-line').click();$('#statement').dispatchEvent(new Event('input',{bubbles:true}));$('#format-help button').click();
   $('#lineform button[type="submit"]').click();
@@ -45,6 +46,7 @@ addEventListener('load',()=>{
   check((window.PROOF_ENTRY_ERRORS||[]).length===0,'the entire input, reload, edit, and navigation flow has no uncaught errors');
   runToolNameChecks(check);
   runMobileLayoutChecks(check);
+  runFeedbackChecks(check);
  }catch(e){check(false,e.stack)}
  finish();
 });

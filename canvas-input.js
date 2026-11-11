@@ -7,12 +7,12 @@ function canvasPointAt(event,radius=18){
 function superposeTriangles(){
  if(index!==3||tool?.[1]!=='CN4')return;
  snapshot();for(let fact of ['superpose','superpose:ABC:DEF'])if(!state.facts.includes(fact))state.facts.push(fact);
- for(let [a,b] of [['A','D'],['B','E'],['C','F']])state.points[a]=[...state.points[b]];picks=[];render();
+ for(let [a,b] of [['A','D'],['B','E'],['C','F']])state.points[a]=[...state.points[b]];picks=[];render();Feedback.play(true);
 }
 function activateCanvasPoint(name){
  if(index===3&&tool?.[1]==='CN4'){
   if(picks[0]==='A'&&name==='D'){superposeTriangles();return}
-  picks=name==='A'?['A']:[];render();$('#instruction').textContent=picks.length?'Now click D to superpose the triangles.':'Drag A onto D, or click A followed by D.';return;
+  picks=name==='A'?['A']:[];if(name!=='A')Feedback.play(false);render();$('#instruction').textContent=picks.length?'Now click D to superpose the triangles.':'Drag A onto D, or click A followed by D.';return;
  }
  choosePoint(name);
 }
@@ -50,9 +50,9 @@ function installCanvasInput(){
   if(moved){
    if(index===3&&tool?.[1]==='CN4'&&active.name==='A'&&target==='D'){superposeTriangles();return}
    if(active.name&&target&&target!==active.name&&!picks.length&&['line','extend','circle','equilateral','midpoint','square'].includes(tool?.[3])){choosePoint(active.name);choosePoint(target);return}
-   $('#instruction').textContent=index===3&&tool?.[1]==='CN4'?'Drop A near D, or click A followed by D.':'Click the named points in order. Two-point tools also accept a drag between endpoints.';return;
+   $('#instruction').textContent=index===3&&tool?.[1]==='CN4'?'Drop A near D, or click A followed by D.':'Click the named points in order. Two-point tools also accept a drag between endpoints.';Feedback.play(false);return;
   }
-  if(active.name)activateCanvasPoint(active.name);else if(tool?.[3]==='point'){let r=canvas.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)mark(coords(e))}
+  if(active.name)activateCanvasPoint(active.name);else if(tool?.[3]==='point'){let r=canvas.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)mark(coords(e))}else Feedback.play(false);
  },{passive:false});
  window.addEventListener('pointercancel',e=>{if(drag?.id===e.pointerId)clearCanvasGesture()});
  canvas.addEventListener('lostpointercapture',e=>{if(drag?.id===e.pointerId)clearCanvasGesture()});

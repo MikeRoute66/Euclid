@@ -1,6 +1,6 @@
 const SETTINGS_KEY='euclid-workshop-settings-v1';
 const PRACTICE_MODES=['Full challenge','Review','Construction practice','Justification practice','Construction and justifications','Statement practice','Proof practice','Statements and construction'];
-const DEFAULT_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,learningMode:false,largeLabels:false,showDefinitionNames:true,showPostulateNames:true,showCommonNotionNames:true,showPropositionNames:true};
+const DEFAULT_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,learningMode:false,largeLabels:false,showDefinitionNames:true,showPostulateNames:true,showCommonNotionNames:true,showPropositionNames:true,soundEffects:true};
 let settings={...DEFAULT_SETTINGS};try{let stored=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');for(let key of Object.keys(settings))if(typeof stored[key]==='boolean')settings[key]=stored[key]}catch{}
 let buildingPractice=false;
 function toolNamesVisible(reference){
