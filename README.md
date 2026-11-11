@@ -91,3 +91,5 @@ On mobile, Construction and Proof occupy separate full-width panels. Swipe left 
 In mobile Proof view, the statement form stays below the scrolling ledger. The app follows the visual viewport when the on-screen keyboard opens or pans the page, compacts headers while typing, and restores them when the keyboard closes. Tool popups clear the form, and Add keeps the input focused. Mobile regression checks include keyboard-sized viewports, editing, and native Firefox resizing.
 
 Sound effects are on by default and can be muted in Options. A short low beep confirms a correct next tool, a successful construction, or a valid applied justification. A dry click marks an incorrect choice or rejected use. Partial point selections, navigation, redraws, imports, and automatically supplied construction remain silent. Sounds are synthesized locally without audio-file downloads.
+
+If sound is silent, Options > Test sound makes a direct playback attempt and shows the audio status. Audio is initialized on a trusted tap, click, or keypress; pending feedback waits for startup instead of expiring after 300 ms. The latest pending sound is cancelled when muted.

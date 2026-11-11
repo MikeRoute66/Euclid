@@ -153,5 +153,6 @@ function showHowToPlay(){
 }
 $('#help').onclick=showHowToPlay;$('#closemodal').onclick=()=>$('#modal').close();
 let initialProposition=autosaveProposition??0;if(autosaveProposition===null)try{let value=Number(localStorage.getItem('euclid-workshop-active'));if(Number.isInteger(value)&&value>=0&&value<LESSONS.length)initialProposition=value}catch{}
+Feedback.install();
 installMobileWorkspace();
 load(initialProposition);

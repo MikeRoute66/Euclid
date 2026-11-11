@@ -161,9 +161,10 @@ function updateSettings(){
  const previous={...settings};
  for(let key of Object.keys(DEFAULT_SETTINGS)){let control=document.querySelector('[data-setting="'+key+'"]');if(control)settings[key]=control.checked}
  try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch{}
- tool=null;picks=[];if(previous.skipProof!==settings.skipProof)resetLineForm();if(['skipConstruction','skipProof','skipJustifications'].some(k=>previous[k]!==settings[k]))history=[];render();renderTools();$('#settings-mode').textContent=practiceMode();
+ Feedback.sync();tool=null;picks=[];if(previous.skipProof!==settings.skipProof)resetLineForm();if(['skipConstruction','skipProof','skipJustifications'].some(k=>previous[k]!==settings[k]))history=[];render();renderTools();$('#settings-mode').textContent=practiceMode();
 }
 function showSettings(){
+ Feedback.refreshStatus();
  $('#main-menu').classList.add('options-open');
  $('#menu-home').hidden=$('#save-points-view').hidden=true;$('#settings-view').hidden=false;$('#save-status').textContent='';
  for(let key of Object.keys(settings))document.querySelector('[data-setting="'+key+'"]').checked=settings[key];$('#settings-mode').textContent=practiceMode();$('#settings-view input').focus();

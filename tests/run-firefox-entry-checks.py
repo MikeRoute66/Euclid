@@ -96,6 +96,11 @@ def command(name, args):
         raise RuntimeError(str(response))
     return response[3]
 
+def evaluate(script):
+    return command('WebDriver:ExecuteScript', {
+        'script': 'return window.eval(arguments[0])', 'args': [script],
+        'sandbox': None, 'newSandbox': False})['value']
+
 passed = False
 try:
     for attempt in range(100):
@@ -121,10 +126,6 @@ try:
             break
         time.sleep(.2)
     if options.width <= 800 and options.height > 600 and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
-        def evaluate(script):
-            return command('WebDriver:ExecuteScript', {
-                'script': 'return window.eval(arguments[0])', 'args': [script],
-                'sandbox': None, 'newSandbox': False})['value']
         evaluate('document.querySelector("#qa-result").remove();Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true,skipJustifications:true});load(EuclidBooks.position("2.1"));state.lines=LESSONS[index].proofGuide.slice(0,9).map(s=>({s:s.s,j:null}));render();setMobileWorkspaceView("proof");document.querySelector("#statement").focus();')
         command('WebDriver:SetWindowRect', {'width': options.width, 'height': 480})
         time.sleep(.3)
@@ -135,6 +136,17 @@ try:
         time.sleep(.3)
         assert not evaluate('document.body.classList.contains("mobile-proof-typing")')
         report = report.replace('ALL CHECKS PASSED', 'PASS native Firefox resize automatically opens and closes compact proof layout\nALL CHECKS PASSED')
+    if 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
+        evaluate('document.querySelector("#qa-result")?.remove();openMainMenu();showSettings();let audioToggle=document.querySelector("[data-setting=soundEffects]");audioToggle.checked=true;audioToggle.dispatchEvent(new Event("change",{bubbles:true}));window.scheduledSounds=0;const createOscillator=AudioContext.prototype.createOscillator;AudioContext.prototype.createOscillator=function(){const node=createOscillator.call(this),start=node.start.bind(node);node.start=(...args)=>{window.scheduledSounds++;return start(...args)};return node};')
+        element = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#test-sound'})['value']
+        command('WebDriver:ElementClick', {'id': element['element-6066-11e4-a52e-4f735466cecf']})
+        for attempt in range(30):
+            audio = json.loads(evaluate('JSON.stringify({status:Feedback.status(),scheduled:window.scheduledSounds})'))
+            if audio['status'] == 'Audio ready.' and audio['scheduled'] > 0:
+                break
+            time.sleep(.1)
+        assert audio['status'] == 'Audio ready.' and audio['scheduled'] == 1, audio
+        report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox Test sound click starts audio and schedules an audible tone\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
     print(report or 'FAILED: no test result was rendered.')
     (artifacts/'firefox-entry.json').write_text(json.dumps({

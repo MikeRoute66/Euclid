@@ -218,6 +218,8 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 
 /* Phones show one full-width work panel and compact lists above each tool tab. */
 .mobile-views,.mobile-play-tip{display:none}
+.sound-preview{display:flex;align-items:center;gap:10px;padding:6px 0 10px;font-size:11px;color:var(--muted)}
+.sound-preview button{flex-shrink:0;font-size:11px;padding:7px 10px}
 @media(max-width:800px),(pointer:coarse) and (max-width:1000px){
  body.mobile-workspace{position:fixed;top:var(--mobile-app-top,0px);width:100%;height:var(--mobile-app-height,100dvh)}
  .workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:34px minmax(0,1fr);touch-action:pan-y}

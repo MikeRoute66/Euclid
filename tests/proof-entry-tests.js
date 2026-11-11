@@ -1,5 +1,5 @@
 /* Exercise malformed input through the form and a real autosave page reload. */
-addEventListener('load',()=>{
+addEventListener('load',async()=>{
  const key='euclid-proof-entry-reload-test';
  let results=[],failures=0;
  const check=(ok,name)=>{results.push((ok?'PASS ':'FAIL ')+name);if(!ok)failures++};
@@ -47,6 +47,7 @@ addEventListener('load',()=>{
   runToolNameChecks(check);
   runMobileLayoutChecks(check);
   runFeedbackChecks(check);
+  await runAudioStartupChecks(check);
  }catch(e){check(false,e.stack)}
  finish();
 });
