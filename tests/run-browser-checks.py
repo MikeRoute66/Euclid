@@ -13,13 +13,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--report',help='Write case results and source fingerprint to a workspace JSON file')
 parser.add_argument('--width', type=int, default=1280)
 parser.add_argument('--height', type=int, default=800)
-parser.add_argument('--suite', choices=['book1', 'late', 'angles', 'source', 'books', 'entry'], default='book1')
+parser.add_argument('--suite', choices=['book1', 'late', 'angles', 'source', 'books', 'entry', 'learning'], default='book1')
 parser.add_argument('--phase', choices=['modes', 'construction'], default='modes')
 parser.add_argument('--lesson', type=int, choices=range(1, 100))
 parser.add_argument('--learning',type=int,choices=[0,1],help='Run one Learning setting in the books suite')
 parser.add_argument('--mask',type=int,choices=range(8),help='Run one practice-toggle combination in the books suite')
 parser.add_argument('--start',type=int,default=1)
-parser.add_argument('--end',type=int,default=40)
+parser.add_argument('--end',type=int)
 args = parser.parse_args()
 workspace = Path(__file__).resolve().parents[1]
 edge = Path('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe')
@@ -42,8 +42,8 @@ def fingerprint():
 source_fingerprint = fingerprint()
 try:
     source = (workspace / 'index.html').read_text(encoding='utf-8')
-    lessons = [args.lesson] if args.lesson else list(range(args.start, args.end+1)) if args.suite == 'source' else list(range(38, 49))
-    targets = lessons if args.suite in ['late','source'] else [None] if args.suite in ['angles','books','entry'] else [None, 'logic']
+    lessons = [args.lesson] if args.lesson else list(range(args.start, (args.end or 40)+1)) if args.suite == 'source' else list(range(38, 49))
+    targets = lessons if args.suite in ['late','source'] else [None] if args.suite in ['angles','books','entry','learning'] else [None, 'logic']
     book_stages = {int(i): f'E{b}.{p}' for file in workspace.glob('book[23]-lessons.js') for i,b,p in re.findall(r'id:\s*(\d+),book:\s*(\d+),proposition:\s*(\d+)', file.read_text(encoding='utf-8'))}
     if args.suite == 'books':
         selected = [args.lesson] if args.lesson else sorted(book_stages)
@@ -60,7 +60,9 @@ try:
         if lesson == 'logic':
             target = workspace / 'tests/logic.html'
         else:
-            script = ('<script>window.AUDIT_LESSON=' + str(lesson) + ';window.AUDIT_PHASE=' + repr(args.phase) + '</script><script src="tests/' + 'late-book-tests.js' + '"></script>') if args.suite in ['late','source'] else '<script src="tests/' + ('books-tests.js' if args.suite == 'books' else 'angle-tests.js' if args.suite == 'angles' else 'proof-entry-tests.js' if args.suite == 'entry' else 'book1-tests.js') + '"></script>'
+            script = ('<script>window.AUDIT_LESSON=' + str(lesson) + ';window.AUDIT_PHASE=' + repr(args.phase) + '</script><script src="tests/' + 'late-book-tests.js' + '"></script>') if args.suite in ['late','source'] else '<script src="tests/' + ('books-tests.js' if args.suite == 'books' else 'angle-tests.js' if args.suite == 'angles' else 'learning-action-tests.js' if args.suite == 'learning' else 'proof-entry-tests.js' if args.suite == 'entry' else 'book1-tests.js') + '"></script>'
+            if args.suite == 'learning':
+                script='<script>window.AUDIT_LESSON='+str(args.lesson or 0)+';window.AUDIT_START='+str(args.start)+';window.AUDIT_END='+str(args.end or 62)+'</script>'+script
             if args.suite == 'books':
                 dependencies = {r['key']: r['dependencies'] for r in json.loads((workspace / 'docs/books-2-3-sources.json').read_text(encoding='utf-8'))['propositions']}
                 script = '<script>window.SOURCE_DEPENDENCIES=' + json.dumps(dependencies) + '</script>' + script
@@ -78,7 +80,7 @@ try:
             '--user-data-dir=' + str(profile),
             '--window-size=' + str(args.width) + ',' + str(args.height),
             '--virtual-time-budget=15000', '--dump-dom', target.as_uri(),
-        ], capture_output=True, encoding='utf-8', errors='replace', timeout=300)
+        ], capture_output=True, encoding='utf-8', errors='replace', timeout=900 if args.suite == 'learning' else 300)
         match = re.search(r'<pre id="(?:qa-result|results)">(.*?)</pre>', result.stdout, re.S)
         report = html.unescape(match.group(1)) if match else 'FAILED: no test result was rendered.'
         print((('E.' + str(lesson)) if args.suite in ['late','source'] else book_stages[lesson] + ' mask=' + str(book_mask) + ' learning=' + str(book_learning) if args.suite == 'books' else target.name) + '\n' + report.encode('ascii', errors='replace').decode(), flush=True)

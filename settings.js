@@ -51,26 +51,30 @@ function constructionProgress(value,lesson){
  });
  return {complete:checks.every(Boolean),done:checks.filter(Boolean).length,total:checks.length,checks};
 }
-function suppliedConstruction(lessonIndex){
- const previous={index,state,tool,picks,history,buildingPractice};
+function suppliedConstruction(lessonIndex,nextOnly=false){
+ const previous={index,state,tool,picks,history,buildingPractice},finishedStep={};
+ let actionIndex=0;
+ const checks=nextOnly?constructionProgress(state,LESSONS[lessonIndex]).checks:[];
+ const action=run=>{if(nextOnly&&checks[actionIndex++])return;run();if(nextOnly)throw finishedStep};
  try{
-  buildingPractice=true;index=lessonIndex;state=fresh();tool=null;picks=[];history=[];
-  const use=(id,...names)=>{tool=Object.values(REFERENCES).flat().find(r=>r[1]===id);picks=[];names.forEach(choosePoint)};
-  const intersection=(supports,beyond,within)=>{
+  buildingPractice=true;index=lessonIndex;state=nextOnly?structuredClone(previous.state):fresh();tool=null;picks=[];history=[];
+  const use=(id,...names)=>action(()=>{tool=Object.values(REFERENCES).flat().find(r=>r[1]===id);picks=[];names.forEach(choosePoint)});
+  const intersection=(supports,beyond,within)=>action(()=>{
    let candidates=bookOneIntersections().filter(q=>supports.every(s=>{if(s.startsWith('arc:'))return q.supports?.includes(s);if(s.startsWith('circle:')){let [a,b]=s.slice(7);return Math.abs(distance(q,state.points[a])-distance(state.points[a],state.points[b]))<.001}let [a,b]=[state.points[s[0]],state.points[s[1]]];return Math.abs((b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]))<.001}));
    if(beyond)candidates=candidates.filter(q=>{let a=state.points[beyond[0]],b=state.points[beyond[1]],v=[b[0]-a[0],b[1]-a[1]];return (q[0]-a[0])*v[0]+(q[1]-a[1])*v[1]>v[0]*v[0]+v[1]*v[1]});
    if(within)candidates=candidates.filter(q=>distance(q,state.points[within[0]])<distance(state.points[within[0]],state.points[within[1]])&&distance(q,state.points[within[1]])<distance(state.points[within[0]],state.points[within[1]]));
    let q=candidates.sort((a,b)=>a[1]-b[1])[0];if(!q)throw Error('The supplied construction could not locate an intersection.');bookOneMark(q,supports);
-  };
+  });
   if(index===0){use('P3','A','B');use('P3','B','A');intersection(['circle:AB','circle:BA']);use('P1','A','C');use('P1','B','C')}
   else if(index===1){use('P1','A','B');use('I1','A','B');use('P2','D','B');use('P3','B','C');intersection(['DB','circle:BC'],'DB');use('P2','D','A');use('P3','D','G');intersection(['DA','circle:DG'],'DA');use('P1','A','L')}
   else if(index===2){use('I2','A','C','D');use('P3','A','E');intersection(['AB','circle:AE'],null,'AB')}
-  else if(index===3){tool=REFERENCES.notions.find(r=>r[1]==='CN4');superposeTriangles()}
+  else if(index===3){action(()=>{tool=REFERENCES.notions.find(r=>r[1]==='CN4');superposeTriangles()})}
   else if(index===4){use('P2','A','B');use('P2','A','C');use('I3','A');use('P1','F','C');use('P1','G','B')}
-  else for(let task of LESSONS[index].construction||[]){if(task.ref==='D1'&&task.inputs.length){tool=REFERENCES.definitions.find(r=>r[1]==='D1');task.inputs.forEach(choosePoint)}else if(task.ref==='D1')intersection(task.supports||INTERSECTION_SUPPORTS[LESSONS[index].id][task.outputs[0]],task.beyond,task.within);else use(task.ref,...task.inputs)}
+  else for(let task of LESSONS[index].construction||[]){if(task.ref==='D1'&&task.inputs.length)use('D1',...task.inputs);else if(task.ref==='D1')intersection(task.supports||INTERSECTION_SUPPORTS[LESSONS[index].id][task.outputs[0]],task.beyond,task.within);else use(task.ref,...task.inputs)}
   if(!constructionProgress(state,LESSONS[index]).complete)throw Error('The supplied construction is incomplete.');
   return constructionGeometry(state);
- }finally{({index,state,tool,picks,history,buildingPractice}=previous)}
+ }catch(error){if(error===finishedStep)return constructionGeometry(state);throw error}
+ finally{({index,state,tool,picks,history,buildingPractice}=previous)}
 }
 function ensurePracticeConstruction(){
  if(settings.skipConstruction&&state.manualConstruction&&!constructionProgress(state,LESSONS[index]).complete)Object.assign(state,suppliedConstruction(index));
@@ -184,11 +188,74 @@ function practiceInstruction(){
 
 function updateLearningGuidance(){
  const panel=$('#learning-guidance');panel.hidden=!settings.learningMode;
- if(settings.learningMode)AngleVisual.decorate($('#learning-instructions'),displayReference(nextHint()),LESSONS[index]);
+ if(settings.learningMode){
+  AngleVisual.decorate($('#learning-instructions'),displayReference(nextHint()),LESSONS[index]);
+  panel.setAttribute('aria-disabled',String(!!state.completed));
+  panel.title=state.completed?'Proposition complete':'Click to perform this step';
+  panel.onclick=performLearningStep;
+  panel.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();performLearningStep()}};
+ }
 }
 
 function proofInspectionBody(line,reference){
  let body=line.derivation?['Earlier propositions: '+line.derivation.dependencies.map(EuclidBooks.dependencyRule).join(', '),...line.derivation.steps]:[line.reason||referenceName(reference),'Earlier proof lines: '+(line.dependencies||[]).join(', ')];
  if(line.sourcePropositions?.length)body.push('Source propositions: '+line.sourcePropositions.map(displayReference).join(', '));
  return body;
+}
+
+// Validate only the prefix available to this line, with the taught reference
+// first. Inference is a fallback for equivalent statements or automatic premises.
+function learningJustification(value,lesson,target,preferred){
+ const trial=structuredClone(value);trial.lines=trial.lines.slice(0,target+1);
+ trial.lines[target].j=preferred||null;
+ EuclidLogic.grade(trial,lesson);
+ if(trial.lines[target].valid)return trial.lines[target].j;
+ inferredProof(trial,lesson);
+ return trial.lines[target].valid?trial.lines[target].autoJustification:null;
+}
+// The learning shortcut uses the same recorded tools and formal checker as play.
+function performLearningStep(){
+ if(!settings.learningMode||state.completed)return;
+ if(editingLine!==null){$('#lineform').requestSubmit();return}
+ const lesson=LESSONS[index],before=JSON.stringify(state),oldHistory=history.slice();
+ try{
+  if(!constructionProgress(state,lesson).complete){
+   const geometry=suppliedConstruction(index,true);
+   snapshot();Object.assign(state,geometry);picks=[];tool=null;resetLineForm();render();
+   if(matchMedia(MOBILE_WORKSPACE_QUERY).matches)setMobileWorkspaceView('construction');
+  }else{
+   const result=settings.skipJustifications?inferredProof(state,lesson):EuclidLogic.grade(state,lesson);
+   const context=result.context,parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
+   const same=(line,step)=>lesson.id<=5?norm(line.s)===norm(step.s):context.key(parse(line.s))===context.key(parse(step.s));
+   const route=lesson.id<=5?lesson.hintSteps:lesson.proofGuide;
+   const step=route.find(step=>!state.lines.some(line=>line.valid&&same(line,step)));
+   if(!step){
+    const bad=state.lines.findIndex(line=>!line.valid);
+    if(bad>=0){
+     const preferred=route.find(step=>norm(step.s)===norm(state.lines[bad].s))?.j;
+     const reference=learningJustification(state,lesson,bad,preferred);
+     if(!reference&&settings.skipProof)throw Error('This supplied line needs an earlier premise.');
+     snapshot();
+     if(reference)state.lines[bad].j=reference;
+     else state.lines.splice(bad,1);
+     render();Feedback.play(true);
+    }
+    return;
+   }
+   const pending=state.lines.findIndex(line=>same(line,step)),bad=state.lines.findIndex(line=>!line.valid);
+   // Inserting before an early dependent statement preserves the user's work.
+   const target=pending>=0?pending:bad>=0?bad:state.lines.length;
+   const trial=structuredClone(state),candidate={s:readableStatement(step.s),j:step.j};
+   if(pending>=0)trial.lines[target]=candidate;else trial.lines.splice(target,0,candidate);
+   const reference=learningJustification(trial,lesson,target,step.j);
+   if(!reference)throw Error('This step needs an earlier premise. Check the preceding proof lines.');
+   snapshot();
+   if(pending>=0)state.lines[target].j=reference;
+   else state.lines.splice(target,0,{s:candidate.s,j:settings.skipJustifications?reference:null});
+   render();
+   if(matchMedia(MOBILE_WORKSPACE_QUERY).matches)setMobileWorkspaceView('proof');
+   $('#lines').children[target]?.scrollIntoView({block:'nearest'});
+  }
+  Feedback.play(true);
+ }catch(error){state=JSON.parse(before);history=oldHistory;render();Feedback.play(false);$('#learning-instructions').textContent=error.message}
 }

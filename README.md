@@ -97,3 +97,5 @@ If sound is silent, Options > Test sound makes a direct playback attempt and sho
 Every tool selection now gives feedback, including attempts to choose unavailable definitions or propositions (which remain blocked). Submitting or editing a proof statement checks whether it follows independently of assigning its manual justification: correct statements beep and incorrect or malformed ones click. Clicking a proof row without assigning a reference checks its statement too.
 
 The rejection sound is a quiet 25 ms burst of filtered noise with a fast decay, giving a non-tonal click. Options > Test click previews it separately from the confirmation beep.
+
+In Learning mode, click the next-step guidance (or focus it and press Enter or Space) to perform that step. Each click constructs one recorded object, adds the next statement, or justifies a pending line. Guided construction actions support Undo. Run `python tests/run-browser-checks.py --suite learning` to check guided completion of all 62 stages in every practice configuration.
