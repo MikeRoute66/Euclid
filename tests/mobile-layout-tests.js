@@ -38,5 +38,35 @@ function runMobileLayoutChecks(check){
    list.scrollTop=list.scrollHeight;check(buttons.at(-1).getBoundingClientRect().bottom<=list.getBoundingClientRect().bottom+1,group+' last tool is reachable by scrolling');closeTools();
   }
   check(document.body.scrollWidth===document.body.clientWidth&&document.body.scrollHeight===document.body.clientHeight,'mobile workspace and palettes fit the screen without page scrolling');
+  runMobileKeyboardChecks(check);
  }finally{Object.assign(settings,previous.settings);load(previous.chapter);setMobileWorkspaceView(previous.view);$('#statement').value=previous.draft}
+}
+function runMobileKeyboardChecks(check){
+ const descriptor=Object.getOwnPropertyDescriptor(window,'visualViewport'),viewport=window.visualViewport;
+ try{
+  Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true,skipJustifications:true,learningMode:true});
+  load(EuclidBooks.position('2.1'));state.lines=LESSONS[index].proofGuide.slice(0,8).map(step=>({s:step.s,j:null}));render();setMobileWorkspaceView('proof');
+  const field=$('#statement'),form=$('#lineform'),ledger=$('.proofbody');
+  let position=field.getBoundingClientRect();ledger.scrollTop=ledger.scrollHeight;
+  check(form.parentElement===$('.proof-composer')&&Math.abs(position.top-field.getBoundingClientRect().top)<1,'mobile proof input stays pinned when the proof ledger scrolls');
+  ledger.scrollTop=0;check(field.getBoundingClientRect().bottom<=$('.proof').getBoundingClientRect().bottom+1,'input is accessible even while reading the first proof line');
+  field.focus({preventScroll:true});
+  let keyboardViewport={height:340,offsetTop:75};Object.defineProperty(window,'visualViewport',{configurable:true,value:keyboardViewport});updateMobileViewport();revealMobileProofLine();
+  check(document.body.classList.contains('mobile-proof-typing')&&getComputedStyle($('header')).display==='none'&&getComputedStyle($('.brief')).display==='none','keyboard mode reclaims the header and lesson-summary space');
+  let body=document.body.getBoundingClientRect(),input=field.getBoundingClientRect(),panel=ledger.getBoundingClientRect();
+  check(Math.abs(body.top-75)<1&&Math.abs(body.height-340)<1&&input.bottom<=415&&input.top>=75,'composer follows the visual viewport height and pan offset above the keyboard');
+  let visible=[...$('#lines').children].filter(row=>{let r=row.getBoundingClientRect();return r.top>=panel.top-1&&r.bottom<=panel.bottom+1});
+  check(panel.height>=170&&visible.length>=3,'at least three complete proof lines fit in a keyboard-sized viewport');
+  tab='definitions';renderTools();check($('#toolpopup').getBoundingClientRect().bottom<=$('.proof-composer').getBoundingClientRect().top,'tool palette opens above the composer instead of covering the input');closeTools();
+  field.value=LESSONS[index].proofGuide[8].s;form.requestSubmit();
+  check(document.activeElement===field&&state.lines.at(-1).valid&&field.value==='','submitting a line keeps the mobile composer focused for continued typing');
+  check($('#lines').lastElementChild.getBoundingClientRect().bottom<=ledger.getBoundingClientRect().bottom+1,'new proof line is revealed directly above the composer');
+  beginEdit(1);let editing=$('#lines').children[1].getBoundingClientRect();
+  check(editing.bottom>=ledger.getBoundingClientRect().top&&editing.top<=ledger.getBoundingClientRect().bottom&&document.activeElement===field,'editing an earlier line keeps its row and input accessible');
+  $('#cancel-edit').click();field.focus();keyboardViewport.height=viewport?.height||innerHeight;keyboardViewport.offsetTop=0;updateMobileViewport();
+  check(!document.body.classList.contains('mobile-proof-typing')&&getComputedStyle($('header')).display!=='none','dismissing the keyboard restores headers even if the input remains focused');
+ }finally{
+  $('#statement').blur();if(descriptor)Object.defineProperty(window,'visualViewport',descriptor);else delete window.visualViewport;
+  updateMobileViewport();
+ }
 }

@@ -73,10 +73,10 @@ function choosePoint(name){if(!tool)return;if(tool[3]==='point'){snapshot();Eucl
 installCanvasInput();
 function resetLineForm(){editingLine=null;$('#lineform label').textContent='Your next statement';$('#lineform button[type="submit"]').textContent='+ Add a line';$('#cancel-edit').hidden=true;$('#statement').value='';updateFormatHelp();}
 function deleteProofLine(i){snapshot();state.lines.splice(i,1);if(editingLine===i)resetLineForm();else if(editingLine!==null&&editingLine>i){editingLine--;$('#lineform label').textContent='Editing line '+(editingLine+1)}render()}
-function beginEdit(i){editingLine=i;$('#statement').value=state.lines[i].s;$('#lineform label').textContent='Editing line '+(i+1);$('#lineform button[type="submit"]').textContent='Save changes';$('#cancel-edit').hidden=false;$('#statement').focus();$('#statement').select();updateFormatHelp();$('#lineform').scrollIntoView({block:'nearest'});updateLearningGuidance();}
+function beginEdit(i){editingLine=i;$('#statement').value=state.lines[i].s;$('#lineform label').textContent='Editing line '+(i+1);$('#lineform button[type="submit"]').textContent='Save changes';$('#cancel-edit').hidden=false;$('#statement').focus();$('#statement').select();updateFormatHelp();$('#lineform').scrollIntoView({block:'nearest'});updateLearningGuidance();focusMobileProofInput();}
 $('#cancel-edit').onclick=()=>{resetLineForm();updateLearningGuidance()};
 $('#statement').addEventListener('keydown',e=>{if(e.key==='Escape'&&editingLine!==null){e.preventDefault();resetLineForm();updateLearningGuidance();}});
-$('#lineform').onsubmit=e=>{e.preventDefault();let value=readableStatement(AngleVisual.resolve($('#statement').value.trim(),LESSONS[index]));if(!value)return;snapshot();if(editingLine===null)state.lines.push({s:value,j:null});else state.lines[editingLine].s=value;resetLineForm();render();};
+$('#lineform').onsubmit=e=>{e.preventDefault();let value=readableStatement(AngleVisual.resolve($('#statement').value.trim(),LESSONS[index]));if(!value)return;snapshot();if(editingLine===null)state.lines.push({s:value,j:null});else state.lines[editingLine].s=value;resetLineForm();render();focusMobileProofInput();};
 document.querySelectorAll('[data-tab]').forEach(b=>{
  b.onclick=()=>{tab=tab===b.dataset.tab?null:b.dataset.tab;renderTools()};
  b.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();tab=b.dataset.tab;renderTools();$('#tools button:not(:disabled)')?.focus();}});

@@ -120,6 +120,21 @@ try:
         if report:
             break
         time.sleep(.2)
+    if options.width <= 800 and options.height > 600 and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
+        def evaluate(script):
+            return command('WebDriver:ExecuteScript', {
+                'script': 'return window.eval(arguments[0])', 'args': [script],
+                'sandbox': None, 'newSandbox': False})['value']
+        evaluate('document.querySelector("#qa-result").remove();Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true,skipJustifications:true});load(EuclidBooks.position("2.1"));state.lines=LESSONS[index].proofGuide.slice(0,9).map(s=>({s:s.s,j:null}));render();setMobileWorkspaceView("proof");document.querySelector("#statement").focus();')
+        command('WebDriver:SetWindowRect', {'width': options.width, 'height': 480})
+        time.sleep(.3)
+        actual = json.loads(evaluate('JSON.stringify({typing:document.body.classList.contains("mobile-proof-typing"),input:document.querySelector("#statement").getBoundingClientRect().toJSON(),ledger:document.querySelector(".proofbody").clientHeight,height:visualViewport.height,top:visualViewport.offsetTop,focused:document.activeElement.id})'))
+        assert actual['typing'] and actual['focused'] == 'statement'
+        assert actual['input']['bottom'] <= actual['height']+actual['top']+1 and actual['ledger'] >= 150
+        command('WebDriver:SetWindowRect', {'width': options.width, 'height': options.height})
+        time.sleep(.3)
+        assert not evaluate('document.body.classList.contains("mobile-proof-typing")')
+        report = report.replace('ALL CHECKS PASSED', 'PASS native Firefox resize automatically opens and closes compact proof layout\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
     print(report or 'FAILED: no test result was rendered.')
     (artifacts/'firefox-entry.json').write_text(json.dumps({
