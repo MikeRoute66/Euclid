@@ -137,7 +137,7 @@ try:
         assert not evaluate('document.body.classList.contains("mobile-proof-typing")')
         report = report.replace('ALL CHECKS PASSED', 'PASS native Firefox resize automatically opens and closes compact proof layout\nALL CHECKS PASSED')
     if 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
-        evaluate('document.querySelector("#qa-result")?.remove();openMainMenu();showSettings();let audioToggle=document.querySelector("[data-setting=soundEffects]");audioToggle.checked=true;audioToggle.dispatchEvent(new Event("change",{bubbles:true}));window.scheduledSounds=0;const createOscillator=AudioContext.prototype.createOscillator;AudioContext.prototype.createOscillator=function(){const node=createOscillator.call(this),start=node.start.bind(node);node.start=(...args)=>{window.scheduledSounds++;return start(...args)};return node};')
+        evaluate('document.querySelector("#qa-result")?.remove();openMainMenu();showSettings();let audioToggle=document.querySelector("[data-setting=soundEffects]");audioToggle.checked=true;audioToggle.dispatchEvent(new Event("change",{bubbles:true}));window.scheduledSounds=0;window.scheduledSoundTypes=[];const createOscillator=AudioContext.prototype.createOscillator;AudioContext.prototype.createOscillator=function(){const node=createOscillator.call(this),start=node.start.bind(node);node.start=(...args)=>{window.scheduledSounds++;window.scheduledSoundTypes.push(node.type);return start(...args)};return node};')
         element = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#test-sound'})['value']
         command('WebDriver:ElementClick', {'id': element['element-6066-11e4-a52e-4f735466cecf']})
         for attempt in range(30):
@@ -147,6 +147,32 @@ try:
             time.sleep(.1)
         assert audio['status'] == 'Audio ready.' and audio['scheduled'] == 1, audio
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox Test sound click starts audio and schedules an audible tone\nALL CHECKS PASSED')
+        evaluate('document.querySelector("#resume-menu").click();Object.assign(settings,DEFAULT_SETTINGS);saved={};load(0);window.scheduledSounds=0;window.scheduledSoundTypes=[];')
+        for number, reference in enumerate([*['D'+str(i) for i in range(2,24)], 'D2.1', 'D2.2'], 1):
+            if evaluate('tab') != 'definitions':
+                menu = command('WebDriver:FindElement', {'using': 'css selector', 'value': '[data-tab="definitions"]'})['value']
+                command('WebDriver:ElementClick', {'id': menu['element-6066-11e4-a52e-4f735466cecf']})
+            button = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#tools [data-reference="'+reference+'"]'})['value']
+            command('WebDriver:ElementClick', {'id': button['element-6066-11e4-a52e-4f735466cecf']})
+            assert evaluate('window.scheduledSounds') == number, reference+' did not schedule exactly one sound'
+            assert evaluate('window.scheduledSoundTypes.at(-1)') == 'square', reference+' did not use the rejection click'
+        report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox clicks on every irrelevant or unavailable definition schedule rejection audio\nALL CHECKS PASSED')
+        evaluate('closeTools();Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true});load(EuclidBooks.position("2.1"));setMobileWorkspaceView("proof");window.scheduledSounds=0;window.scheduledSoundTypes=[];')
+        statements = [
+            ('area BGNC = area BGLD + area DLME + area EMNC', 'triangle'),
+            ('not a statement', 'square'),
+            ('BG = AX', 'triangle'),
+        ]
+        for number, (statement, tone) in enumerate(statements, 1):
+            if number == 3:
+                edit = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#lines .proofline:last-child .edit-line'})['value']
+                command('WebDriver:ElementClick', {'id': edit['element-6066-11e4-a52e-4f735466cecf']})
+            evaluate('document.querySelector("#statement").value='+json.dumps(statement))
+            submit = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#lineform button[type="submit"]'})['value']
+            command('WebDriver:ElementClick', {'id': submit['element-6066-11e4-a52e-4f735466cecf']})
+            assert evaluate('window.scheduledSounds') == number, statement
+            assert evaluate('window.scheduledSoundTypes.at(-1)') == tone, statement
+        report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox proof submissions and edits schedule the correct confirmation or rejection sound\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
     print(report or 'FAILED: no test result was rendered.')
     (artifacts/'firefox-entry.json').write_text(json.dumps({

@@ -272,3 +272,5 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
  #chapters{flex:1;max-width:none;margin:0 6px}
  #book-select{flex:0 0 60px;padding:4px 2px}
 }
+
+#tools .tool[aria-disabled="true"]{opacity:.45;cursor:not-allowed}

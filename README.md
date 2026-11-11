@@ -93,3 +93,5 @@ In mobile Proof view, the statement form stays below the scrolling ledger. The a
 Sound effects are on by default and can be muted in Options. A short low beep confirms a correct next tool, a successful construction, or a valid applied justification. A dry click marks an incorrect choice or rejected use. Partial point selections, navigation, redraws, imports, and automatically supplied construction remain silent. Sounds are synthesized locally without audio-file downloads.
 
 If sound is silent, Options > Test sound makes a direct playback attempt and shows the audio status. Audio is initialized on a trusted tap, click, or keypress; pending feedback waits for startup instead of expiring after 300 ms. The latest pending sound is cancelled when muted.
+
+Every tool selection now gives feedback, including attempts to choose unavailable definitions or propositions (which remain blocked). Submitting or editing a proof statement checks whether it follows independently of assigning its manual justification: correct statements beep and incorrect or malformed ones click. Clicking a proof row without assigning a reference checks its statement too.
