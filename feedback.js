@@ -15,10 +15,10 @@ function createFeedback(){
   const correct=pending;pending=null;
   try{
    active?.stop();
-   const start=context.currentTime+.02,oscillator=context.createOscillator(),gain=context.createGain(),duration=correct ? 0.22 : 0.06;
-   oscillator.type=correct?'triangle':'square';oscillator.frequency.setValueAtTime(correct?220:850,start);
-   gain.gain.setValueAtTime(0,start);gain.gain.linearRampToValueAtTime(0.18,start+.004);
-   gain.gain.setValueAtTime(0.18,start+(correct ? 0.13 : 0.012));gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+   const start=context.currentTime+.02,oscillator=context.createOscillator(),gain=context.createGain(),duration=correct ? 0.22 : 0.025;
+   oscillator.type=correct?'triangle':'sine';oscillator.frequency.setValueAtTime(correct?220:140,start);
+   gain.gain.setValueAtTime(0,start);gain.gain.linearRampToValueAtTime(correct ? 0.18 : 0.065,start+(correct ? 0.004 : 0.0015));
+   gain.gain.setValueAtTime(correct ? 0.18 : 0.065,start+(correct ? 0.13 : 0.003));gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
    oscillator.connect(gain);gain.connect(context.destination);oscillator.start(start);oscillator.stop(start+duration+.005);active=oscillator;
    oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();if(active===oscillator)active=null};
   }catch{problem='Audio could not play. Tap Test sound to retry.';refreshStatus()}

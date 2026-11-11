@@ -155,12 +155,12 @@ try:
             button = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#tools [data-reference="'+reference+'"]'})['value']
             command('WebDriver:ElementClick', {'id': button['element-6066-11e4-a52e-4f735466cecf']})
             assert evaluate('window.scheduledSounds') == number, reference+' did not schedule exactly one sound'
-            assert evaluate('window.scheduledSoundTypes.at(-1)') == 'square', reference+' did not use the rejection click'
+            assert evaluate('window.scheduledSoundTypes.at(-1)') == 'sine', reference+' did not use the rejection click'
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox clicks on every irrelevant or unavailable definition schedule rejection audio\nALL CHECKS PASSED')
         evaluate('closeTools();Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true});load(EuclidBooks.position("2.1"));setMobileWorkspaceView("proof");window.scheduledSounds=0;window.scheduledSoundTypes=[];')
         statements = [
             ('area BGNC = area BGLD + area DLME + area EMNC', 'triangle'),
-            ('not a statement', 'square'),
+            ('not a statement', 'sine'),
             ('BG = AX', 'triangle'),
         ]
         for number, (statement, tone) in enumerate(statements, 1):

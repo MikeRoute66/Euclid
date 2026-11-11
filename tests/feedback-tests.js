@@ -55,7 +55,7 @@ async function runAudioStartupChecks(check){
   let audio=createFeedback();audio.play(true);check(starts.length===0,'audio waits for a suspended context to start');await wait();
   check(starts.length===1&&starts[0]==='triangle'&&audio.status()==='Audio ready.','slow audio startup longer than 300 ms still plays the confirmation');
   starts=[];audio=createFeedback();audio.play(true);audio.play(false);await wait();
-  check(starts.length===1&&starts[0]==='square','audio startup plays only the most recent requested feedback');
+  check(starts.length===1&&starts[0]==='sine','audio startup plays only the most recent requested feedback');
   starts=[];audio=createFeedback();audio.play(true);settings.soundEffects=false;audio.sync();await wait();
   check(starts.length===0&&audio.status()==='Sound is off.','muting while audio starts cancels the pending sound');
   settings.soundEffects=true;window.AudioContext=class extends SlowAudio{resume(){return Promise.reject(new Error('blocked'))}};
