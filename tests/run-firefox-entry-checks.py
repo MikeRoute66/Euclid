@@ -18,7 +18,7 @@ import uuid
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument('--suite',choices=['entry','ranked','leaderboard'],default='entry')
+parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial'],default='entry')
 parser.add_argument('--width',type=int,default=900)
 parser.add_argument('--height',type=int,default=600)
 options = parser.parse_args()
@@ -52,6 +52,8 @@ if options.suite=='ranked':
     tests='<script src="tests/ranked-browser-tests.js"></script>'
 elif options.suite=='leaderboard':
     tests='<script src="tests/leaderboard-browser-tests.js"></script>'
+elif options.suite=='tutorial':
+    tests='<script src="tests/tutorial-browser-tests.js"></script>'
 else:
     tests='<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/feedback-tests.js"></script><script src="tests/proof-entry-tests.js"></script>'
 page.write_text(source.replace('<head>','<head>'+capture).replace('</body>',tests+'</body>'),encoding='utf-8')
@@ -125,7 +127,7 @@ try:
     command('WebDriver:SetWindowRect', {'width': options.width, 'height': options.height})
     command('WebDriver:Navigate', {'url': 'http://127.0.0.1:'+str(server.server_port)+'/'+page.name})
     report = ''
-    for attempt in range(900 if options.suite=='ranked' else 100):
+    for attempt in range(900 if options.suite in ['ranked','tutorial'] else 100):
         result = command('WebDriver:ExecuteScript', {
             'script': 'return document.querySelector("#qa-result")?.textContent||""',
             'args': [], 'sandbox': None, 'newSandbox': False})
@@ -185,6 +187,15 @@ try:
             assert evaluate('window.scheduledSounds') == number, statement
             assert evaluate('window.scheduledSoundTypes.at(-1)') == tone, statement
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox proof submissions and edits schedule the correct confirmation or rejection sound\nALL CHECKS PASSED')
+    if options.suite=='tutorial' and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
+        evaluate('document.querySelector("#tutorial-menu").click();document.querySelector("[data-lesson=\\"D15-0\\"]").click();')
+        import base64
+        screenshot=command('WebDriver:TakeScreenshot', {})['value']
+        (artifacts/('tutorial-'+str(options.width)+'.png')).write_bytes(base64.b64decode(screenshot))
+        close=command('WebDriver:FindElement', {'using':'css selector','value':'#tutorial-close'})['value']
+        command('WebDriver:ElementClick', {'id':close['element-6066-11e4-a52e-4f735466cecf']})
+        assert evaluate('!document.querySelector("#tutorial-dialog").open&&document.querySelector("#main-menu").open')
+        report=report.replace('ALL CHECKS PASSED','PASS Native Firefox tap exits the tutorial to the main menu\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
     print(report or 'FAILED: no test result was rendered.')
     (artifacts/('firefox-'+options.suite+'.json')).write_text(json.dumps({

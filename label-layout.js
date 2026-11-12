@@ -1,12 +1,12 @@
 /* Place labels in screen space, then map their positions back into the SVG. */
-function constructionLabelLayout(svg){
+function constructionLabelLayout(svg,value=state){
  const matrix=svg.getScreenCTM(),rect=svg.getBoundingClientRect();if(!matrix||!rect.width||!rect.height)return;
  const scale=Math.hypot(matrix.a,matrix.b),inverse=matrix.inverse(),project=p=>({x:matrix.a*p[0]+matrix.c*p[1]+matrix.e-rect.left,y:matrix.b*p[0]+matrix.d*p[1]+matrix.f-rect.top});
- const points=Object.entries(state.points).map(([name,p])=>({name,...project(p)}));
- const segments=[...state.edges.map(e=>[project(state.points[e[0]]),project(state.points[e[1]])]),...state.rays.map(e=>{let a=state.points[e[0]],b=state.points[e[1]];return [project(a),project([a[0]+4*(b[0]-a[0]),a[1]+4*(b[1]-a[1])])]})];
- const circles=state.circles.map(c=>({...project(state.points[c.a]),r:distance(state.points[c.a],state.points[c.b])*scale}));
+ const points=Object.entries(value.points).map(([name,p])=>({name,...project(p)}));
+ const segments=[...value.edges.map(e=>[project(value.points[e[0]]),project(value.points[e[1]])]),...value.rays.map(e=>{let a=value.points[e[0]],b=value.points[e[1]];return [project(a),project([a[0]+4*(b[0]-a[0]),a[1]+4*(b[1]-a[1])])]})];
+ const circles=value.circles.map(c=>({...project(value.points[c.a]),r:distance(value.points[c.a],value.points[c.b])*scale}));
  const overlaps=(a,b,gap=0)=>a.x<b.x+b.w+gap&&a.x+a.w+gap>b.x&&a.y<b.y+b.h+gap&&a.y+a.h+gap>b.y;
- const obstacles=[document.querySelector('#instruction'),document.querySelector('.angle-key')].filter(Boolean).map(n=>n.getBoundingClientRect()).map(r=>({x:r.left-rect.left,y:r.top-rect.top,w:r.width,h:r.height}));
+ const obstacles=[svg.closest('.canvaswrap')?.querySelector('#instruction'),svg.closest('.canvaswrap')?.querySelector('.angle-key')].filter(Boolean).map(n=>n.getBoundingClientRect()).map(r=>({x:r.left-rect.left,y:r.top-rect.top,w:r.width,h:r.height}));
  function crosses(box,a,b){let low=0,high=1;for(let [origin,delta,min,max] of [[a.x,b.x-a.x,box.x-3,box.x+box.w+3],[a.y,b.y-a.y,box.y-3,box.y+box.h+3]]){if(Math.abs(delta)<1e-9){if(origin<min||origin>max)return false}else{let x=(min-origin)/delta,y=(max-origin)/delta;low=Math.max(low,Math.min(x,y));high=Math.min(high,Math.max(x,y));if(low>high)return false}}return true}
  const boxes=[];
  for(let p of points){
@@ -28,11 +28,11 @@ function constructionLabelLayout(svg){
   boxes.push(box);
   const toSvg=(x,y)=>{let q=svg.createSVGPoint();q.x=x+rect.left;q.y=y+rect.top;return q.matrixTransform(inverse)},center=toSvg(box.x+box.w/2,box.y+box.h/2),corner=toSvg(box.x,box.y);
   const group=el('g',{'data-label':p.name,class:'point-label-group'}),background=el('rect',{x:corner.x,y:corner.y,width:box.w/scale,height:box.h/scale,rx:3/scale,class:'label-background'});
-  if(Math.hypot(box.x+box.w/2-p.x,box.y+box.h/2-p.y)>40){let anchor=toSvg(Math.max(box.x,Math.min(box.x+box.w,p.x)),Math.max(box.y,Math.min(box.y+box.h,p.y))),vertex=state.points[p.name],leader=el('line',{x1:vertex[0],y1:vertex[1],x2:anchor.x,y2:anchor.y,class:'label-leader'});svg.insertBefore(leader,svg.querySelector('.point-label-group'))}
+  if(Math.hypot(box.x+box.w/2-p.x,box.y+box.h/2-p.y)>40){let anchor=toSvg(Math.max(box.x,Math.min(box.x+box.w,p.x)),Math.max(box.y,Math.min(box.y+box.h,p.y))),vertex=value.points[p.name],leader=el('line',{x1:vertex[0],y1:vertex[1],x2:anchor.x,y2:anchor.y,class:'label-leader'});svg.insertBefore(leader,svg.querySelector('.point-label-group'))}
   text.setAttribute('x',center.x);text.setAttribute('y',center.y+(settings.largeLabels?6.8:5.5)/scale);text.style.strokeWidth=(3/scale)+'px';group.append(background,text);svg.append(group);
  }
  // Transparent targets retain a constant physical size as the viewBox changes.
- for(let [name,p] of Object.entries(state.points)){let hit=el('circle',{cx:p[0],cy:p[1],r:16/scale,class:'point-hit','data-point':name});svg.insertBefore(hit,svg.querySelector('.point-label-group'))}
+ for(let [name,p] of Object.entries(value.points)){let hit=el('circle',{cx:p[0],cy:p[1],r:16/scale,class:'point-hit','data-point':name});svg.insertBefore(hit,svg.querySelector('.point-label-group'))}
 }
 
 let labelResizeFrame;

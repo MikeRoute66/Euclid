@@ -173,7 +173,7 @@ function updateSettings(){
 function showSettings(){
  Feedback.refreshStatus();
  $('#main-menu').classList.add('options-open');
- $('#menu-home').hidden=$('#save-points-view').hidden=true;$('#settings-view').hidden=false;$('#save-status').textContent='';
+ $('#menu-home').hidden=true;$('#settings-view').hidden=false;
  for(let key of Object.keys(settings))document.querySelector('[data-setting="'+key+'"]').checked=settings[key];$('#settings-mode').textContent=practiceMode();if(typeof Ranked!=='undefined')Ranked.controls();$('#settings-view input').focus();
 }
 function installSettings(){
