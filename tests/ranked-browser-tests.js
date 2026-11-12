@@ -51,7 +51,7 @@ addEventListener('load',async()=>{
    check(state.completed,'Construction, Undo, statement edits/deletion, and justifications replay successfully on the real server');
    check(localStorage.getItem('euclid-workshop-v2')===stored,'Ranked play does not overwrite the practice autosave');
    $('#main-menu-button').click();$('#leaderboard-menu').click();
-   await wait(()=>[...$('#leaderboard-rows').children].some(row=>row.textContent.includes(RANK_TEST_ACCOUNT.username)));
+   await wait(()=>$('#leaderboard-boards').textContent.includes(RANK_TEST_ACCOUNT.username));
    check(true,'The shared leaderboard shows the completed player\'s best time');$('#leaderboard-close').click();
    $('#settings-menu').click();document.querySelector('[data-setting="rankedMode"]').click();
    check(!settings.rankedMode&&settings.learningMode&&JSON.stringify(state.lines)===practice,'Turning Ranked mode off restores practice progress and assistance settings');

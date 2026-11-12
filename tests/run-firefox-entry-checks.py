@@ -18,7 +18,7 @@ import uuid
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument('--suite',choices=['entry','ranked'],default='entry')
+parser.add_argument('--suite',choices=['entry','ranked','leaderboard'],default='entry')
 parser.add_argument('--width',type=int,default=900)
 parser.add_argument('--height',type=int,default=600)
 options = parser.parse_args()
@@ -50,6 +50,8 @@ if options.suite=='ranked':
     account=json.loads((artifacts/'ranked-test-session.json').read_text(encoding='utf-8'))
     capture+='<script>window.RANK_TEST_ACCOUNT='+json.dumps({'username':account['username'],'password':account['password']})+';</script>'
     tests='<script src="tests/ranked-browser-tests.js"></script>'
+elif options.suite=='leaderboard':
+    tests='<script src="tests/leaderboard-browser-tests.js"></script>'
 else:
     tests='<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/feedback-tests.js"></script><script src="tests/proof-entry-tests.js"></script>'
 page.write_text(source.replace('<head>','<head>'+capture).replace('</body>',tests+'</body>'),encoding='utf-8')

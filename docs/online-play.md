@@ -8,6 +8,8 @@ Players create a public username and a password in **Menu > Player / Sign in**. 
 
 ## Score acceptance
 
+**Menu > Leaderboards** opens a dedicated scrollable viewer for every proposition with current-version entries, in book/proposition order. Each board shows the top 100 players. Click its heading to hide or show its entries, or use Show all / Hide all. These visibility choices stay in this browser across refreshes and visits; they never remove scores. No sign-in is required to view times.
+
 - The database records start time. Finish time is captured on the server after the submitted payload arrives, before proof validation, so validation latency does not inflate the result.
 - The browser records tool selection, point/mark operations, superposition, statements, edits, justification, deletion, and Undo. The server rebuilds geometry with the production construction tools. It ignores submitted completion flags, durations, certificates, and purported checkpoint positions.
 - The production formal proof checker validates the resulting proof against construction records and earlier established lines. Verification runs in small batches to fit Edge Function CPU limits. Only server-stored, previously checked prefixes may be reused. The initial proof snapshot and receipt time are immutable for that submission.
@@ -22,7 +24,7 @@ This is a server-validated casual leaderboard. A browser app cannot prove that a
 The CLI is authenticated and linked locally to the owner's Euclid project. Never commit CLI credentials, `.env` files, or service keys. Only `online-config.js` (public project URL/key and course version) belongs in the static site.
 
 1. With Python, run `python scripts/build-ranked-runtime.py` after changing mathematical rules or construction tools. Commit both the generated runtime and updated `online-config.js`.
-2. Apply new migrations with `supabase db query --remote --file supabase/migrations/FILE.sql --yes`, in filename order. These migrations create application-owned objects and do not erase player data. The first three migrations have already been applied.
+2. Apply new migrations with `supabase db query --remote --file supabase/migrations/FILE.sql --yes`, in filename order. These migrations create application-owned objects and do not erase player data. The first four migrations have already been applied.
 3. Deploy with `supabase functions deploy euclid-online --use-api --no-verify-jwt --yes`. This endpoint has public account/leaderboard actions, so gateway JWT verification is disabled; protected actions explicitly validate user tokens in the handler.
 4. Commit and push the static app to GitHub Pages. Deploy the corresponding function before publishing a changed course version. Existing clients must refresh if their version differs.
 
@@ -34,4 +36,6 @@ The bundled browser auth client is Supabase JS 2.119.0; its license is in `vendo
 - `python tests/ranked-api-tests.py` tests the deployed backend using disposable accounts. It checks account uniqueness, passwords, ownership, denied direct writes, untrusted timing, idempotence, fastest-only records, public data boundaries, and representative proofs including E2.9, E2.10, and E2.14.
 - `python tests/run-firefox-entry-checks.py --suite ranked --width 390 --height 844` uses those disposable credentials in an isolated Firefox profile. It checks real login, reload persistence, ranked settings, construction/proof events, best-time display, practice restoration, ranked reload, mobile panel switching, and logout.
 - Run `python tests/cleanup-ranked-test-users.py` when finished. It removes only the generated QA accounts and their scores, then removes the local credential fixture.
+- `python tests/run-firefox-entry-checks.py --suite leaderboard --width 390 --height 844` checks the viewer with all 62 populated boards, independent collapse, remembered visibility, scrolling, safe username rendering, empty results, and refresh failures using mocked board responses.
+- `python tests/leaderboard-api-tests.py` checks the deployed public snapshot and compares each populated board with the individual leaderboard endpoint without creating accounts or changing scores.
 - Existing entry, mobile, audio, and Book I regression suites remain available.

@@ -130,15 +130,35 @@ const Ranked=(()=>{
   }catch(error){q('#account-status').textContent=error.message}
   finally{q('#account-submit').disabled=false}
  }
+ const HIDDEN_BOARDS_KEY='euclid-hidden-leaderboards-v1';
+ let hiddenBoards=new Set(),boardRequest=0;
+ try{const stored=JSON.parse(localStorage.getItem(HIDDEN_BOARDS_KEY));if(Array.isArray(stored))hiddenBoards=new Set(stored.filter(s=>typeof s==='string'))}catch{}
+ function saveHiddenBoards(){try{localStorage.setItem(HIDDEN_BOARDS_KEY,JSON.stringify([...hiddenBoards]))}catch{}}
  async function board(){
-  q('#leaderboard-status').textContent='Loading...';q('#leaderboard-rows').replaceChildren();
-  const stage=q('#leaderboard-stage').value;
+  const ticket=++boardRequest;
+  q('#leaderboard-status').textContent='Loading...';q('#leaderboard-refresh').disabled=true;
   try{
-   const data=await api({action:'board',proposition:stage},false);
-   if(q('#leaderboard-stage').value!==stage)return;
-   q('#leaderboard-status').textContent=data.rows.length?'Best time per player. Top 100 finishers.':'No ranked times yet for this proposition.';
-   for(const row of data.rows){const tr=document.createElement('tr');for(const value of [row.rank,row.username,format(row.elapsedMs)]){const td=document.createElement('td');td.textContent=String(value);tr.append(td)}if(row.username===username)tr.className='own-score';q('#leaderboard-rows').append(tr)}
-  }catch(error){q('#leaderboard-status').textContent=error.message}
+   const data=await api({action:'boards'},false);
+   if(ticket!==boardRequest)return;
+   const sections=[];
+   for(const entry of data.boards){
+    const lesson=LESSONS.find(l=>EuclidBooks.key(l)===entry.proposition);
+    if(!lesson||!entry.rows.length)continue;
+    const section=document.createElement('details');section.className='leaderboard-board';section.dataset.proposition=entry.proposition;section.open=!hiddenBoards.has(entry.proposition);
+    const summary=document.createElement('summary');summary.textContent=EuclidBooks.reference(lesson)+' - '+lesson.title+' ('+entry.rows.length+')';
+    const table=document.createElement('table'),caption=document.createElement('caption');caption.textContent=EuclidBooks.reference(lesson)+' best times';caption.className='sr-only';table.append(caption);
+    const head=document.createElement('thead'),heading=document.createElement('tr');
+    for(const text of ['Rank','Player','Best time']){const th=document.createElement('th');th.scope='col';th.textContent=text;heading.append(th)}head.append(heading);table.append(head);
+    const rows=document.createElement('tbody');
+    for(const row of entry.rows){const tr=document.createElement('tr');for(const value of [row.rank,row.username,format(row.elapsedMs)]){const td=document.createElement('td');td.textContent=String(value);tr.append(td)}if(row.username===username)tr.className='own-score';rows.append(tr)}
+    table.append(rows);section.append(summary,table);
+    section.addEventListener('toggle',()=>{if(section.open)hiddenBoards.delete(entry.proposition);else hiddenBoards.add(entry.proposition);saveHiddenBoards()});
+    sections.push(section);
+   }
+   q('#leaderboard-boards').replaceChildren(...sections);
+   q('#leaderboard-status').textContent=sections.length?sections.length+' proposition'+(sections.length===1?'':'s')+' with ranked times.':'No ranked times yet. Finish a proposition in Ranked mode to appear here.';
+  }catch(error){if(ticket===boardRequest)q('#leaderboard-status').textContent='Could not refresh. '+error.message}
+  finally{if(ticket===boardRequest)q('#leaderboard-refresh').disabled=false}
  }
  async function init(){
   q('#account-menu').onclick=showAccount;q('#account-close').onclick=()=>q('#account-dialog').close();
@@ -147,8 +167,9 @@ const Ranked=(()=>{
    if(settings.rankedMode){const previous={...settings};settings.rankedMode=false;settingsChanged(previous);persist();render();renderTools()}
    await client?.auth.signOut({scope:'local'});user=null;username='';controls();q('#account-status').textContent='Signed out on this device.';
   };
-  q('#leaderboard-menu').onclick=()=>{q('#leaderboard-stage').replaceChildren(...LESSONS.map(lesson=>{const option=document.createElement('option');option.value=EuclidBooks.key(lesson);option.textContent=EuclidBooks.reference(lesson)+' - '+lesson.title;return option}));q('#leaderboard-stage').value=EuclidBooks.key(LESSONS[index]);q('#leaderboard-dialog').showModal();board()};
-  q('#leaderboard-close').onclick=()=>q('#leaderboard-dialog').close();q('#leaderboard-stage').onchange=board;q('#leaderboard-refresh').onclick=board;
+  q('#leaderboard-menu').onclick=()=>{q('#leaderboard-dialog').showModal();board()};
+  q('#leaderboard-close').onclick=()=>q('#leaderboard-dialog').close();q('#leaderboard-refresh').onclick=board;
+  for(const [id,open] of [['leaderboard-expand',true],['leaderboard-collapse',false]])q('#'+id).onclick=()=>{for(const section of q('#leaderboard-boards').children){section.open=open;if(open)hiddenBoards.delete(section.dataset.proposition);else hiddenBoards.add(section.dataset.proposition)}saveHiddenBoards()};
   q('#ranked-retry').onclick=submit;
   q('#main-menu').addEventListener('close',begin);
   q('#account-dialog').addEventListener('close',()=>{if(settings.rankedMode&&!user){const previous={...settings};settings.rankedMode=false;settingsChanged(previous);persist();render();renderTools()}else begin()});

@@ -292,6 +292,18 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 .online-tabs [aria-pressed="true"]{color:var(--green);border-color:var(--green)}
 .online-close{float:right}
 .online-table-wrap{max-height:50dvh;overflow:auto;margin-top:12px}
+#leaderboard-dialog{width:min(960px,96vw);height:92dvh;max-height:92dvh;padding:16px;overflow:hidden}
+#leaderboard-dialog[open]{display:flex;flex-direction:column}
+.leaderboard-header{display:block;flex:none;height:auto;margin:0;border:0}
+.leaderboard-header h2{margin:0 0 6px}
+.leaderboard-header p{margin:6px 0}
+#leaderboard-boards{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.leaderboard-board{margin:8px 0;border:1px solid #344b3a}
+.leaderboard-board summary{cursor:pointer;padding:12px;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.leaderboard-board summary:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
+.leaderboard-board summary:hover{color:var(--green)}
+.leaderboard-board table{margin-bottom:8px}
+#leaderboard-dialog caption{font-size:12px;text-align:left;padding:4px 8px;color:var(--green)}
 .online-dialog table{width:100%;border-collapse:collapse;font-size:13px}
 .online-dialog th,.online-dialog td{text-align:left;padding:8px;border-bottom:1px solid #253129}
 .online-dialog th:last-child,.online-dialog td:last-child{text-align:right;font-variant-numeric:tabular-nums}

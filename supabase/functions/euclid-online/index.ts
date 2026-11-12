@@ -50,10 +50,14 @@ async function handle(req:Request){
   const session=await response.json();
   return {session};
  }
+ if(body.action==='boards'){
+  await gate(req,'board',120);
+  return {courseVersion:COURSE_VERSION,boards:await rpc('ranked_leaderboards',{p_version:COURSE_VERSION})};
+ }
  if(body.action==='board'){
   await gate(req,'board',120);
   const proposition=stage(body.proposition);
-  const rows=await request('/rest/v1/best_times?proposition=eq.'+proposition+'&course_version=eq.'+COURSE_VERSION+'&select=elapsed_ms,achieved_at,player_profiles!inner(username)&order=elapsed_ms.asc,achieved_at.asc&limit=100');
+  const rows=await request('/rest/v1/best_times?proposition=eq.'+proposition+'&course_version=eq.'+COURSE_VERSION+'&select=elapsed_ms,achieved_at,player_profiles!inner(username)&order=elapsed_ms.asc,achieved_at.asc,user_id.asc&limit=100');
   return {courseVersion:COURSE_VERSION,rows:rows.map((r:any,i:number)=>({rank:i+1,username:r.player_profiles.username,elapsedMs:r.elapsed_ms}))};
  }
  const user=await player(req);
