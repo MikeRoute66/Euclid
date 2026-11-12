@@ -30,7 +30,11 @@ addEventListener('load',async()=>{
   check(!viewer.firstElementChild.open,'Refresh preserves hidden propositions');
   q('#leaderboard-collapse').click();check([...viewer.children].every(s=>!s.open),'Hide all collapses every board');
   q('#leaderboard-expand').click();check([...viewer.children].every(s=>s.open),'Show all restores every board');
-  q('#leaderboard-close').click();q('#leaderboard-menu').click();await wait(()=>!q('#leaderboard-refresh').disabled);
+  const close=q('#leaderboard-close'),closeRect=close.getBoundingClientRect();
+  const hit=document.elementFromPoint(closeRect.left+closeRect.width/2,closeRect.top+closeRect.height/2);
+  check(closeRect.width>=44&&closeRect.height>=44&&closeRect.top>=0&&closeRect.bottom<=innerHeight&&hit===close,'Close stays visible and tappable after scrolling, with a touch-sized target');
+  hit?.click();check(!q('#leaderboard-dialog').open&&q('#main-menu').open,'Tapping the visible Close button returns to the main menu');
+  q('#leaderboard-menu').click();await wait(()=>!q('#leaderboard-refresh').disabled);
   check([...viewer.children].every(s=>s.open),'Reopening preserves the chosen visibility');
   mode='error';q('#leaderboard-refresh').click();await wait(()=>q('#leaderboard-status').textContent.includes('Test network failure'));
   check(viewer.children.length===62&&!q('#leaderboard-refresh').disabled,'Failed refresh preserves the previous boards and allows retry');
