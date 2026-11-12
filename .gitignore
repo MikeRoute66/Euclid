@@ -4,3 +4,9 @@ qa-result.txt
 *.png
 __pycache__/
 .qa-*.html
+
+.local-tools/
+supabase/.temp/
+.env
+.env.*
+!.env.example

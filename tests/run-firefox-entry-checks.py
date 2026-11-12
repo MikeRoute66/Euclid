@@ -18,6 +18,7 @@ import uuid
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
+parser.add_argument('--suite',choices=['entry','ranked'],default='entry')
 parser.add_argument('--width',type=int,default=900)
 parser.add_argument('--height',type=int,default=600)
 options = parser.parse_args()
@@ -45,8 +46,13 @@ with socket.socket() as reserve:
                               'user_pref("browser.shell.checkDefaultBrowser",false);')
 capture = '<script>window.PROOF_ENTRY_ERRORS=[];addEventListener("error",e=>PROOF_ENTRY_ERRORS.push(e.error?.stack||e.message));</script>'
 source = (root/'index.html').read_text(encoding='utf-8')
-page.write_text(source.replace('<head>', '<head>'+capture).replace(
-    '</body>', '<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/feedback-tests.js"></script><script src="tests/proof-entry-tests.js"></script></body>'), encoding='utf-8')
+if options.suite=='ranked':
+    account=json.loads((artifacts/'ranked-test-session.json').read_text(encoding='utf-8'))
+    capture+='<script>window.RANK_TEST_ACCOUNT='+json.dumps({'username':account['username'],'password':account['password']})+';</script>'
+    tests='<script src="tests/ranked-browser-tests.js"></script>'
+else:
+    tests='<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/feedback-tests.js"></script><script src="tests/proof-entry-tests.js"></script>'
+page.write_text(source.replace('<head>','<head>'+capture).replace('</body>',tests+'</body>'),encoding='utf-8')
 
 class QuietServer(http.server.ThreadingHTTPServer):
     def handle_error(self, request, client_address):
@@ -117,7 +123,7 @@ try:
     command('WebDriver:SetWindowRect', {'width': options.width, 'height': options.height})
     command('WebDriver:Navigate', {'url': 'http://127.0.0.1:'+str(server.server_port)+'/'+page.name})
     report = ''
-    for attempt in range(100):
+    for attempt in range(900 if options.suite=='ranked' else 100):
         result = command('WebDriver:ExecuteScript', {
             'script': 'return document.querySelector("#qa-result")?.textContent||""',
             'args': [], 'sandbox': None, 'newSandbox': False})
@@ -125,7 +131,7 @@ try:
         if report:
             break
         time.sleep(.2)
-    if options.width <= 800 and options.height > 600 and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
+    if options.suite=='entry' and options.width <= 800 and options.height > 600 and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
         evaluate('document.querySelector("#qa-result").remove();Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true,skipJustifications:true});load(EuclidBooks.position("2.1"));state.lines=LESSONS[index].proofGuide.slice(0,9).map(s=>({s:s.s,j:null}));render();setMobileWorkspaceView("proof");document.querySelector("#statement").focus();')
         command('WebDriver:SetWindowRect', {'width': options.width, 'height': 480})
         time.sleep(.3)
@@ -136,7 +142,7 @@ try:
         time.sleep(.3)
         assert not evaluate('document.body.classList.contains("mobile-proof-typing")')
         report = report.replace('ALL CHECKS PASSED', 'PASS native Firefox resize automatically opens and closes compact proof layout\nALL CHECKS PASSED')
-    if 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
+    if options.suite=='entry' and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
         evaluate('document.querySelector("#qa-result")?.remove();openMainMenu();showSettings();let audioToggle=document.querySelector("[data-setting=soundEffects]");audioToggle.checked=true;audioToggle.dispatchEvent(new Event("change",{bubbles:true}));window.scheduledSounds=0;window.scheduledSoundTypes=[];for(let [method,type] of [["createOscillator",null],["createBufferSource","buffer"]]){const create=AudioContext.prototype[method];AudioContext.prototype[method]=function(){const node=create.call(this),start=node.start.bind(node);node.start=(...args)=>{window.scheduledSounds++;window.scheduledSoundTypes.push(type||node.type);return start(...args)};return node};}')
         element = command('WebDriver:FindElement', {'using': 'css selector', 'value': '#test-sound'})['value']
         command('WebDriver:ElementClick', {'id': element['element-6066-11e4-a52e-4f735466cecf']})
@@ -179,7 +185,7 @@ try:
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox proof submissions and edits schedule the correct confirmation or rejection sound\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
     print(report or 'FAILED: no test result was rendered.')
-    (artifacts/'firefox-entry.json').write_text(json.dumps({
+    (artifacts/('firefox-'+options.suite+'.json')).write_text(json.dumps({
         'browser': 'Firefox', 'version': session.get('capabilities', {}).get('browserVersion'),
         'passed': passed, 'checks': len(re.findall(r'^PASS ', report, re.M)),
         'report': report}, indent=2), encoding='utf-8')

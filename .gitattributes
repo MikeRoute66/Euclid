@@ -1,0 +1,2 @@
+# Keep third-party distributions byte-for-byte, including whitespace in JS literals.
+vendor/* -text -whitespace

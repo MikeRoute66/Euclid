@@ -279,3 +279,31 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 #learning-guidance[role="button"]:hover{background:#17261b}
 #learning-guidance[role="button"]:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 #learning-guidance[aria-disabled="true"]{cursor:default}
+
+.online-dialog{width:min(500px,94vw);max-height:92dvh;overflow:auto;background:#080b09;color:var(--ink);border:1px solid #344b3a;padding:22px}
+.online-dialog::backdrop{background:#000e}
+.online-dialog form{display:grid;gap:12px;margin-top:16px}
+.online-dialog label{display:grid;gap:5px;font-size:13px}
+.online-dialog input,.online-dialog select{width:100%;font:inherit;font-size:16px;background:#000;color:var(--ink);border:1px solid #435447;padding:9px;min-width:0}
+.online-dialog h2{font-size:25px;margin:5px 0 15px}
+.online-dialog p{font-size:13px;line-height:1.45}
+.online-dialog [hidden]{display:none!important}
+.online-tabs,.online-actions{display:flex;gap:8px;flex-wrap:wrap}
+.online-tabs [aria-pressed="true"]{color:var(--green);border-color:var(--green)}
+.online-close{float:right}
+.online-table-wrap{max-height:50dvh;overflow:auto;margin-top:12px}
+.online-dialog table{width:100%;border-collapse:collapse;font-size:13px}
+.online-dialog th,.online-dialog td{text-align:left;padding:8px;border-bottom:1px solid #253129}
+.online-dialog th:last-child,.online-dialog td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.online-dialog table{table-layout:fixed}
+.online-dialog th:first-child{width:48px}
+.online-dialog th:last-child{width:100px}
+.online-dialog td:nth-child(2){overflow-wrap:anywhere}
+.own-score{color:var(--green)}
+.ranked-status{display:flex;align-items:center;gap:8px;font-size:11px;flex:0 0 100%;color:var(--green);min-width:0}
+.ranked-status[hidden]{display:none}
+#ranked-timer{font-variant-numeric:tabular-nums;white-space:nowrap}
+#ranked-message{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ranked-retry{padding:2px 5px;font-size:11px}
+.setting-row:has(input:disabled){opacity:.55}
+.ranked-pending .workspace{opacity:.65}

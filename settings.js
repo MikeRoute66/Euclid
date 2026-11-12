@@ -1,7 +1,9 @@
 const SETTINGS_KEY='euclid-workshop-settings-v1';
 const PRACTICE_MODES=['Full challenge','Review','Construction practice','Justification practice','Construction and justifications','Statement practice','Proof practice','Statements and construction'];
-const DEFAULT_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,learningMode:false,largeLabels:false,showDefinitionNames:true,showPostulateNames:true,showCommonNotionNames:true,showPropositionNames:true,soundEffects:true};
+const DEFAULT_SETTINGS={rankedMode:false,skipConstruction:false,skipProof:false,skipJustifications:false,showHints:true,learningMode:false,largeLabels:false,showDefinitionNames:true,showPostulateNames:true,showCommonNotionNames:true,showPropositionNames:true,soundEffects:true};
 let settings={...DEFAULT_SETTINGS};try{let stored=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');for(let key of Object.keys(settings))if(typeof stored[key]==='boolean')settings[key]=stored[key]}catch{}
+const RANKED_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications:false,learningMode:false,showHints:false,showDefinitionNames:false,showPostulateNames:false,showCommonNotionNames:false,showPropositionNames:false,soundEffects:false};
+if(settings.rankedMode)Object.assign(settings,RANKED_SETTINGS);
 let buildingPractice=false;
 function toolNamesVisible(reference){
  const id=EuclidBooks.runtimeRule(Array.isArray(reference)?reference[1]:reference);
@@ -164,14 +166,15 @@ function applyPracticeDisplay(completed){
 function updateSettings(){
  const previous={...settings};
  for(let key of Object.keys(DEFAULT_SETTINGS)){let control=document.querySelector('[data-setting="'+key+'"]');if(control)settings[key]=control.checked}
+ if(typeof Ranked!=='undefined')Ranked.settingsChanged(previous);
  try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch{}
- Feedback.sync();tool=null;picks=[];if(previous.skipProof!==settings.skipProof)resetLineForm();if(['skipConstruction','skipProof','skipJustifications'].some(k=>previous[k]!==settings[k]))history=[];render();renderTools();$('#settings-mode').textContent=practiceMode();
+ Feedback.sync();tool=null;picks=[];if(previous.skipProof!==settings.skipProof)resetLineForm();if(previous.rankedMode===settings.rankedMode&&['skipConstruction','skipProof','skipJustifications'].some(k=>previous[k]!==settings[k]))history=[];render();renderTools();$('#settings-mode').textContent=practiceMode();
 }
 function showSettings(){
  Feedback.refreshStatus();
  $('#main-menu').classList.add('options-open');
  $('#menu-home').hidden=$('#save-points-view').hidden=true;$('#settings-view').hidden=false;$('#save-status').textContent='';
- for(let key of Object.keys(settings))document.querySelector('[data-setting="'+key+'"]').checked=settings[key];$('#settings-mode').textContent=practiceMode();$('#settings-view input').focus();
+ for(let key of Object.keys(settings))document.querySelector('[data-setting="'+key+'"]').checked=settings[key];$('#settings-mode').textContent=practiceMode();if(typeof Ranked!=='undefined')Ranked.controls();$('#settings-view input').focus();
 }
 function installSettings(){
  $('#settings-menu').onclick=showSettings;$('#back-from-settings').onclick=()=>{showMenuHome();$('#settings-menu').focus()};

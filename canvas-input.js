@@ -7,7 +7,7 @@ function canvasPointAt(event,radius=18){
 function superposeTriangles(){
  if(index!==3||tool?.[1]!=='CN4')return;
  snapshot();for(let fact of ['superpose','superpose:ABC:DEF'])if(!state.facts.includes(fact))state.facts.push(fact);
- for(let [a,b] of [['A','D'],['B','E'],['C','F']])state.points[a]=[...state.points[b]];picks=[];render();Feedback.play(true);
+ for(let [a,b] of [['A','D'],['B','E'],['C','F']])state.points[a]=[...state.points[b]];picks=[];render();if(!buildingPractice&&typeof Ranked!=='undefined')Ranked.record({kind:'superpose'});Feedback.play(true);
 }
 function activateCanvasPoint(name){
  if(index===3&&tool?.[1]==='CN4'){
@@ -57,5 +57,5 @@ function installCanvasInput(){
  window.addEventListener('pointercancel',e=>{if(drag?.id===e.pointerId)clearCanvasGesture()});
  canvas.addEventListener('lostpointercapture',e=>{if(drag?.id===e.pointerId)clearCanvasGesture()});
  window.addEventListener('blur',clearCanvasGesture);
- document.addEventListener('keydown',e=>{if(e.key==='Escape'){clearCanvasGesture();if(tool?.[3]==='equalAreaSquare'&&picks.length){picks=[];render()}}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){clearCanvasGesture();if(tool?.[3]==='equalAreaSquare'&&picks.length){picks=[];if(typeof Ranked!=='undefined')Ranked.record({kind:'cancelPicks'});render()}}});
 }

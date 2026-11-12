@@ -99,3 +99,5 @@ Every tool selection now gives feedback, including attempts to choose unavailabl
 The rejection sound is a quiet 25 ms burst of filtered noise with a fast decay, giving a non-tonal click. Options > Test click previews it separately from the confirmation beep.
 
 In Learning mode, click the next-step guidance (or focus it and press Enter or Space) to perform that step. Each click constructs one recorded object, adds the next statement, or justifies a pending line. Guided construction actions support Undo. Run `python tests/run-browser-checks.py --suite learning` to check guided completion of all 62 stages in every practice configuration.
+
+Accounts and shared leaderboards are available from the main menu. Ranked mode is a toggle in Options; it requires a fresh attempt with all assistance off. Password login persists independently on each device. See [online play and deployment](docs/online-play.md) for the backend, validation, account-recovery limitations, and tests.
