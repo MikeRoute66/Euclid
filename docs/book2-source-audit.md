@@ -28,8 +28,10 @@ strategy. Choosing that nonsquare rectangle is valid for every positive given
 area. The reusable E2.14 tool also accepts an already-square input, triangles,
 and simple nonconvex polygons; it rejects crossing and degenerate boundaries.
 
-The Joyce E2.8 image places O and Q inconsistently with its proof's equal widths
-and complements. The workshop uses consistent labels for the same eight regions.
+The workshop relabels E2.8 because its construction tools introduce auxiliary
+points. Joyce's diagram is consistent: O is the left endpoint of the lower
+internal horizontal, and Q is its intersection with the diagonal. An earlier
+version of this audit incorrectly claimed those labels were inconsistent.
 Several transcription slips in the Heath PDF are resolved from the surrounding
 argument, including the repeated half-angle name in E2.9 and the equal-square
 sentence in E2.10. The posted equations use the equal perpendicular leg, not the
@@ -39,3 +41,7 @@ The source index's dependency checks ensure that each explicitly cited earlier
 proposition appears in the teaching route or construction. They do not replace
 this argument review. Domain rules remain trusted Euclidean schemas rather than
 a foundational machine formalization of the entire text.
+
+See the [long-proof comparison](book2-long-proofs-review.md) for the detailed
+review of E2.4–E2.10, including source-to-workshop label mappings and the reason
+the workshop requires more individual proof lines.
