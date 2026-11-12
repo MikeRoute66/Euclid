@@ -16,6 +16,8 @@ addEventListener('load',async()=>{
   q('#leaderboard-menu').click();await wait(()=>q('#leaderboard-boards').children.length===62);
   check(requests===1,'All 62 boards load in a single request without signing in');
   const viewer=q('#leaderboard-boards'),first=viewer.firstElementChild;
+  const frame=q('#leaderboard-dialog').getBoundingClientRect();
+  check(frame.left===0&&frame.top===0&&Math.abs(frame.width-innerWidth)<=1&&Math.abs(frame.height-innerHeight)<=1&&getComputedStyle(q('#leaderboard-dialog')).borderTopWidth==='0px','The viewer fills the viewport without an outer border');
   check(viewer.querySelectorAll('tbody tr').length===6200,'Every board includes all 100 returned entries');
   check(!viewer.querySelector('img')&&first.textContent.includes('<img'),'Player names render as text');
   check(viewer.scrollHeight>viewer.clientHeight&&viewer.clientHeight>100,'The board list has a usable independent scrolling area');
