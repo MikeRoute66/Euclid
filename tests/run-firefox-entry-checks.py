@@ -192,10 +192,21 @@ try:
         import base64
         screenshot=command('WebDriver:TakeScreenshot', {})['value']
         (artifacts/('tutorial-'+str(options.width)+'.png')).write_bytes(base64.b64decode(screenshot))
+        menu=command('WebDriver:FindElement', {'using':'css selector','value':'#tutorial-toolbox [data-tab="definitions"]'})['value']
+        command('WebDriver:ElementClick', {'id':menu['element-6066-11e4-a52e-4f735466cecf']})
+        assert evaluate('!document.querySelector("#toolpopup").hidden&&document.querySelector("#toolpopup").getBoundingClientRect().bottom<=innerHeight')
+        screenshot=command('WebDriver:TakeScreenshot', {})['value']
+        (artifacts/('tutorial-menus-'+str(options.width)+'.png')).write_bytes(base64.b64decode(screenshot))
+        tool=command('WebDriver:FindElement', {'using':'css selector','value':'#tools [data-reference="D15"]'})['value']
+        command('WebDriver:ElementClick', {'id':tool['element-6066-11e4-a52e-4f735466cecf']})
+        assert evaluate('Tutorial.selected()==="D15"&&document.querySelector("#toolpopup").hidden')
+        line=command('WebDriver:FindElement', {'using':'css selector','value':'#tutorial-proof-line'})['value']
+        command('WebDriver:ElementClick', {'id':line['element-6066-11e4-a52e-4f735466cecf']})
+        assert evaluate('document.querySelector("#tutorial-status").classList.contains("correct")')
         close=command('WebDriver:FindElement', {'using':'css selector','value':'#tutorial-close'})['value']
         command('WebDriver:ElementClick', {'id':close['element-6066-11e4-a52e-4f735466cecf']})
         assert evaluate('!document.querySelector("#tutorial-dialog").open&&document.querySelector("#main-menu").open')
-        report=report.replace('ALL CHECKS PASSED','PASS Native Firefox tap exits the tutorial to the main menu\nALL CHECKS PASSED')
+        report=report.replace('ALL CHECKS PASSED','PASS Native Firefox taps open a bottom menu, scroll to/select a tool, justify a line, and exit to the main menu\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
     print(report or 'FAILED: no test result was rendered.')
     (artifacts/('firefox-'+options.suite+'.json')).write_text(json.dumps({

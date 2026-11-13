@@ -6,6 +6,7 @@ const RANKED_SETTINGS={skipConstruction:false,skipProof:false,skipJustifications
 if(settings.rankedMode)Object.assign(settings,RANKED_SETTINGS);
 let buildingPractice=false;
 function toolNamesVisible(reference){
+ if(typeof Tutorial!=='undefined'&&Tutorial.usingMenus())return true;
  const id=EuclidBooks.runtimeRule(Array.isArray(reference)?reference[1]:reference);
  const group=Object.keys(REFERENCES).find(group=>REFERENCES[group].some(r=>r[1]===id));
  const key={definitions:'showDefinitionNames',postulates:'showPostulateNames',notions:'showCommonNotionNames',propositions:'showPropositionNames'}[group];

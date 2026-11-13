@@ -26,7 +26,7 @@ const Ranked=(()=>{
   if(q('#account-signed-out'))q('#account-signed-out').hidden=!!user;
   const pending=settings.rankedMode&&!attempt;
   document.body.classList.toggle('ranked-pending',pending);
-  const workspace=q('.workspace'),shelf=q('.shelf');if(workspace)workspace.inert=pending;if(shelf)shelf.inert=pending;
+  const workspace=q('.workspace'),shelf=q('.shelf');if(workspace)workspace.inert=pending;if(shelf)shelf.inert=pending&&!(typeof Tutorial!=='undefined'&&Tutorial.usingMenus());
   for(const input of q('#lineform')?.querySelectorAll('input,button')||[])input.disabled=pending;
   q('#ranked-status').hidden=!settings.rankedMode;
   q('#ranked-message').textContent=message||(user?'Return to play to start a fresh timed attempt.':'Sign in to play ranked.');

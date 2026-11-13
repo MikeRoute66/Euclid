@@ -324,6 +324,11 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 #tutorial-dialog{position:fixed;inset:0;width:100%;max-width:none;height:100dvh;max-height:none;margin:0;border:0;border-radius:0;background:#000;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));overflow:hidden;color:var(--ink)}
 #tutorial-dialog[open]{display:flex;flex-direction:column;gap:12px}
 #tutorial-dialog [hidden]{display:none!important}
+#tutorial-toolbox{flex:none;min-width:0}
+#tutorial-toolbox .shelf{display:grid;grid-template-rows:30px 40px;margin:0;max-height:none;opacity:1}
+#tutorial-toolbox .shelfhead{display:flex}
+#tutorial-toolbox #toolpopup{bottom:40px}
+#tutorial-toolbox .tutorial-menu-target{border-bottom:2px solid var(--green)}
 .tutorial-top{display:flex;align-items:center;gap:16px;flex:none}
 .tutorial-top h2{font-size:24px;margin:0}
 #tutorial-progress{font-size:12px;color:var(--muted);flex:1}
@@ -375,6 +380,8 @@ h1{font-size:23px;line-height:1.1;margin:0 0 3px}
 #tutorial-canvas [role="button"]{cursor:pointer}
 #tutorial-canvas [role="button"]:hover,#tutorial-canvas [role="button"]:focus-visible{stroke:var(--rust);outline:none}
 @media(max-width:800px){
+ #tutorial-toolbox .shelf{grid-template-rows:26px 36px}
+ #tutorial-toolbox #toolpopup{bottom:36px;max-height:min(30dvh,228px)}
  #tutorial-dialog{padding:12px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
  .tutorial-top{gap:8px}.tutorial-top h2{font-size:20px}#tutorial-progress{font-size:10px}
  .tutorial-work{display:flex;flex-direction:column;gap:8px;min-height:0;flex:none}

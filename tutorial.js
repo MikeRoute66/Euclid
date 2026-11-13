@@ -2,8 +2,39 @@
 const Tutorial=(()=>{
  const q=s=>document.querySelector(s),KEY='euclid-tutorial-v1',cache=new Map();
  let current=null,exercise=null,selection=null,answers=[],done=false,progress={completed:[],last:null};
+ let menuState=null,advanceTimer=null;
  try{const stored=JSON.parse(localStorage.getItem(KEY));if(stored&&Array.isArray(stored.completed))progress={completed:stored.completed.filter(id=>TUTORIAL_LESSONS.some(l=>l.id===id)),last:stored.last}}catch{}
  const reference=id=>Object.values(REFERENCES).flat().find(r=>r[1]===id);
+ const groupFor=id=>Object.keys(REFERENCES).find(group=>REFERENCES[group].some(r=>r[1]===id));
+ function cancelAdvance(){clearTimeout(advanceTimer);advanceTimer=null}
+ function attachMenus(){
+  if(menuState)return;
+  const shelf=q('.shelf'),anchor=document.createComment('workshop toolbox');shelf.before(anchor);
+  menuState={anchor,tab,inert:shelf.inert,selected:q('#selected').textContent};tab=null;shelf.inert=false;
+  q('#tutorial-toolbox').append(shelf);q('#tutorial-toolbox').hidden=false;renderTools();
+ }
+ function detachMenus(){
+  if(!menuState)return;
+  hideToolName();const shelf=q('.shelf'),previous=menuState;
+  previous.anchor.replaceWith(shelf);shelf.inert=previous.inert;tab=previous.tab;q('#selected').textContent=previous.selected;
+  shelf.querySelectorAll('.tutorial-menu-target').forEach(button=>button.classList.remove('tutorial-menu-target'));
+  menuState=null;q('#tutorial-toolbox').hidden=true;renderTools();
+ }
+ function selectTool(r){
+  if(done)return;
+  selection=r[1];answers=[];closeTools();q('#selected').textContent='Selected: '+displayReference(selection)+' \u00b7 '+r[0];
+  q('#tutorial-status').textContent=selection===current.ref?'Tool selected. '+actionPrompt():'This example uses '+current.ref+'. Choose it from the bottom menus.';
+  Feedback.play(selection===current.ref);
+ }
+ function actionPrompt(){
+  if(['proof','customProof'].includes(current.kind))return 'Click the unfinished proof line.';
+  return current.prompt.replace(/^The [^.]*tool is selected\.\s*/i,'');
+ }
+ function next(){cancelAdvance();const position=TUTORIAL_LESSONS.indexOf(current)+1;if(position<TUTORIAL_LESSONS.length)start(TUTORIAL_LESSONS[position].id);else home()}
+ function ready(){
+  if(selection===current.ref)return true;
+  attempt(false,'Open '+({definitions:'Definitions',postulates:'Postulates',notions:'Common notions'}[groupFor(current.ref)])+' below and select '+current.ref+' first.');return false;
+ }
  function isolated(position,value,run){
   const previous={index,state,tool,picks,history,buildingPractice},instruction=q('#instruction').textContent;
   try{index=position;state=value;tool=null;picks=[];history=[];buildingPractice=true;return run()}
@@ -73,27 +104,26 @@ const Tutorial=(()=>{
  }
  function start(id){
   const lesson=TUTORIAL_LESSONS.find(l=>l.id===id);if(!lesson)return;
+  cancelAdvance();attachMenus();closeTools();
   current=lesson;selection=null;answers=[];done=false;q('#tutorial-status').textContent='';q('#tutorial-status').classList.remove('correct');q('#tutorial-next').disabled=true;
   q('#tutorial-home').hidden=true;q('#tutorial-exercise').hidden=false;
-  q('#tutorial-title').textContent=lesson.ref+' \u00b7 '+lesson.title;q('#tutorial-reference').textContent=reference(lesson.ref)[2];q('#tutorial-prompt').textContent=lesson.prompt;
+  q('#tutorial-title').textContent=lesson.ref+' \u00b7 '+lesson.title;q('#tutorial-reference').textContent=reference(lesson.ref)[2];
+  q('#tutorial-prompt').textContent='Open '+({definitions:'Definitions',postulates:'Postulates',notions:'Common notions'}[groupFor(lesson.ref)])+' below. Select '+lesson.ref+'. '+actionPrompt();
+  q('#selected').textContent='Choose a tool from the menus below';renderTools();
+  q('#tutorial-toolbox').querySelectorAll('[data-tab]').forEach(button=>button.classList.toggle('tutorial-menu-target',button.dataset.tab===groupFor(lesson.ref)));
   q('#tutorial-facts').textContent=lesson.facts||'';q('#tutorial-facts').hidden=!lesson.facts;
   q('#tutorial-response').replaceChildren();q('#tutorial-prior').replaceChildren();q('#tutorial-context').open=false;q('#tutorial-context').hidden=true;
   try{
    exercise=makeExercise(lesson);renderDiagram();
    if(lesson.kind==='proof'||lesson.kind==='customProof'){
-    const label=document.createElement('label');label.textContent='Justification';label.htmlFor='tutorial-reference-select';const select=document.createElement('select');select.id='tutorial-reference-select';
-    const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Choose a tool';select.append(placeholder);
-    const group=Object.values(REFERENCES).find(g=>g.some(r=>r[1]===lesson.ref));
-    for(const r of group){const option=document.createElement('option');option.value=r[1];option.textContent=r[1]+' \u00b7 '+r[0];select.append(option)}
-    select.onchange=()=>{selection=select.value;q('#tutorial-status').textContent='Now click the proof line.'};
     const line=document.createElement('button');line.type='button';line.id='tutorial-proof-line';line.className='tutorial-proof-line';line.textContent=exercise.statement;line.onclick=justify;
-    q('#tutorial-response').append(label,select,line);
+    q('#tutorial-response').append(line);
     const prior=exercise.value.lines.slice(0,-1);q('#tutorial-context').hidden=!prior.length;
     for(const p of prior){const row=document.createElement('li');row.textContent=p.s+' \u00b7 '+displayReference(p.j);q('#tutorial-prior').append(row)}
    }else if(lesson.kind==='classify'){
-    for(const option of lesson.choices){const b=document.createElement('button');b.type='button';b.textContent=option;b.dataset.answer=option;b.onclick=()=>attempt(option===lesson.answer);q('#tutorial-response').append(b)}
+    for(const option of lesson.choices){const b=document.createElement('button');b.type='button';b.textContent=option;b.dataset.answer=option;b.onclick=()=>{if(ready())attempt(option===lesson.answer)};q('#tutorial-response').append(b)}
    }else{
-    const text=document.createElement('p');text.textContent=lesson.kind==='construct'?'Tool ready: '+reference(lesson.ref)[0]+'.':'Click the diagram. You can also use Tab, then Enter.';q('#tutorial-response').append(text);
+    const text=document.createElement('p');text.textContent='Choose the tool below, then use the diagram. You can also use Tab, then Enter.';q('#tutorial-response').append(text);
    }
    progress.last=id;remember();q('#tutorial-prompt').focus();
   }catch(error){exercise=null;q('#tutorial-status').textContent='This example could not open. '+error.message}
@@ -105,16 +135,17 @@ const Tutorial=(()=>{
   q('#tutorial-status').classList.add('correct');q('#tutorial-status').textContent='Correct. '+current.explanation;q('#tutorial-next').disabled=false;Feedback.play(true);
   q('#tutorial-response').querySelectorAll('button,select').forEach(b=>b.disabled=true);
   q('#tutorial-progress').textContent=progress.completed.length+' / '+TUTORIAL_LESSONS.length+' examples completed';
+  const completed=current;cancelAdvance();advanceTimer=setTimeout(()=>{advanceTimer=null;if(q('#tutorial-dialog').open&&current===completed&&done)next()},500);
  }
  function justify(){
-  if(!selection){attempt(false,'Choose a justification first, then click this line.');return}
-  if(selection!==current.ref){attempt(false,'This example practices '+current.ref+'. Select it and try the proof line again.');return}
+  if(!ready())return;
   const value=structuredClone(exercise.value);value.lines.at(-1).j=selection;EuclidLogic.grade(value,exercise.source);
   attempt(value.lines.every(l=>l.valid),value.lines.find(l=>!l.valid)?.error);
   if(done)q('#tutorial-proof-line').textContent=exercise.statement+' \u00b7 '+selection+' \u2713';
  }
  function target(key){
   if(done||!exercise)return;
+  if(!ready())return;
   if(current.kind==='construct'){constructionTarget(key);return}
   const expected=current.targets?.[answers.length];
   const accepted=current.targets?.includes(key)&&!answers.includes(key)||expected==='anyEdge'&&key.startsWith('edge:')||expected==='eitherEndpoint'&&['point:A','point:B'].includes(key)||expected==='half:upperOrLower'&&key.startsWith('half:');
@@ -192,13 +223,15 @@ const Tutorial=(()=>{
   const [a,v,b]=[...name].map(n=>value.points[n]),left=Math.atan2(a[1]-v[1],a[0]-v[0]),end=Math.atan2(b[1]-v[1],b[0]-v[0]),sweep=(end-left+Math.PI*3)%(Math.PI*2)-Math.PI,r=32;
   clickable(svg,node('path',{d:`M ${v} L ${v[0]+r*Math.cos(left)} ${v[1]+r*Math.sin(left)} A ${r} ${r} 0 0 ${sweep>0?1:0} ${v[0]+r*Math.cos(left+sweep)} ${v[1]+r*Math.sin(left+sweep)} Z`,class:'tutorial-angle'}),'angle:'+name,'Angle '+name);
  }
- function home(){q('#tutorial-home').hidden=false;q('#tutorial-exercise').hidden=true;catalog();q('#tutorial-resume').focus()}
+ function home(){cancelAdvance();detachMenus();q('#tutorial-home').hidden=false;q('#tutorial-exercise').hidden=true;catalog();q('#tutorial-resume').focus()}
  function open(){q('#tutorial-search').value='';home();q('#tutorial-dialog').showModal();q('#tutorial-resume').focus()}
- function close(){q('#tutorial-dialog').close();q('#tutorial-menu').focus()}
+ function close(){cancelAdvance();detachMenus();q('#tutorial-dialog').close();q('#tutorial-menu').focus()}
+ q('#tutorial-dialog').addEventListener('close',()=>{cancelAdvance();detachMenus()});
+ q('#tutorial-dialog').addEventListener('cancel',()=>{cancelAdvance();detachMenus()});
  q('#tutorial-close').onclick=close;q('#tutorial-catalog').onclick=home;q('#tutorial-search').oninput=catalog;
  q('#tutorial-retry').onclick=()=>start(current.id);
- q('#tutorial-next').onclick=()=>{const next=TUTORIAL_LESSONS.indexOf(current)+1;if(next<TUTORIAL_LESSONS.length)start(TUTORIAL_LESSONS[next].id);else home()};
+ q('#tutorial-next').onclick=next;
  q('#tutorial-resume').onclick=()=>start(progress.last||TUTORIAL_LESSONS[0].id);
  let resizeFrame;window.addEventListener('resize',()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{if(q('#tutorial-dialog').open&&exercise&&!q('#tutorial-exercise').hidden)renderDiagram()})});
- return {open,makeExercise,lessons:TUTORIAL_LESSONS};
+ return {open,makeExercise,lessons:TUTORIAL_LESSONS,usingMenus:()=>menuState!==null,selected:()=>selection,selectReference:selectTool};
 })();
