@@ -18,7 +18,7 @@ import uuid
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial'],default='entry')
+parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial','semicircle'],default='entry')
 parser.add_argument('--width',type=int,default=900)
 parser.add_argument('--height',type=int,default=600)
 options = parser.parse_args()
@@ -54,6 +54,8 @@ elif options.suite=='leaderboard':
     tests='<script src="tests/leaderboard-browser-tests.js"></script>'
 elif options.suite=='tutorial':
     tests='<script src="tests/tutorial-browser-tests.js"></script>'
+elif options.suite=='semicircle':
+    tests='<script src="tests/semicircle-browser-tests.js"></script>'
 else:
     tests='<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/feedback-tests.js"></script><script src="tests/proof-entry-tests.js"></script>'
 page.write_text(source.replace('<head>','<head>'+capture).replace('</body>',tests+'</body>'),encoding='utf-8')
@@ -126,6 +128,39 @@ try:
     session = command('WebDriver:NewSession', {'capabilities': {}})
     command('WebDriver:SetWindowRect', {'width': options.width, 'height': options.height})
     command('WebDriver:Navigate', {'url': 'http://127.0.0.1:'+str(server.server_port)+'/'+page.name})
+    if options.suite=='semicircle':
+        for _ in range(100):
+            if evaluate('!!window.SEMICIRCLE_QA'):break
+            time.sleep(.1)
+        def click_element(selector):
+            element=command('WebDriver:FindElement',{'using':'css selector','value':selector})['value']
+            command('WebDriver:ElementClick',{'id':element['element-6066-11e4-a52e-4f735466cecf']})
+        def click_position(point):
+            actions=[{'type':'pointerMove','duration':0,'x':round(point[0]),'y':round(point[1]),'origin':'viewport'},{'type':'pointerDown','button':0},{'type':'pointerUp','button':0}]
+            command('WebDriver:PerformActions',{'actions':[{'type':'pointer','id':'manual-mouse','parameters':{'pointerType':'mouse'},'actions':actions}]})
+        tasks=evaluate('LESSONS[index].construction')
+        for step,task in enumerate(tasks):
+            if task['ref']=='D18':
+                evaluate("SEMICIRCLE_QA.check(/semicircle/i.test(nextHint())&&nextHint().includes('M, E, L, I'),'Guidance names the semicircle and all four manual inputs')")
+                evaluate('settings.learningMode=false;render()')
+                click_element('#hint')
+                evaluate("SEMICIRCLE_QA.check(/semicircle/i.test($('#modalbody').textContent)&&$('#modalbody').textContent.includes('M, E, L, I'),'The normal hint button also teaches all semicircle inputs')")
+                click_element('#closemodal')
+                evaluate('settings.learningMode=true;render()')
+            group='definitions' if task['ref'].startswith('D') else 'postulates' if task['ref'].startswith('P') else 'propositions'
+            click_element('[data-tab="'+group+'"]')
+            click_element('#tools [data-reference="'+task['ref']+'"]')
+            if task['ref']=='D1' and not task['inputs']:
+                point=evaluate("(()=>{const d=EuclidLogic.diagram(state),hit=bookOneIntersections().find(p=>p.supports?.includes('arc:a1')&&p.supports.includes('HI')&&p[1]<state.points.I[1]);if(!hit)throw Error('No upper arc crossing');const m=$('#canvas').getScreenCTM();return [m.a*hit[0]+m.c*hit[1]+m.e,m.b*hit[0]+m.d*hit[1]+m.f]})()")
+                click_position(point)
+            else:
+                for name in task['inputs']:
+                    point=evaluate("(()=>{const p=state.points["+json.dumps(name)+"],m=$('#canvas').getScreenCTM();return [m.a*p[0]+m.c*p[1]+m.e,m.b*p[0]+m.d*p[1]+m.f]})()")
+                    click_position(point)
+            evaluate('SEMICIRCLE_QA.check(constructionProgress(state,LESSONS[index]).checks['+str(step)+'], '+json.dumps('Manual construction step '+str(step+1)+': '+task['ref'])+')')
+        import base64
+        (artifacts/('manual-semicircle-'+str(options.width)+'.png')).write_bytes(base64.b64decode(command('WebDriver:TakeScreenshot',{})['value']))
+        evaluate("SEMICIRCLE_QA.check(EuclidCurves.valid(state)&&state.arcs.length===1&&state.arcs[0].points.includes('N'),'The manually drawn semicircle records the intersection N');SEMICIRCLE_QA.check(constructionProgress(state,LESSONS[index]).complete,'The entire E2.14 construction is achievable through manual pointer input');state.lines=LESSONS[index].proofGuide.map(s=>({s:s.s,j:s.j}));render();SEMICIRCLE_QA.check(state.completed&&state.lines.every(l=>l.valid),'The manual construction supports the complete source proof');SEMICIRCLE_QA.check(PROOF_ENTRY_ERRORS.length===0,'No uncaught errors in manual E2.14');SEMICIRCLE_QA.finish()")
     report = ''
     for attempt in range(900 if options.suite in ['ranked','tutorial'] else 100):
         result = command('WebDriver:ExecuteScript', {
@@ -206,7 +241,15 @@ try:
         close=command('WebDriver:FindElement', {'using':'css selector','value':'#tutorial-close'})['value']
         command('WebDriver:ElementClick', {'id':close['element-6066-11e4-a52e-4f735466cecf']})
         assert evaluate('!document.querySelector("#tutorial-dialog").open&&document.querySelector("#main-menu").open')
-        report=report.replace('ALL CHECKS PASSED','PASS Native Firefox taps open a bottom menu, scroll to/select a tool, justify a line, and exit to the main menu\nALL CHECKS PASSED')
+        evaluate("sessionStorage.setItem('tutorial-migration-check','1');const old=JSON.parse(localStorage.getItem('euclid-tutorial-v1'));old.last='D1-1';old.completed.push('D1-1');localStorage.setItem('euclid-tutorial-v1',JSON.stringify(old))")
+        command('WebDriver:Refresh', {})
+        for _ in range(100):
+            if evaluate('typeof Tutorial!=="undefined"&&document.querySelector("#main-menu").open'):break
+            time.sleep(.1)
+        evaluate('document.querySelector("#tutorial-menu").click();document.querySelector("#tutorial-resume").click()')
+        assert evaluate('document.querySelector("#tutorial-title").textContent.includes("Mark a point")&&document.querySelector("#tutorial-progress").textContent.startsWith("46 / 46")')
+        evaluate('document.querySelector("#tutorial-close").click();sessionStorage.removeItem("tutorial-migration-check")')
+        report=report.replace('ALL CHECKS PASSED','PASS Native Firefox taps open a bottom menu, scroll to/select a tool, justify a line, and exit to the main menu\nPASS Reload removes retired completion IDs and recovers from a retired resume target\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
     print(report or 'FAILED: no test result was rendered.')
     (artifacts/('firefox-'+options.suite+'.json')).write_text(json.dumps({

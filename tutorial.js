@@ -4,6 +4,7 @@ const Tutorial=(()=>{
  let current=null,exercise=null,selection=null,answers=[],done=false,progress={completed:[],last:null};
  let menuState=null,advanceTimer=null;
  try{const stored=JSON.parse(localStorage.getItem(KEY));if(stored&&Array.isArray(stored.completed))progress={completed:stored.completed.filter(id=>TUTORIAL_LESSONS.some(l=>l.id===id)),last:stored.last}}catch{}
+ if(!TUTORIAL_LESSONS.some(l=>l.id===progress.last))progress.last=TUTORIAL_LESSONS.find(l=>!progress.completed.includes(l.id))?.id||TUTORIAL_LESSONS[0].id;
  const reference=id=>Object.values(REFERENCES).flat().find(r=>r[1]===id);
  const groupFor=id=>Object.keys(REFERENCES).find(group=>REFERENCES[group].some(r=>r[1]===id));
  function cancelAdvance(){clearTimeout(advanceTimer);advanceTimer=null}
@@ -160,7 +161,6 @@ const Tutorial=(()=>{
    isolated(exercise.position,value,()=>{
     tool=reference(current.ref);
     if(op==='superpose'){EuclidConstruction.initialize(value,LESSONS[3]);superposeTriangles()}
-    else if(op==='semicircle'){picks=['O','A','B'];choosePoint('C')}
     else if(exercise.coordinate)bookOneMark(exercise.coordinate,exercise.supports);
     else for(const key of answers)choosePoint(key.slice(6));
    });
