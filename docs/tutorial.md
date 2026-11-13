@@ -1,28 +1,29 @@
 # Tutorial coverage
 
-The tutorial currently has 46 examples across all 25 installed definitions, five postulates, and five common notions. It covers distinct vocabulary and supported operations, rather than every possible application of an axiom. Each example practices one small operation. Every example first requires opening one of the actual bottom reference menus and selecting its tool, then using the diagram, choosing a classification, or clicking a proof line. Tool-menu navigation adds clicks to the original one/two-action exercises.
+The tutorial currently has 28 practical lessons. Each lesson performs a supported construction or justifies a formal proof statement. Foundational vocabulary stays in the reference menus; it no longer receives an exercise merely to cover every definition. In particular, point marking remains because it records incidence, whereas clicking a surface, identifying an endpoint, locating an already specified center, and classifying a pictured figure have been removed.
 
-Different intersections, different magnitude types, and different members of a classification are examples of the same concept. They no longer get separate lessons. Separate lessons remain for different operations or logical directions, such as recognizing a diameter versus using its bisection property, establishing an equilateral triangle versus using its equal sides, or physically superposing triangles versus applying coincidence in a proof. Stable lesson IDs preserve completion for retained concepts; removed IDs are filtered out, and a removed resume target moves to an available lesson.
+Every lesson uses the actual bottom reference menus. Correct completion advances after 500 ms. Different intersections or kinds of magnitude do not create extra lessons. Separate lessons remain for different operations or logical directions, such as establishing an equilateral triangle versus using its equal sides, or physically superposing triangles versus applying coincidence in a proof.
 
-| References | Concepts practiced |
+| References | Practical actions |
 | --- | --- |
-| D1 | Mark a point and record its membership; one example covers line, circle, and arc intersections |
-| D2-D9 | Line, endpoints, straightness, surface, surface edges, plane surface, plane angle, rectilinear angle |
-| D10-D12 | Equal adjacent angles give perpendicularity; perpendicularity gives right angles; obtuse and acute vocabulary |
-| D13-D14 | Recognize a boundary; recognize an enclosed figure, regardless of straight or curved edges |
-| D15-D18 | Equal recorded radii; center; diameter and equal halves; recognize a semicircle; construct one using the full center/endpoints/side-marker input sequence |
-| D19-D21 | Classify a straight-sided figure; prove equilateral from side equalities; use its equal sides; classify a triangle by angles |
-| D22-D23 | Establish a square; use its equal sides; use its right angles; rename segments on an established parallel support |
+| D1 | Mark an intersection and record its membership |
+| D10 | Justify perpendicular lines or a right angle |
+| D15 | Justify equality of recorded radii |
+| D18 | Construct a semicircle using center, diameter endpoints, and side marker |
+| D20 | Establish an equilateral triangle; use its equal sides |
+| D22 | Establish a square; use its equal sides and right angles |
+| D23 | Justify parallelism when naming segments on established parallel supports |
 | P1-P4 | Join, extend, draw a circle, compare established right angles |
-| P5 | Prove that lines meet; use Euclid's alternate-angle argument for parallels |
-| CN1 | Transitivity; one representative example applies equally to lengths, angles, and areas |
-| CN2 | Adjacent parts sum to the whole; add equal magnitudes; preserve an inequality when adding the same magnitude |
-| CN3 | Subtract equal magnitudes; one representative length example |
+| P5 | Justify that lines meet; use the alternate-angle argument for parallels |
+| CN1 | Justify transitive equality |
+| CN2 | Express a whole as adjacent parts; add equal magnitudes; preserve an inequality under addition |
+| CN3 | Subtract equal magnitudes |
 | CN4 | Superpose triangles; justify coincidence; use corresponding coincident parts |
-| CN5 | A whole exceeds its proper part; one representative segment example |
-| D2.1-D2.2 | Express a rectangle by its containing sides, with a square as the same product with equal factors; identify the gnomon union |
+| CN5 | Justify a whole being greater than a proper part |
+| D2.1 | Express a rectangle by its containing sides |
+| D2.2 | Justify a gnomon from its recorded diagonal and partition |
 
-Vocabulary examples supply their side/angle/containment facts explicitly. They do not claim that the formal grammar accepts every classification, or that a picture proves its own properties. Changing the depicted object is not treated as another use case. The full reference and short explanation still describe the other members of each classification and the other kinds of magnitude.
+All 25 definitions remain available in the menus, including those without a tutorial exercise. Stable IDs preserve completion for retained lessons; retired IDs are filtered out, and an unavailable resume target moves to an available lesson. Old proposition progress is untouched.
 
 Proof examples copy an existing source route's validated prefix and its actual constructed geometry, then leave one statement unjustified. Both the supplied prefix and target must pass the production formal grader. All geometry construction examples use the existing construction functions and check that the requested record was actually created. The semicircle example supplies a circle with a recorded diameter, but requires all four manual selections: center O, endpoints A and B, and side marker C. This is one construction operation with four point inputs; the tutorial no longer preselects its first three inputs.
 

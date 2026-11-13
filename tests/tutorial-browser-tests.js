@@ -10,8 +10,8 @@ addEventListener('load',async()=>{
   check(q('#continue-menu').textContent==='Play'&&q('#tutorial-menu').textContent==='Tutorial'&&!q('#load-save')&&!q('#save-point-menu')&&!q('#fresh-menu')&&!q('#save-file'),'Main menu replaces the four save-game actions with Play and Tutorial');
   const shelf=q('.shelf'),shelfParent=shelf.parentElement;
   q('#tutorial-menu').click();
-  check(Tutorial.lessons.filter(l=>l.ref==='D1').length===1&&Tutorial.lessons.length===46,'The catalog has 46 distinct concepts and a single point-marking example');
-  const refs=new Set(Tutorial.lessons.map(l=>l.ref));check([...REFERENCES.definitions,...REFERENCES.postulates,...REFERENCES.notions].every(r=>refs.has(r[1])),'Every installed definition, postulate, and common notion has at least one example');
+  check(Tutorial.lessons.filter(l=>l.ref==='D1').length===1&&Tutorial.lessons.length===28&&Tutorial.lessons.every(l=>['construct','proof','customProof'].includes(l.kind)),'All 28 lessons teach a construction or proof action, with a single point-marking example');
+  const refs=new Set(Tutorial.lessons.map(l=>l.ref));check([...REFERENCES.postulates,...REFERENCES.notions].every(r=>refs.has(r[1]))&&['D1','D10','D15','D18','D20','D22','D23','D2.1','D2.2'].every(id=>refs.has(id)),'The tutorial covers actionable definitions, every postulate, and every common notion');
   for(const l of Tutorial.lessons){
    try{
     q('#tutorial-search').value='';q('#tutorial-search').dispatchEvent(new Event('input'));
@@ -42,14 +42,14 @@ addEventListener('load',async()=>{
   check(q('#tutorial-next').disabled,'A geometry action requires selecting its tool from a bottom menu');
   choose('D1');const started=performance.now();q('#tutorial-canvas [data-target="intersection"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));
   await pause(250);check(q('#tutorial-title').textContent.includes('Mark a point'),'A completed example remains visible during the first 250 ms');
-  await pause(350);check(performance.now()-started>=500&&q('#tutorial-title').textContent.includes('Length without breadth'),'Completion advances automatically after 500 ms');
+  await pause(350);check(performance.now()-started>=500&&q('#tutorial-title').textContent.includes('Equal adjacent angles'),'Completion advances automatically after 500 ms');
   q('#tutorial-catalog').click();q('[data-lesson="D1-0"]').click();choose('D1');q('#tutorial-canvas [data-target="intersection"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));
-  q('#tutorial-next').click();await pause(600);check(q('#tutorial-title').textContent.includes('Length without breadth'),'Manual Next cancels the pending advance rather than skipping an extra example');
+  q('#tutorial-next').click();await pause(600);check(q('#tutorial-title').textContent.includes('Equal adjacent angles'),'Manual Next cancels the pending advance rather than skipping an extra example');
   q('#tutorial-catalog').click();q('[data-lesson="D1-0"]').click();choose('D1');q('#tutorial-canvas [data-target="intersection"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));
   q('#tutorial-close').click();await pause(600);check(!q('#tutorial-dialog').open&&shelf.parentElement===shelfParent,'Leaving during the delay cancels advancement and restores the workshop menus');
   q('#tutorial-menu').click();q('[data-lesson="D1-0"]').click();choose('D1');q('#tutorial-canvas [data-target="intersection"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));
   q('#tutorial-retry').click();await pause(600);check(q('#tutorial-title').textContent.includes('Mark a point')&&q('#tutorial-next').disabled,'Retry cancels the old example timer');
-  q('#tutorial-catalog').click();q('[data-lesson="D2.2-0"]').click();choose('D2.2');q('#tutorial-canvas [data-target="face:gnomon"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));await pause(600);check(!q('#tutorial-home').hidden,'The final example returns to the catalog automatically');
+  q('#tutorial-catalog').click();q('[data-lesson="D2.2-1"]').click();choose('D2.2');q('#tutorial-proof-line').click();await pause(600);check(!q('#tutorial-home').hidden,'The final example returns to the catalog automatically');
   q('#tutorial-search').value='gnomon';q('#tutorial-search').dispatchEvent(new Event('input'));check(q('#tutorial-list').querySelectorAll('button').length===1,'Catalog search locates the single gnomon concept');
   q('#tutorial-close').click();
   check(!q('#tutorial-dialog').open&&q('#main-menu').open&&shelf.parentElement===shelfParent,'Tutorial returns to the main menu');

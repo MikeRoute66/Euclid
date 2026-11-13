@@ -241,13 +241,13 @@ try:
         close=command('WebDriver:FindElement', {'using':'css selector','value':'#tutorial-close'})['value']
         command('WebDriver:ElementClick', {'id':close['element-6066-11e4-a52e-4f735466cecf']})
         assert evaluate('!document.querySelector("#tutorial-dialog").open&&document.querySelector("#main-menu").open')
-        evaluate("sessionStorage.setItem('tutorial-migration-check','1');const old=JSON.parse(localStorage.getItem('euclid-tutorial-v1'));old.last='D1-1';old.completed.push('D1-1');localStorage.setItem('euclid-tutorial-v1',JSON.stringify(old))")
+        evaluate("sessionStorage.setItem('tutorial-migration-check','1');const old=JSON.parse(localStorage.getItem('euclid-tutorial-v1'));old.last='D2-0';old.completed.push('D2-0');localStorage.setItem('euclid-tutorial-v1',JSON.stringify(old))")
         command('WebDriver:Refresh', {})
         for _ in range(100):
             if evaluate('typeof Tutorial!=="undefined"&&document.querySelector("#main-menu").open'):break
             time.sleep(.1)
         evaluate('document.querySelector("#tutorial-menu").click();document.querySelector("#tutorial-resume").click()')
-        assert evaluate('document.querySelector("#tutorial-title").textContent.includes("Mark a point")&&document.querySelector("#tutorial-progress").textContent.startsWith("46 / 46")')
+        assert evaluate('document.querySelector("#tutorial-title").textContent.includes("Mark a point")&&document.querySelector("#tutorial-progress").textContent.startsWith(Tutorial.lessons.length+" / "+Tutorial.lessons.length)')
         evaluate('document.querySelector("#tutorial-close").click();sessionStorage.removeItem("tutorial-migration-check")')
         report=report.replace('ALL CHECKS PASSED','PASS Native Firefox taps open a bottom menu, scroll to/select a tool, justify a line, and exit to the main menu\nPASS Reload removes retired completion IDs and recovers from a retired resume target\nALL CHECKS PASSED')
     passed = 'ALL CHECKS PASSED' in report and 'FAIL ' not in report
