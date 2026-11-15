@@ -12,9 +12,9 @@ const EuclidBooks=(()=>{
  function dependencyRule(value){return typeof value==='number'?'I'+value:runtimeRule(value)}
  function referenceLesson(value){return LESSONS.find(l=>reference(l)===rule(value))}
  function earlier(value,lesson){let source=referenceLesson(value);if(!source)return false;let a=identity(source),b=identity(lesson);return a.book<b.book||a.book===b.book&&a.proposition<b.proposition}
- function install(number,lessons,definitions,modes={}){
-  const expected={2:14,3:37}[number],ordered=[...lessons].sort((a,b)=>a.proposition-b.proposition);
-  if(!expected||LESSONS.some(l=>identity(l).book===number)||ordered.length!==expected||ordered.some((l,i)=>l.book!==number||l.proposition!==i+1||l.id!==LESSONS.length+i+1||!l.goals?.length||!l.proofGuide?.length||!Array.isArray(l.construction)))throw Error('Install a complete, ordered book after all its predecessors.');
+ function install(number,lessons,definitions,modes={},releaseCount=null){
+  const expected=releaseCount??{2:14,3:37}[number],ordered=[...lessons].sort((a,b)=>a.proposition-b.proposition);
+  if(!({2:14,3:37}[number])||expected<1||expected>{2:14,3:37}[number]||LESSONS.some(l=>identity(l).book===number)||ordered.length!==expected||ordered.some((l,i)=>l.book!==number||l.proposition!==i+1||l.id!==LESSONS.length+i+1||!l.goals?.length||!l.proofGuide?.length||!Array.isArray(l.construction)))throw Error('Install an ordered, reviewed release after its predecessors.');
   for(let l of ordered){l.key=key(l);for(let step of [...l.construction,...l.proofGuide]){let ref=step.ref||step.j,m=/^E([23])\.(\d+)$/.exec(ref);if(m&&(Number(m[1])>number||Number(m[1])===number&&Number(m[2])>=l.proposition))throw Error('A lesson cannot use its own or a later proposition.')}}
   LESSONS.push(...ordered);REFERENCES.definitions.push(...definitions);REFERENCES.propositions.push(...ordered.map(l=>[l.title,reference(l),l.description,modes[reference(l)]]));
  }

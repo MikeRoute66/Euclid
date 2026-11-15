@@ -12,7 +12,7 @@ function toolNamesVisible(reference){
  const key={definitions:'showDefinitionNames',postulates:'showPostulateNames',notions:'showCommonNotionNames',propositions:'showPropositionNames'}[group];
  return !key||settings[key];
 }
-function constructionGeometry(value){return structuredClone(Object.fromEntries(['points','edges','rays','circles','arcs','facts','topology'].map(key=>[key,key==='arcs'?(value[key]||[]):value[key]])))}
+function constructionGeometry(value){return structuredClone(Object.fromEntries(['points','edges','rays','circles','arcs','facts','topology','givenCircles'].map(key=>[key,key==='arcs'?(value[key]||[]):value[key]])))}
 const INTERSECTION_SUPPORTS={22:{K:['circle:GI','circle:HJ']},42:{K:['CJ','AI'],L:['GH','AI']},44:{M:['AL','KJ'],N:['MB','IJ'],P:['NO','AL'],Q:['NO','BK']},46:{G:['DE','BF']}};
 function sameConstructionInputs(operation,left,right){
  const pair=s=>[...s].sort().join(''),angle=s=>s[1]+pair(s[0]+s[2]);
@@ -32,6 +32,7 @@ function sameConstructionInputs(operation,left,right){
 }
 function matchesConstructionSupport(value,name,support){
  const point=value.points[name];if(!point)return false;
+ if(support.startsWith('given:'))return BookThreeCircles.member(value,support.slice(6),name);
  if(support.startsWith('arc:'))return !!EuclidCurves.arc(value,support.slice(4))?.points.includes(name);
  if(support.startsWith('circle:')){let [a,b]=support.slice(7),circle=value.circles.find(c=>c.a===a&&c.b===b);return !!circle&&EuclidConstruction.radius(value,circle,name)}
  return EuclidLogic.diagram(value).collinear(support[0],support[1],name);
@@ -50,6 +51,7 @@ function constructionProgress(value,lesson){
   if(task.ref==='P3')return circle(...task.inputs);
   if(task.ref==='D18')return (value.arcs||[]).some(a=>{let c=EuclidCurves.circle(value,a.circleId);let side=EuclidConstruction.turn(value,task.inputs[1],task.inputs[2],task.inputs[3]);return c?.a===task.inputs[0]&&(a.start===task.inputs[1]&&a.end===task.inputs[2]&&a.side===side||a.start===task.inputs[2]&&a.end===task.inputs[1]&&a.side===-side)});
   if(task.ref==='D1'){let name=task.outputs[0]||task.inputs[0],supports=task.supports||(lesson.id===12?['circle:CA','AB']:INTERSECTION_SUPPORTS[lesson.id]?.[name]),d=EuclidLogic.diagram(value);return !!supports&&supports.every(s=>matchesConstructionSupport(value,name,s))&&(!task.beyond||d.between(task.beyond[0],task.beyond[1],name))&&(!task.within||d.between(task.within[0],name,task.within[1]))}
+  if(task.ref==='E3.1')return BookThreeCircles.centerRecords(value).some(r=>r.circle===task.circle&&r.output===task.outputs[0]);
   return value.facts.some(raw=>{if(!raw.startsWith('book:'))return false;try{let c=JSON.parse(raw.slice(5));return EuclidConstruction.certificate(c,value.points)&&[task,...(task.alternatives||[])].some(candidate=>c.rule===Number(candidate.ref.slice(1))&&sameConstructionInputs(c.operation,c.inputs,candidate.inputs)&&JSON.stringify(c.outputs)===JSON.stringify(candidate.outputs))&&(!task.beyond||EuclidLogic.diagram(value).between(task.beyond[0],task.beyond[1],c.outputs[0]))}catch{return false}});
  });
  return {complete:checks.every(Boolean),done:checks.filter(Boolean).length,total:checks.length,checks};
@@ -63,7 +65,7 @@ function suppliedConstruction(lessonIndex,nextOnly=false){
   buildingPractice=true;index=lessonIndex;state=nextOnly?structuredClone(previous.state):fresh();tool=null;picks=[];history=[];
   const use=(id,...names)=>action(()=>{tool=Object.values(REFERENCES).flat().find(r=>r[1]===id);picks=[];names.forEach(choosePoint)});
   const intersection=(supports,beyond,within)=>action(()=>{
-   let candidates=bookOneIntersections().filter(q=>supports.every(s=>{if(s.startsWith('arc:'))return q.supports?.includes(s);if(s.startsWith('circle:')){let [a,b]=s.slice(7);return Math.abs(distance(q,state.points[a])-distance(state.points[a],state.points[b]))<.001}let [a,b]=[state.points[s[0]],state.points[s[1]]];return Math.abs((b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]))<.001}));
+   let candidates=bookOneIntersections().filter(q=>supports.every(s=>{if(s.startsWith('arc:'))return q.supports?.includes(s);if(s.startsWith('given:'))return q.supports?.includes(s);if(s.startsWith('circle:')){let [a,b]=s.slice(7);return Math.abs(distance(q,state.points[a])-distance(state.points[a],state.points[b]))<.001}let [a,b]=[state.points[s[0]],state.points[s[1]]];return Math.abs((b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]))<.001}));
    if(beyond)candidates=candidates.filter(q=>{let a=state.points[beyond[0]],b=state.points[beyond[1]],v=[b[0]-a[0],b[1]-a[1]];return (q[0]-a[0])*v[0]+(q[1]-a[1])*v[1]>v[0]*v[0]+v[1]*v[1]});
    if(within)candidates=candidates.filter(q=>distance(q,state.points[within[0]])<distance(state.points[within[0]],state.points[within[1]])&&distance(q,state.points[within[1]])<distance(state.points[within[0]],state.points[within[1]]));
    let q=candidates.sort((a,b)=>a[1]-b[1])[0];if(!q)throw Error('The supplied construction could not locate an intersection.');bookOneMark(q,supports);
@@ -102,7 +104,7 @@ function ensurePracticeProof(){
 }
 const AUTOMATIC_PROOF_CACHE=new WeakMap();
 function inferredProof(value,lesson){
- const geometry=JSON.stringify([lesson,LESSONS.map(EuclidBooks.key),value.points,value.edges,value.rays,value.circles,value.arcs,value.facts,value.topology]),inputs=value.lines.map(l=>[l.s,l.j]),signature=geometry+'\0'+JSON.stringify(inputs);
+ const geometry=JSON.stringify([lesson,LESSONS.map(EuclidBooks.key),value.points,value.edges,value.rays,value.circles,value.arcs,value.facts,value.topology,value.givenCircles]),inputs=value.lines.map(l=>[l.s,l.j]),signature=geometry+'\0'+JSON.stringify(inputs);
  const cached=AUTOMATIC_PROOF_CACHE.get(value),fields=['autoJustification','valid','error','dependencies','reason','derivation','sourcePropositions'];
  const factCount=c=>(c.facts||c.accepted).length;
  const intact=cached&&factCount(cached.context)===cached.accepted&&factCount(cached.result.context)===cached.graded;

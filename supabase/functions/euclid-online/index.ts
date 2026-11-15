@@ -21,7 +21,7 @@ async function player(req:Request){
  if(!profiles[0])throw new Problem('This account does not have a player profile.',403);
  return {id:user.id,username:profiles[0].username};
 }
-function stage(value:unknown){if(typeof value!=='string'||!/^(?:1\.(?:[1-9]|[1-3]\d|4[0-8])|2\.(?:[1-9]|1[0-4]))$/.test(value))throw new Problem('Unknown proposition.');return value}
+function stage(value:unknown){if(typeof value!=='string'||!/^(?:1\.(?:[1-9]|[1-3]\d|4[0-8])|2\.(?:[1-9]|1[0-4])|3\.[1-7])$/.test(value))throw new Problem('Unknown proposition.');return value}
 async function gate(req:Request,action:string,limit:number){
  const address=(req.headers.get('x-forwarded-for')||req.headers.get('cf-connecting-ip')||'unknown').split(',')[0].trim();
  const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key+address));

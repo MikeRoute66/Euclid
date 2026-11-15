@@ -1,7 +1,7 @@
 /* Capitalize only construction labels in geometric statement positions. */
 function capitalizeGeometryLabels(input,pointNames){
  const known=new Set(pointNames),parsed=!!EuclidLogic.parse(input);
- const words=new Set('this that these those it which what here there isosceles a an is are and the to on of at has two all for same than triangle triangles equilateral isosceles scalene congruent superposed superpose equal equals angle angles segment length line side parallel perpendicular parallelogram square collinear right area greater less inside point meets gnomon rectangle contained'.split(' '));
+ const words=new Set('if then circle circles center centre centers diameter chord outside cuts touches contradiction longest shortest only distance from not bisect each other lies this that these those it which what here there isosceles a an is are and the to on of at has two all for same than triangle triangles equilateral isosceles scalene congruent superposed superpose equal equals angle angles segment length line side parallel perpendicular parallelogram square collinear right area greater less inside point meets gnomon rectangle contained'.split(' '));
  return input.replace(/[a-z]+/gi,(word,offset)=>{
   const lower=word.toLowerCase(),upper=word.toUpperCase(),before=input.slice(0,offset),after=input.slice(offset+word.length);
   if(![...upper].every(n=>known.has(n))||new Set(upper).size!==upper.length)return word;

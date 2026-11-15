@@ -18,7 +18,8 @@ import uuid
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial','semicircle'],default='entry')
+parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial','semicircle','book3','book3manual','book3view'],default='entry')
+parser.add_argument('--lesson',type=int,choices=range(1,8),default=1)
 parser.add_argument('--width',type=int,default=900)
 parser.add_argument('--height',type=int,default=600)
 options = parser.parse_args()
@@ -56,6 +57,13 @@ elif options.suite=='tutorial':
     tests='<script src="tests/tutorial-browser-tests.js"></script>'
 elif options.suite=='semicircle':
     tests='<script src="tests/semicircle-browser-tests.js"></script>'
+elif options.suite=='book3':
+    tests='<script src="tests/book3-browser-tests.js"></script>'
+elif options.suite=='book3manual':
+    capture+='<script>window.MANUAL_BOOK3='+str(options.lesson)+';</script>'
+    tests='<script src="tests/book3-manual-tests.js"></script>'
+elif options.suite=='book3view':
+    tests='<script>addEventListener("load",()=>{document.querySelector("#continue-menu").click();const node=document.createElement("pre");node.hidden=true;node.id="qa-result";node.textContent="ALL CHECKS PASSED";document.body.append(node)});</script>'
 else:
     tests='<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/feedback-tests.js"></script><script src="tests/proof-entry-tests.js"></script>'
 page.write_text(source.replace('<head>','<head>'+capture).replace('</body>',tests+'</body>'),encoding='utf-8')
@@ -128,7 +136,7 @@ try:
     session = command('WebDriver:NewSession', {'capabilities': {}})
     command('WebDriver:SetWindowRect', {'width': options.width, 'height': options.height})
     command('WebDriver:Navigate', {'url': 'http://127.0.0.1:'+str(server.server_port)+'/'+page.name})
-    if options.suite=='semicircle':
+    if options.suite in ['semicircle','book3manual']:
         for _ in range(100):
             if evaluate('!!window.SEMICIRCLE_QA'):break
             time.sleep(.1)
@@ -150,7 +158,10 @@ try:
             group='definitions' if task['ref'].startswith('D') else 'postulates' if task['ref'].startswith('P') else 'propositions'
             click_element('[data-tab="'+group+'"]')
             click_element('#tools [data-reference="'+task['ref']+'"]')
-            if task['ref']=='D1' and not task['inputs']:
+            if task['ref']=='D1' and not task['inputs'] and options.suite=='book3manual':
+                expression="(()=>{const task="+json.dumps(task)+",d=EuclidLogic.diagram(state);let candidates=bookOneIntersections().filter(p=>task.supports.every(s=>p.supports?.includes(s)));if(task.beyond){const a=state.points[task.beyond[0]],b=state.points[task.beyond[1]],v=[b[0]-a[0],b[1]-a[1]];candidates=candidates.filter(p=>(p[0]-a[0])*v[0]+(p[1]-a[1])*v[1]>v[0]*v[0]+v[1]*v[1])}const hit=candidates.sort((a,b)=>a[1]-b[1])[0];if(!hit)throw Error('No requested circle crossing');const m=$('#canvas').getScreenCTM();return [m.a*hit[0]+m.c*hit[1]+m.e,m.b*hit[0]+m.d*hit[1]+m.f]})()"
+                click_position(evaluate(expression))
+            elif task['ref']=='D1' and not task['inputs']:
                 point=evaluate("(()=>{const d=EuclidLogic.diagram(state),hit=bookOneIntersections().find(p=>p.supports?.includes('arc:a1')&&p.supports.includes('HI')&&p[1]<state.points.I[1]);if(!hit)throw Error('No upper arc crossing');const m=$('#canvas').getScreenCTM();return [m.a*hit[0]+m.c*hit[1]+m.e,m.b*hit[0]+m.d*hit[1]+m.f]})()")
                 click_position(point)
             else:
@@ -159,10 +170,11 @@ try:
                     click_position(point)
             evaluate('SEMICIRCLE_QA.check(constructionProgress(state,LESSONS[index]).checks['+str(step)+'], '+json.dumps('Manual construction step '+str(step+1)+': '+task['ref'])+')')
         import base64
-        (artifacts/('manual-semicircle-'+str(options.width)+'.png')).write_bytes(base64.b64decode(command('WebDriver:TakeScreenshot',{})['value']))
-        evaluate("SEMICIRCLE_QA.check(EuclidCurves.valid(state)&&state.arcs.length===1&&state.arcs[0].points.includes('N'),'The manually drawn semicircle records the intersection N');SEMICIRCLE_QA.check(constructionProgress(state,LESSONS[index]).complete,'The entire E2.14 construction is achievable through manual pointer input');state.lines=LESSONS[index].proofGuide.map(s=>({s:s.s,j:s.j}));render();SEMICIRCLE_QA.check(state.completed&&state.lines.every(l=>l.valid),'The manual construction supports the complete source proof');SEMICIRCLE_QA.check(PROOF_ENTRY_ERRORS.length===0,'No uncaught errors in manual E2.14');SEMICIRCLE_QA.finish()")
+        (artifacts/('manual-'+options.suite+'-'+str(options.lesson)+'-'+str(options.width)+'.png')).write_bytes(base64.b64decode(command('WebDriver:TakeScreenshot',{})['value']))
+        if options.suite=='semicircle':evaluate("SEMICIRCLE_QA.check(EuclidCurves.valid(state)&&state.arcs.length===1&&state.arcs[0].points.includes('N'),'The manually drawn semicircle records the intersection N')")
+        evaluate("SEMICIRCLE_QA.check(constructionProgress(state,LESSONS[index]).complete,'The entire construction is achievable through manual pointer input');state.lines=[...(LESSONS[index].givens||[]).map(s=>({s,j:'Given'})),...LESSONS[index].proofGuide.map(s=>({s:s.s,j:s.j}))];render();SEMICIRCLE_QA.check(state.completed&&state.lines.every(l=>l.valid),'The manual construction supports the complete source proof');SEMICIRCLE_QA.check(PROOF_ENTRY_ERRORS.length===0,'No uncaught errors in manual construction');SEMICIRCLE_QA.finish()")
     report = ''
-    for attempt in range(900 if options.suite in ['ranked','tutorial'] else 100):
+    for attempt in range(1800 if options.suite=='book3' else 900 if options.suite in ['ranked','tutorial'] else 100):
         result = command('WebDriver:ExecuteScript', {
             'script': 'return document.querySelector("#qa-result")?.textContent||""',
             'args': [], 'sandbox': None, 'newSandbox': False})
@@ -222,6 +234,20 @@ try:
             assert evaluate('window.scheduledSounds') == number, statement
             assert evaluate('window.scheduledSoundTypes.at(-1)') == tone, statement
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox proof submissions and edits schedule the correct confirmation or rejection sound\nALL CHECKS PASSED')
+    if options.suite in ['book3','book3view'] and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
+        import base64
+        evaluate('document.querySelector("#qa-result").hidden=true')
+        evaluate("Object.assign(settings,DEFAULT_SETTINGS,{soundEffects:false});saved={};load(EuclidBooks.position('3.1'));setMobileWorkspaceView('construction')")
+        (artifacts/('book3-unknown-center-'+str(options.width)+'.png')).write_bytes(base64.b64decode(command('WebDriver:TakeScreenshot',{})['value']))
+        evaluate("Object.assign(settings,DEFAULT_SETTINGS,{soundEffects:false,learningMode:true,skipConstruction:true,skipJustifications:true});saved={};load(EuclidBooks.position('3.2'));state.lines.push(...LESSONS[index].proofGuide.slice(0,4).map(s=>({s:s.s,j:s.j})));render();setMobileWorkspaceView('construction')")
+        (artifacts/('book3-circles-'+str(options.width)+'.png')).write_bytes(base64.b64decode(command('WebDriver:TakeScreenshot',{})['value']))
+        evaluate("const l=LESSONS[index],colors=AngleVisual.catalog(l);window.book3ColorPass=AngleVisual.resolve('If E is outside circle C1 on chord AB then '+colors[0].color+' = '+colors[1].color,l).includes('then angle ');window.book3HoverBefore=JSON.stringify(state);document.querySelectorAll('#lines .proofline')[4].dispatchEvent(new MouseEvent('mouseenter'))")
+        assert evaluate("book3ColorPass&&!!document.querySelector('.given-circle.proof-highlight')&&!!document.querySelector('.edge.proof-highlight')")
+        evaluate("document.querySelectorAll('#lines .proofline')[4].dispatchEvent(new MouseEvent('mouseleave'))")
+        assert evaluate('JSON.stringify(state)===book3HoverBefore')
+        evaluate("setMobileWorkspaceView('proof')")
+        (artifacts/('book3-proof-'+str(options.width)+'.png')).write_bytes(base64.b64decode(command('WebDriver:TakeScreenshot',{})['value']))
+        report=report.replace('ALL CHECKS PASSED','PASS Unknown-center/circle/proof layouts captured; conditional color aliases and circle/line hover work without altering records\nALL CHECKS PASSED')
     if options.suite=='tutorial' and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
         evaluate('document.querySelector("#tutorial-menu").click();document.querySelector("[data-lesson=\\"D15-0\\"]").click();')
         import base64

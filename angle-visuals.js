@@ -13,7 +13,7 @@ const AngleVisual=(()=>{
   const entries=catalog(lesson);if(!entries.length)return text;
   const names=entries.map(e=>e.color).sort((a,b)=>b.length-a.length).join('|'),pattern=new RegExp('\\b(?:angle\\s+)?('+names+')(?:\\s+angle)?\\b','gi');
   return text.replace(pattern,(match,color,offset)=>{
-   let before=text.slice(0,offset),after=text.slice(offset+match.length);
+   let before=text.slice(0,offset).replace(/^.*\bthen\s+/i,''),after=text.slice(offset+match.length);
    // A triangle named RED is still a triangle. Only magnitude positions and
    // right-angle statements accept a bare color as an angle alias.
    if(!/(?:^|[=<>+\-()])\s*(?:\d+(?:\/\d+)?\s*\*?\s*)?$/.test(before)||!/^\s*(?:$|[=<>+\-().]|is\s+(?:a\s+)?right\b)/i.test(after))return match;
@@ -45,7 +45,8 @@ const AngleVisual=(()=>{
  function clear(svg){svg.querySelectorAll('.proof-highlight').forEach(e=>{e.classList.remove('proof-highlight');e.removeAttribute('transform')});svg.querySelectorAll('.proof-highlight-overlay').forEach(e=>e.remove())}
  function highlight(svg,text,value,lesson){
   clear(svg);let ast=BookOneLogic.parse(resolve(text,lesson));if(!ast)return;
-  const segments=new Set(),angles=new Set(),figures=new Set(),points=new Set(BookOneLogic.statementNames(ast));
+  const circleAst=ast;while(ast.kind==='conditional')ast=ast.body;
+  const segments=new Set(),angles=new Set(),figures=new Set(),points=new Set(BookOneLogic.statementNames(circleAst));
   const polygon=p=>{figures.add(p);[...p].forEach(n=>points.add(n))},angle=a=>{angles.add(a);segments.add(a[0]+a[1]);segments.add(a[1]+a[2])};
   const squares=(value.lines||[]).filter(l=>l.valid).map(l=>BookOneLogic.parse(l.s)).filter(a=>a?.kind==='shape'&&a.property==='square').map(a=>a.polygon);
   const productKey=term=>term.split('*').map(side=>[...side].sort().join('')).sort().join('*');
@@ -65,8 +66,15 @@ const AngleVisual=(()=>{
   else if(ast.kind==='sameSide')segments.add(ast.line);
   else if(ast.kind==='inside')polygon(ast.triangle);
   else if(ast.kind==='parallel'||ast.kind==='perpendicular'||ast.kind==='intersection'){segments.add(ast.a);segments.add(ast.b)}
+  for(const field of ['line','chord','segment'])if(ast[field])segments.add(ast[field]);
+  if(ast.kind==='notMutual'){segments.add(ast.a);segments.add(ast.b)}
+  if(ast.kind==='circlePair'){segments.add(ast.point+ast.a);segments.add(ast.point+ast.b)}
   const enlarge=(node,p)=>{node.classList.add('proof-highlight');node.setAttribute('transform',`translate(${p}) scale(1.1) translate(${-p[0]} ${-p[1]})`)};
   const d=diagram(value);
+  if(typeof BookThreeLogic!=='undefined'){
+   const ids=new Set();const collect=t=>{if(t.circle)ids.add(t.circle);for(const id of t.circles||[])ids.add(id);if(t.kind==='conditional'){collect(t.condition);collect(t.body)}};collect(circleAst);
+   for(const node of svg.querySelectorAll('.given-circle'))if(ids.has(node.dataset.circle)){const c=BookThreeCircles.circle(value,node.dataset.circle);enlarge(node,c.plot.center)}
+  }
   for(let name of figures){
    const sides=[...name].map((a,i)=>a+name[(i+1)%name.length]);
    if(![...name].every(n=>value.points[n])||!sides.every(e=>d.drawn(...e))){sides.forEach(e=>segments.add(e));continue}

@@ -4,9 +4,9 @@ function constructionLabelLayout(svg,value=state){
  const scale=Math.hypot(matrix.a,matrix.b),inverse=matrix.inverse(),project=p=>({x:matrix.a*p[0]+matrix.c*p[1]+matrix.e-rect.left,y:matrix.b*p[0]+matrix.d*p[1]+matrix.f-rect.top});
  const points=Object.entries(value.points).map(([name,p])=>({name,...project(p)}));
  const segments=[...value.edges.map(e=>[project(value.points[e[0]]),project(value.points[e[1]])]),...value.rays.map(e=>{let a=value.points[e[0]],b=value.points[e[1]];return [project(a),project([a[0]+4*(b[0]-a[0]),a[1]+4*(b[1]-a[1])])]})];
- const circles=value.circles.map(c=>({...project(value.points[c.a]),r:distance(value.points[c.a],value.points[c.b])*scale}));
+ const circles=value.circles.map(c=>({...project(value.points[c.a]),r:distance(value.points[c.a],value.points[c.b])*scale}));if(typeof BookThreeCircles!=='undefined')for(const c of BookThreeCircles.objects(value))circles.push({...project(c.plot.center),r:c.plot.radius*scale});
  const overlaps=(a,b,gap=0)=>a.x<b.x+b.w+gap&&a.x+a.w+gap>b.x&&a.y<b.y+b.h+gap&&a.y+a.h+gap>b.y;
- const obstacles=[svg.closest('.canvaswrap')?.querySelector('#instruction'),svg.closest('.canvaswrap')?.querySelector('.angle-key')].filter(Boolean).map(n=>n.getBoundingClientRect()).map(r=>({x:r.left-rect.left,y:r.top-rect.top,w:r.width,h:r.height}));
+ const obstacles=[svg.closest('.canvaswrap')?.querySelector('#instruction'),svg.closest('.canvaswrap')?.querySelector('.angle-key'),...svg.querySelectorAll('.circle-name')].filter(Boolean).map(n=>n.getBoundingClientRect()).map(r=>({x:r.left-rect.left,y:r.top-rect.top,w:r.width,h:r.height}));
  function crosses(box,a,b){let low=0,high=1;for(let [origin,delta,min,max] of [[a.x,b.x-a.x,box.x-3,box.x+box.w+3],[a.y,b.y-a.y,box.y-3,box.y+box.h+3]]){if(Math.abs(delta)<1e-9){if(origin<min||origin>max)return false}else{let x=(min-origin)/delta,y=(max-origin)/delta;low=Math.max(low,Math.min(x,y));high=Math.min(high,Math.max(x,y));if(low>high)return false}}return true}
  const boxes=[];
  for(let p of points){

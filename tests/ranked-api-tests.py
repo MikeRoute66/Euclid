@@ -73,7 +73,7 @@ try:
     check(repeated['elapsedMs']==result['elapsedMs'],'Repeating a submission is idempotent')
     second=start('1.1',token);new=finish(second,fixtures['1.1'],token)
     check(new['bestMs']==min(result['elapsedMs'],new['elapsedMs']),'Only the player\'s fastest time is retained')
-    for stage in ['1.4','1.27','1.45','2.1','2.9','2.10','2.14']:
+    for stage in (['3.1','3.2','3.3','3.4','3.5','3.6','3.7'] if '--book3-only' in __import__('sys').argv else ['1.4','1.27','1.45','2.1','2.9','2.10','2.14','3.1','3.2','3.3','3.4','3.5','3.6','3.7']):
         finish(start(stage,token),fixtures[stage],token)
     status,board=call({'action':'board','proposition':'1.1'})
     rows=[row for row in board['rows'] if row['username']==a['username']]

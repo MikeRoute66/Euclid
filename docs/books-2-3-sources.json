@@ -2179,7 +2179,8 @@
         "E1.8"
       ],
       "hasCorollary": true,
-      "auditStatus": "pending"
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book3-source-audit.md"
     },
     {
       "key": "3.2",
@@ -2281,7 +2282,8 @@
         "E1.19"
       ],
       "hasCorollary": false,
-      "auditStatus": "pending"
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book3-source-audit.md"
     },
     {
       "key": "3.3",
@@ -2411,7 +2413,8 @@
         "E1.26"
       ],
       "hasCorollary": false,
-      "auditStatus": "pending"
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book3-source-audit.md"
     },
     {
       "key": "3.4",
@@ -2499,7 +2502,8 @@
         "E3.3"
       ],
       "hasCorollary": false,
-      "auditStatus": "pending"
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book3-source-audit.md"
     },
     {
       "key": "3.5",
@@ -2570,7 +2574,8 @@
       ],
       "dependencies": [],
       "hasCorollary": false,
-      "auditStatus": "pending"
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book3-source-audit.md"
     },
     {
       "key": "3.6",
@@ -2640,7 +2645,8 @@
       ],
       "dependencies": [],
       "hasCorollary": false,
-      "auditStatus": "pending"
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book3-source-audit.md"
     },
     {
       "key": "3.7",
@@ -2843,7 +2849,8 @@
         "E1.4"
       ],
       "hasCorollary": false,
-      "auditStatus": "pending"
+      "auditStatus": "source-route-reviewed",
+      "audit": "docs/book3-source-audit.md"
     },
     {
       "key": "3.8",

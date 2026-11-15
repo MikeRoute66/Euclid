@@ -6,10 +6,10 @@ Book III. Unfinished lessons must not appear as public stages.
 
 ## Current state
 
-- The working tree installs 48 Book I and 14 Book II lessons (62 stages).
+- The working tree installs 48 Book I, 14 Book II, and 7 Book III lessons (69 stages).
   Book II passed all 224 practice-mode cases against one unchanged source
   fingerprint, plus Book I, visual, save, and compact viewport checks. Results
-  are recorded in `book2-validation.json`. Book III has no implemented lessons yet.
+  are recorded in `book2-validation.json`. Book III now installs its first seven reviewed propositions (69 stages total), with 112 practice/learning cases. See `book3-source-audit.md`.
 - Book-qualified presentation: E1.1, E2.1, E3.1. Definitions have qualified public
   identities, with legacy Book I references adapted to its existing calculus.
 - Version 2 exports and autosaves use stable `book.proposition` progress keys,
@@ -64,7 +64,7 @@ E2.1 the source's isolated length A is represented by the segment AX.
 ## Book III implementation order
 
 Implement the following groups in proposition order. They are development
-milestones; publish Book III only when the whole book passes its release gates.
+milestones; publish only reviewed prefixes that pass all applicable release gates. E3.1-7 form the first release; E3.8-37 remain private.
 
 | Propositions | Main work |
 | --- | --- |
@@ -116,7 +116,7 @@ especially E3.1, E3.17, E3.25, E3.30, E3.33, and E3.34.
 5. Persistence/UI: round-trip old and new saves, preserve named save points,
    navigate between books, inspect dialogs/menus, and check compact viewports.
 6. Regression and deployment: rerun Book I, freeze the tested source revision,
-   commit and deploy a complete book to GitHub Pages, then check the live site.
+   commit and deploy the reviewed release to GitHub Pages, then check the live site.
 
 Completion means 99 playable propositions, all 13 new definitions, reviewed
 source routes, validated reusable tools, and the complete regression evidence.

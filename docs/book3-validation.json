@@ -1,0 +1,91 @@
+{
+  "release": "Book III 1-7",
+  "date": "2026-11-15",
+  "courseVersion": "425a0109a59cda8e4cdd",
+  "totalStages": 69,
+  "modeCasesPerViewport": 112,
+  "viewports": [
+    "390x844 Firefox",
+    "900x800 Firefox"
+  ],
+  "checks": {
+    "rules": {
+      "passed": true,
+      "checks": 46
+    },
+    "server_replay": {
+      "passed": true,
+      "checks": 144
+    },
+    "mobile_modes": {
+      "passed": true,
+      "checks": 151
+    },
+    "desktop_modes": {
+      "passed": true,
+      "checks": 151
+    },
+    "native_center": {
+      "passed": true,
+      "checks": 12
+    },
+    "native_distances": {
+      "passed": true,
+      "checks": 14
+    },
+    "book1_regression": {
+      "passed": true,
+      "checks": 2707
+    },
+    "entry_regression": {
+      "passed": true,
+      "checks": 473
+    },
+    "tutorial_regression": {
+      "passed": true,
+      "checks": 129
+    },
+    "live_api": {
+      "passed": true,
+      "checks": 33
+    }
+  },
+  "preservedRealLeaderboardEntries": 17,
+  "sourceHashes": {
+    "angle-visuals.js": "5ba42d320cfc33ea88e42a0edf16ce8e4cf54d1e12175922793f79220a56a221",
+    "app.js": "07b9121733d304550adaa84da645dfcbfd9b93d2345f8054e5751e9020f26c66",
+    "book1-lessons.js": "a70cfd69c62fbad43a8e9e81a6c8369be8a5d5aa501b8e87bef7625a969f703f",
+    "book1-logic.js": "624e7b3b2f341f752c449528c8deb63a2caf4fa93eb1dfa6acffbe3eb13bdd84",
+    "book1-ui.js": "6f99d267e90cfb3bea79088930653c01b2143fe8b95914a018143f5d277af9de",
+    "book2-lessons.js": "a088de6c2ff33d0383ce08e070d79256bf29d92c9f63932cad75ffec56f1d9bb",
+    "book2-logic.js": "b84acedeeaabfc1c402619c2d42a9c5da1ab5a39008cb8a115f80084630d881c",
+    "book3-circles.js": "ba79eb9718e5801035874c87b27d6e20aad45209d021f7368fdf86aa5a5a719c",
+    "book3-lessons.js": "df8ef8de82b65a5553ad093a87f79a5e3ac0063abf447ad7abc9317a5d8bc15a",
+    "book3-logic.js": "ed99c466308a3b0a3f81d87cbb62fc2c63eb8ba704b7c0647a1817716f3d307e",
+    "books.js": "064c569c9cd4d3b92ba1194bbcea18a0cda004a0a277633650b1efa348d1d915",
+    "canvas-input.js": "8b46266caa16ea8a71637b81a320fd3698c7c34ecefaa8da4d379ea608773f0a",
+    "construction.js": "aac5ad0b4a5faf3d73151c483dcfedff8f3a64c0b16305a1d18a5ac92360890c",
+    "course.js": "0155447569b8d799e9599f22a574c1d35aa50667aeaf926bc38b85f186514b67",
+    "curves.js": "f567b9253dc76042ce3f23b1f0e52b596432ac0f01b078b9219c7abe2372d190",
+    "euclid-proofs.js": "537701a4c70e9449a6cd4a08da90cd516f1fc779aa8452e9009d3d49214f8a30",
+    "feedback.js": "0acad3fd884bfbee28e3706dba80f1d90b0a39ec9f0107f4d95e72455fb7b53e",
+    "format-help.js": "4771d98b7ae2c887b1180a689356d4ff61e18a16afc1dc30c9175cebda8b54e7",
+    "guidance.js": "00947e7d6191519ed8a3f16baf4a817a3fe8f266fa829b5311afc3e48017ad25",
+    "index.html": "ec81ff48125947cbfb5b91b3bfc8f874baf86e30664f4dc578474c832b1da1ac",
+    "label-layout.js": "fdb2b1b60ffd1eb8e01bfbd838d6700cdebcb8a47ddb626a3a4718776d3f6b3f",
+    "lessons.js": "4425d2abaf3573a28d0f8a3157bf3026832eb09710f3f20c3cbfb98e5b353f79",
+    "logic.js": "6dac9fe8398566696a48f2f1726c768a795638f9c6470aef675497eacb4cc885",
+    "main-menu.js": "6be42c8a8065630b4e6816b21bac2b290ba4f49db3b74aee65ba886f1cddfd9b",
+    "mobile-layout.js": "494c4f371fd4d71bf8c9ee7a0a08ff48d274dfadb77833e15c1d38ba5f271041",
+    "online-config.js": "1b85555f1e678fd1f28a4c4c60df7b993cbba25edfed4a9d78854acce28f6eda",
+    "online.js": "bf3ee454a605e5a73f6fc8e11a83b2c61b8d0db7f4329da7807258703ea56a03",
+    "settings.js": "67a95dd15c7ee2847633332f60df6386614d0de4a0c7a66c622e20cbfb13448f",
+    "style.css": "5ee325ec97ec43022264355cd6d55f6c42004cbf57d4ab6c86de298d4fd32f08",
+    "supabase/functions/_shared/runtime.js": "038c51baa9d5cdbcc74e3d67f8240a3e40a0e76586236883ab222339a8a2620d",
+    "supabase/functions/euclid-online/index.ts": "91608a0c437ecd9dd5f3f333fc05ef497237cf7afc7b0123f6b2241835cd96c0",
+    "symbolic.js": "2817789258dc4bd87e61df86403ccbd76060b301c497f6466d2bc5ff49d3b63c",
+    "tutorial-lessons.js": "97119dbfef713da054f58ca13317917d6435f61cd8e4c8b2f8e907e2319e34a0",
+    "tutorial.js": "7af1b53c198d3bdcffc0b17c1c4f55b22a32989e65c9697bba8da318baa642de"
+  },
+  "hashNormalization": "UTF-8 with LF line endings"
+}

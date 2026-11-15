@@ -36,7 +36,7 @@ The main menu opens on startup and is available from Menu in the header. **Play*
 
 **Tutorial** opens 28 short construction and proof lessons using the same bottom menus as Play. Each lesson performs a useful action: draw or mark an object, superpose figures, or justify a formal statement. Vocabulary-only click and classification exercises are omitted; all definitions remain available for reference. Correct examples advance automatically after 500 ms. Tutorial completion is stored separately and never affects proposition progress or ranked times. See [the tutorial coverage notes](docs/tutorial.md).
 
-The book and proposition selectors and the searchable main-menu list cover E1.1-E1.48 and E2.1-E2.14. Earlier propositions are available as tools when studying a later proposition; current and later propositions cannot justify their own conclusions. Right-click a justified line to inspect its deduction or reference.
+The book and proposition selectors and the searchable main-menu list cover E1.1-E1.48, E2.1-E2.14, and E3.1-E3.7. Earlier propositions are available as tools when studying a later proposition; current and later propositions cannot justify their own conclusions. Right-click a justified line to inspect its deduction or reference.
 
 
 Construction provenance is saved with each proposition. Tools record line incidence, point order and orientation, and circle membership when those relationships are constructed. The proof checker does not read drawing coordinates. Every theorem tool has a checked operation contract; its recorded properties can be unpacked with definitions (for example D20 for sides of an E.1 triangle, and D22 for square properties). Circle equality requires endpoints recorded on the same circle, not points that happen to look equidistant. Use D1 to mark an intersection or explicitly mark an existing point on a circle; P3 records its defining endpoint. Merely joining an unrelated point does not establish circle membership.
@@ -70,7 +70,7 @@ Practice clears are labeled separately from full proofs. Switching off supplied 
 
 ## Books II and III expansion
 
-Book I has 48 stages and Book II has 14. Choose a book in the header or use Stage select. References use E1.1 and E2.1 notation; the reference menus group definitions and earlier propositions by book. Book II adds the contained rectangle and gnomon definitions, length products, selected semicircles, and reusable constructions for E2.11 and E2.14. Its teaching routes follow Euclid's geometric area and right-triangle arguments. See [the Book II source audit](docs/book2-source-audit.md) for scope and explicit elaborations.
+Book I has 48 stages, Book II has 14, and Book III currently has its first seven. Choose a book in the header or use Stage select. References use E1.1 and E2.1 notation; the reference menus group definitions and earlier propositions by book. Book II adds the contained rectangle and gnomon definitions, length products, selected semicircles, and reusable constructions for E2.11 and E2.14. Its teaching routes follow Euclid's geometric area and right-triangle arguments. See [the Book II source audit](docs/book2-source-audit.md) for scope and explicit elaborations.
 
 Products accept `AB*CD` or `rectangle contained by AB and CD`. A squared length uses `AB^2`; a polygon area uses `area ABCD`. These terms share area dimension and can be combined in equalities. Geometry and construction records establish their meaning; displayed measurements cannot prove them.
 
@@ -101,3 +101,5 @@ The rejection sound is a quiet 25 ms burst of filtered noise with a fast decay, 
 In Learning mode, click the next-step guidance (or focus it and press Enter or Space) to perform that step. Each click constructs one recorded object, adds the next statement, or justifies a pending line. Guided construction actions support Undo. Run `python tests/run-browser-checks.py --suite learning` to check guided completion of all 62 stages in every practice configuration.
 
 Accounts and shared leaderboards are available from the main menu. Ranked mode is a toggle in Options; it requires a fresh attempt with all assistance off. Password login persists independently on each device. See [online play and deployment](docs/online-play.md) for the backend, validation, account-recovery limitations, and tests.
+
+Book III introduces named given circles with unknown centers, the reusable E3.1 center-finding tool, and scoped `If ... then ...` arguments. E3.3 includes both directions; E3.7 includes the longest/shortest comparisons and uniqueness of the equal-distance pair. See [the first-seven source audit](docs/book3-source-audit.md). Later Book III propositions remain unavailable.

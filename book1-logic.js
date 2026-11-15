@@ -13,6 +13,7 @@ const BookOneLogic=(()=>{
   let dimensions=new Set(terms.map(t=>['square','product'].includes(t.kind)?'area':t.kind));if(dimensions.size!==1)return null;return terms;
  }
  function parse(s){
+  if(typeof BookThreeLogic!=='undefined'&&/\b(?:circle|if|contradiction)\b|do not bisect/i.test(s)){const special=BookThreeLogic.parse(s);if(special)return special}
   let text=readableLegacy(s).trim().replace(/\.$/,'').replace(/\btriangles?\b/gi,'').replace(/[\u25b3\u0394]/g,'').toUpperCase().trim(),m;
   if((m=text.match(/^([A-Z]{6})\s+IS\s+(?:A\s+)?GNOMON$/)))return new Set(m[1]).size===6?{kind:'shape',polygon:m[1],property:'gnomon'}:null;
   if((m=text.match(/^([A-Z]{2})\s+IS\s+(PARALLEL|PERPENDICULAR)\s+TO\s+([A-Z]{2})$/)))return m[1][0]!==m[1][1]&&m[3][0]!==m[3][1]?{kind:m[2].toLowerCase(),a:m[1],b:m[3]}:null;
@@ -29,7 +30,7 @@ const BookOneLogic=(()=>{
  }
  function readableLegacy(s){return s.replace(/Equilateral\(([A-Z]{3})\)/gi,'$1 is equilateral').replace(/Congruent\(([A-Z]{3}),\s*([A-Z]{3})\)/gi,'$1 is congruent to $2').replace(/Superpose\(([A-Z]{3}),\s*([A-Z]{3})\)/gi,'$1 is superposed on $2')}
  const equality=(x,y)=>parse(x+' = '+y),atomic=t=>t?.kind==='eq'&&t.left.length===1&&t.right.length===1&&t.left[0].coefficient===1&&t.right[0].coefficient===1;
- const namesIn=t=>{if(!t)return [];let text=t.kind==='eq'||t.kind==='gt'?[...t.left,...t.right].map(v=>v.term.replace(/AREA\(|\)|RIGHT|\^2|\u2220/g,'')).join(''):t.kind==='right'?t.angle:t.kind==='shape'?t.polygon:t.kind==='collinear'?t.points:t.kind==='intersection'?t.a+t.b+t.point:t.kind==='inside'?t.point+t.triangle:t.kind==='sameSide'?t.a+t.b+t.line:(t.a||'')+(t.b||'');return [...text].filter(n=>/[A-Z]/.test(n))};
+ const namesIn=t=>{if(!t)return [];if(typeof BookThreeLogic!=='undefined'&&!['eq','gt','right','shape','congruence','parallel','perpendicular','collinear','intersection','inside','sameSide','pointEqual'].includes(t.kind))return BookThreeLogic.names(t);let text=t.kind==='eq'||t.kind==='gt'?[...t.left,...t.right].map(v=>v.term.replace(/AREA\(|\)|RIGHT|\^2|\u2220/g,'')).join(''):t.kind==='right'?t.angle:t.kind==='shape'?t.polygon:t.kind==='collinear'?t.points:t.kind==='intersection'?t.a+t.b+t.point:t.kind==='inside'?t.point+t.triangle:t.kind==='sameSide'?t.a+t.b+t.line:(t.a||'')+(t.b||'');return [...text].filter(n=>/[A-Z]/.test(n))};
  function context(state,lesson){
   if(!state.topology)EuclidConstruction.initialize(state,lesson);else EuclidConstruction.restoreGivens(state,lesson);
   let facts=[],derivations=[],origins=new WeakMap(),symbolicDependencies=new Set(),d=EuclidLogic.diagram(state,facts);
@@ -37,7 +38,7 @@ const BookOneLogic=(()=>{
   function canonical(term){if(term.includes('*')){let factors=term.split('*').map(sort).sort();return factors[0]===factors[1]?factors[0]+'^2':factors.join('*')}if(term==='RIGHT')return 'RIGHT';if(term.startsWith('AREA('))return 'AREA('+polygonKey(term.slice(5,-1))+')';if(term.endsWith('^2'))return sort(term.slice(0,2))+'^2';return d.canonical(term)}
   function expr(items){let out=new Map();for(let item of items){let key=canonical(item.term),coefficient=item.coefficient;if(key===A+'STRAIGHT'){key='RIGHT';coefficient*=2}out.set(key,(out.get(key)||0)+coefficient)}for(let [key,n] of out)if(Math.abs(n)<1e-8)out.delete(key);return out}
   const exprKey=items=>JSON.stringify([...expr(items)].sort(([a],[b])=>a.localeCompare(b)));
-  function key(t){if(!t)return '';if(t.kind==='eq')return 'eq:'+sortPair(exprKey(t.left),exprKey(t.right));if(t.kind==='gt')return 'gt:'+exprKey(t.left)+'>'+exprKey(t.right);if(t.kind==='congruence')return 'congruent:'+EuclidLogic.relationKey(t.a,t.b);if(t.kind==='shape')return t.property+':'+polygonKey(t.polygon);if(t.kind==='parallel'||t.kind==='perpendicular')return t.kind+':'+sortPair(lineKey(t.a),lineKey(t.b));if(t.kind==='right')return 'right:'+canonical(A+t.angle);if(t.kind==='pointEqual')return 'point:'+sort(t.a+t.b);if(t.kind==='sameSide')return 'sameSide:'+sort(t.a+t.b)+':'+lineKey(t.line);if(t.kind==='collinear')return 'collinear:'+sort(t.points);return JSON.stringify(t)}
+  function key(t){if(!t)return '';if(t.kind==='centerLine')return 'centerLine:'+t.circle+':'+lineKey(t.line);if(t.kind==='conditional')return 'if:'+key(t.condition)+' then:'+key(t.body);if(t.kind==='conjunction')return 'and:'+t.items.map(key).sort().join('|');if(typeof BookThreeLogic!=='undefined'&&!['eq','gt','right','shape','congruence','parallel','perpendicular','collinear','intersection','inside','sameSide','pointEqual'].includes(t.kind))return BookThreeLogic.key(t);if(t.kind==='eq')return 'eq:'+sortPair(exprKey(t.left),exprKey(t.right));if(t.kind==='gt')return 'gt:'+exprKey(t.left)+'>'+exprKey(t.right);if(t.kind==='congruence')return 'congruent:'+EuclidLogic.relationKey(t.a,t.b);if(t.kind==='shape')return t.property+':'+polygonKey(t.polygon);if(t.kind==='parallel'||t.kind==='perpendicular')return t.kind+':'+sortPair(lineKey(t.a),lineKey(t.b));if(t.kind==='right')return 'right:'+canonical(A+t.angle);if(t.kind==='pointEqual')return 'point:'+sort(t.a+t.b);if(t.kind==='sameSide')return 'sameSide:'+sort(t.a+t.b)+':'+lineKey(t.line);if(t.kind==='collinear')return 'collinear:'+sort(t.points);return JSON.stringify(t)}
   const lineCache=new Map();let certificateStamp=null,certificateCache=[],pairStamp=null,pairCache=[];
   function lineKey(line){let k=facts.length+':'+sort(line);if(lineCache.has(k))return lineCache.get(k);let [a,b]=line,result=d.names.filter(n=>n===a||n===b||d.collinear(a,b,n)).sort().join('');lineCache.set(k,result);return result}
   const equivalent=(x,y)=>canonical(x)===canonical(y);
@@ -77,7 +78,7 @@ const BookOneLogic=(()=>{
   function certificateClaims(){let stamp=state.facts.join('\u0000');if(stamp===certificateStamp)return certificateCache;let claims=[];for(let raw of state.facts){if(!raw.startsWith('book:'))continue;try{let record=JSON.parse(raw.slice(5));let reference=EuclidBooks.dependencyRule(record.rule);if((typeof record.rule==='number'?record.rule<lesson.id:EuclidBooks.earlier(reference,lesson))&&EuclidConstruction.certificate(record,state.points)&&record.claims?.every(s=>parse(s)))for(let s of record.claims)claims.push({rule:reference,claim:parse(s),record})}catch{}}certificateStamp=stamp;certificateCache=claims;return claims}
   function preferredReferences(t){return atomic(t)&&t.left[0].kind==='length'&&equilateral(t)?['D20']:[]}
   function sourceReferences(t){return [...new Set([...certificateClaims().filter(c=>key(c.claim)===key(t)).map(c=>c.rule),...facts.filter(f=>f.kind==='congruence'&&parts(t,f)||t.kind==='right'&&right(t.angle)&&atomic(f)&&f.left[0].kind==='angle'&&[...f.left,...f.right].some(v=>canonical(v.term)===canonical(A+t.angle))).map(f=>origins.get(f)).filter(r=>/^(?:I|E[23]\.)/.test(r||''))])]}
-  function accept(t,reference){origins.set(t,reference);facts.push(t)}
+  function accept(t,reference){if(t.kind==='conditional')t._reference=reference;origins.set(t,reference);facts.push(t)}
   function certificate(t,reference){return certificateClaims().some(c=>c.rule===reference&&key(c.claim)===key(t))}
   function circleEquality(t){if(!atomic(t)||t.left[0].kind!=='length'||t.right[0].kind!=='length')return false;let x=t.left[0].term,y=t.right[0].term;return state.circles.some(c=>{let end=s=>s[0]===c.a?s[1]:s[1]===c.a?s[0]:null,a=end(x),b=end(y);return a&&b&&EuclidConstruction.radius(state,c,a)&&EuclidConstruction.radius(state,c,b)})}
   function quadrilateralPart(t){return [...facts,...certificateClaims().map(c=>c.claim)].some(f=>{if(f.kind!=='shape'||f.property!=='square')return false;let p=f.polygon,edges=[...p].map((a,i)=>a+p[(i+1)%4]);if(atomic(t)&&t.left[0].kind==='length'&&t.right[0].kind==='length')return f.property==='square'&&[t.left[0].term,t.right[0].term].every(s=>edges.some(e=>sort(e)===sort(s)));if(t.kind==='parallel')return false;if(f.property!=='square')return false;let x=t.kind==='right'?t.angle[0]+t.angle[1]:t.a,y=t.kind==='right'?t.angle[1]+t.angle[2]:t.b;return ['right','perpendicular'].includes(t.kind)&&edges.some((e,i)=>lineKey(x)===lineKey(e)&&lineKey(y)===lineKey(edges[(i+1)%4])||lineKey(y)===lineKey(e)&&lineKey(x)===lineKey(edges[(i+1)%4]));})}
@@ -185,6 +186,8 @@ const BookOneLogic=(()=>{
    return result;
   }
   function checkDirect(t,reference){
+   if(namesIn(t).some(n=>!d.points[n]))return {ok:false,error:'This statement names a point not in the construction.'};
+   if(lesson.book===3&&typeof BookThreeLogic!=='undefined'){const circleResult=BookThreeLogic.check(t,reference,{state,lesson,d,facts,key,posted,equal,right,perpendicular,expr,origin:f=>origins.get(f),check:checkDirect});if(circleResult)return circleResult}
    derivations.length=0;symbolicDependencies.clear();
    if(namesIn(t).some(n=>!d.points[n]))return {ok:false,error:'This statement names a point not in the construction.'};
    if(t.kind==='gt'&&exprKey(t.left)===exprKey(t.right))return {ok:false,error:'A magnitude cannot be strictly greater than itself.'};
@@ -261,7 +264,14 @@ const BookOneLogic=(()=>{
    return {ok:!!ok,sourcePropositions:ok?[...new Set([...sourceReferences(t),...[...symbolicDependencies].map(n=>'I'+n)])]:[],error:ok?'':'The stated premises and construction do not establish this claim using '+reference+'.',explanation:reason||derivations.at(-1)?.name,derivation:derivations.at(-1)||null};
   }
   function equalExpression(t){let graph=new Map(),join=(a,b)=>{if(!graph.has(a))graph.set(a,new Set());graph.get(a).add(b)};for(let f of facts)if(f.kind==='eq'){let a=exprKey(f.left),b=exprKey(f.right);join(a,b);join(b,a)}let queue=[exprKey(t.left)],end=exprKey(t.right),seen=new Set();while(queue.length){let x=queue.shift();if(x===end)return true;if(seen.has(x))continue;seen.add(x);for(let y of graph.get(x)||[])queue.push(y)}return false}
-  function isoscelesAngle(t){if(!atomic(t)||t.left[0].kind!=='angle'||t.right[0].kind!=='angle')return false;let a=t.left[0].term.slice(1),b=t.right[0].term.slice(1);if(sort(a)!==sort(b)||a[1]===b[1])return false;let v=[...a].find(n=>n!==a[1]&&n!==b[1]);return d.proper(a)&&equal(v+a[1],v+b[1])}
+  function isoscelesAngle(t){
+   if(!atomic(t)||t.left[0].kind!=='angle'||t.right[0].kind!=='angle')return false;
+   let a=t.left[0].term.slice(1),b=t.right[0].term.slice(1);if(a[1]===b[1])return false;
+   if(sort(a)!==sort(b)){
+    const normalize=name=>{const k=d.canonical(A+name).slice(1).split('@');return k.length===2?k[0][0]+k[1]+k[0][1]:''};a=normalize(a);b=normalize(b);
+   }
+   if(!a||!b||sort(a)!==sort(b))return false;const apex=[...a].find(n=>n!==a[1]&&n!==b[1]);return !!apex&&d.proper(a)&&equal(apex+a[1],apex+b[1]);
+  }
   function vertical(a,b){return a[1]===b[1]&&[b,[...b].reverse().join('')].some(v=>d.between(a[0],a[1],v[0])&&d.between(a[2],a[1],v[2]))}
   function straightFromSum(t){if(t.kind!=='collinear')return false;for(let f of facts)if(f.kind==='eq'&&f.left.length===2&&f.left.every(q=>q.kind==='angle'&&q.term!=='RIGHT'&&q.coefficient===1)&&f.right.length===1&&f.right[0].term==='RIGHT'&&f.right[0].coefficient===2){let [x,y]=f.left.map(q=>q.term.slice(1));for(let a of [x,[...x].reverse().join('')])for(let b of [y,[...y].reverse().join('')])if(a[1]===b[1]&&d.sameRay(a[1],a[2],b[0])&&!sameSide(a[0],b[2],a[1]+a[2])&&sort(a[0]+a[1]+b[2])===sort(t.points))return true}return false}
   function uniquePerpendicular(t){if(t.kind!=='collinear'||t.points.length!==3)return false;for(let vertex of t.points){let ends=[...t.points].filter(n=>n!==vertex);if(!ends.every(n=>d.drawn(vertex,n)))continue;for(let base of d.names)if(base!==vertex&&d.drawn(vertex,base)&&ends.every(n=>perpendicular(vertex+n,vertex+base)))return true}return false}
@@ -499,7 +509,7 @@ const BookOneLogic=(()=>{
  // the last invalid line, can reuse the validated prefix. Edits to an accepted
  // line, geometry, givens, or installed lessons rebuild the context instead.
  const gradeCache=new WeakMap(),gradeFields=['valid','error','dependencies','derivation','reason','sourcePropositions'];
- function gradeSignature(state,lesson){return JSON.stringify([lesson,LESSONS.map(l=>EuclidBooks.key(l)),state.points,state.edges,state.rays,state.circles,state.arcs,state.topology,state.facts])}
+ function gradeSignature(state,lesson){return JSON.stringify([lesson,LESSONS.map(l=>EuclidBooks.key(l)),state.points,state.edges,state.rays,state.circles,state.arcs,state.topology,state.facts,state.givenCircles])}
  function grade(state,lesson){
   if(lesson.id<=5)return baseGrade(state,lesson);
   let geometry=gradeSignature(state,lesson),inputs=state.lines.map(l=>[l.s,l.j]),signature=geometry+'\0'+JSON.stringify(inputs),cached=gradeCache.get(state),reuse;

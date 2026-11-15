@@ -24,7 +24,7 @@ This is a server-validated casual leaderboard. A browser app cannot prove that a
 The CLI is authenticated and linked locally to the owner's Euclid project. Never commit CLI credentials, `.env` files, or service keys. Only `online-config.js` (public project URL/key and course version) belongs in the static site.
 
 1. With Python, run `python scripts/build-ranked-runtime.py` after changing mathematical rules or construction tools. Commit both the generated runtime and updated `online-config.js`.
-2. Apply new migrations with `supabase db query --remote --file supabase/migrations/FILE.sql --yes`, in filename order. These migrations create application-owned objects and do not erase player data. The first four migrations have already been applied.
+2. Apply new migrations with `supabase db query --remote --file supabase/migrations/FILE.sql --yes`, in filename order. These migrations create application-owned objects and do not erase player data. The seven migrations through the Book III release have been applied.
 3. Deploy with `supabase functions deploy euclid-online --use-api --no-verify-jwt --yes`. This endpoint has public account/leaderboard actions, so gateway JWT verification is disabled; protected actions explicitly validate user tokens in the handler.
 4. Commit and push the static app to GitHub Pages. Deploy the corresponding function before publishing a changed course version. Existing clients must refresh if their version differs.
 
@@ -33,7 +33,7 @@ The bundled browser auth client is Supabase JS 2.119.0; its license is in `vendo
 ## Verification
 
 - `deno run --allow-write=.browser-check-release tests/ranked-server-tests.js .browser-check-release/ranked-fixtures.json` replays and validates source proofs for all 62 propositions, checks batched/full-grader agreement, and rejects forged facts, missing construction provenance, invalid references, and invalid point names.
-- `python tests/ranked-api-tests.py` tests the deployed backend using disposable accounts. It checks account uniqueness, passwords, ownership, denied direct writes, untrusted timing, idempotence, fastest-only records, public data boundaries, and representative proofs including E2.9, E2.10, and E2.14.
+- `python tests/ranked-api-tests.py` tests the deployed backend using disposable accounts. It checks account uniqueness, passwords, ownership, denied direct writes, untrusted timing, idempotence, fastest-only records, public data boundaries, and representative proofs including E2.9, E2.10, E2.14, and all seven released Book III propositions.
 - `python tests/run-firefox-entry-checks.py --suite ranked --width 390 --height 844` uses those disposable credentials in an isolated Firefox profile. It checks real login, reload persistence, ranked settings, construction/proof events, best-time display, practice restoration, ranked reload, mobile panel switching, and logout.
 - Run `python tests/cleanup-ranked-test-users.py` when finished. It removes only the generated QA accounts and their scores, then removes the local credential fixture.
 - `python tests/run-firefox-entry-checks.py --suite leaderboard --width 390 --height 844` checks the viewer with all 62 populated boards, independent collapse, remembered visibility, scrolling, safe username rendering, empty results, and refresh failures using mocked board responses.
