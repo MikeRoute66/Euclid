@@ -197,10 +197,43 @@ function updateLearningGuidance(){
  if(settings.learningMode){
   AngleVisual.decorate($('#learning-instructions'),displayReference(nextHint()),LESSONS[index]);
   panel.setAttribute('aria-disabled',String(!!state.completed));
-  panel.title=state.completed?'Proposition complete':'Click to perform this step';
+  panel.title=state.completed?'Proposition complete':'Click to perform this step. Right-click to see which tool to use.';
   panel.onclick=performLearningStep;
-  panel.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();performLearningStep()}};
+  panel.oncontextmenu=showLearningTools;
+  panel.onkeydown=event=>{if(event.key==='ContextMenu'||event.shiftKey&&event.key==='F10'){showLearningTools(event)}else if(event.key==='Enter'||event.key===' '){event.preventDefault();performLearningStep()}};
  }
+}
+
+// Inspect a copy: revealing the next reference must never perform the step.
+function learningToolHint(){
+ if(!settings.learningMode)return {message:'Turn Learning mode on to inspect its next step.'};
+ if(state.completed)return {message:'This proposition is complete. No further tool is needed.'};
+ if(editingLine!==null)return {message:'Save or cancel the current proof edit first. No construction tool is needed to save an edit.'};
+ const lesson=LESSONS[index],value=structuredClone(state),progress=constructionProgress(value,lesson);
+ if(!progress.complete){
+  const firstFive=[['P3','P3','D1','P1','P1'],['P1','I1','P2','P3','D1','P2','P3','D1','P1'],['I2','P3','D1'],['CN4'],['P2','P2','I3','P1','P1']],next=progress.checks.findIndex(done=>!done);
+  return {reference:lesson.id<=5?firstFive[lesson.id-1][next]:lesson.construction[next].ref,message:'Use this tool for the current construction step.'};
+ }
+ const result=settings.skipJustifications?inferredProof(value,lesson):EuclidLogic.grade(value,lesson),parse=lesson.id<=5?BookOneLogic.baseParse:BookOneLogic.parse;
+ const same=(line,step)=>lesson.id<=5?norm(line.s)===norm(step.s):result.context.key(parse(line.s))===result.context.key(parse(step.s));
+ const route=lesson.id<=5?lesson.hintSteps:lesson.proofGuide,step=route.find(s=>!value.lines.some(line=>line.valid&&same(line,s)));
+ if(!step){
+  const bad=value.lines.findIndex(line=>!line.valid);
+  if(bad<0)return {message:'No further proof tool is needed.'};
+  const preferred=route.find(s=>norm(s.s)===norm(value.lines[bad].s))?.j,reference=learningJustification(value,lesson,bad,preferred);
+  return reference?{reference,message:'Use this justification on the pending proof line.'}:{message:'Correct the invalid statement before choosing its justification.'};
+ }
+ const pending=value.lines.findIndex(line=>same(line,step)),bad=value.lines.findIndex(line=>!line.valid),target=pending>=0?pending:bad>=0?bad:value.lines.length;
+ const candidate={s:readableStatement(step.s),j:step.j};if(pending>=0)value.lines[target]=candidate;else value.lines.splice(target,0,candidate);
+ const reference=learningJustification(value,lesson,target,step.j);
+ return reference?{reference,message:(settings.skipJustifications?'Justification is automatic in this mode. The statement uses: ':'Use this justification for: ')+step.s}:{message:'Establish the missing earlier premise first.'};
+}
+function showLearningTools(event){
+ if(!settings.learningMode)return;
+ event.preventDefault();event.stopPropagation();
+ const hint=learningToolHint(),body=[];
+ if(hint.reference){const r=Object.values(REFERENCES).flat().find(r=>r[1]===hint.reference);body.push(hint.reference==='Logic'?'Use Deduction (the button in the proof panel).':hint.reference==='Given'?'Use Given (the button in the proof panel).':'Use '+displayReference(hint.reference)+(r&&toolNamesVisible(r)?' - '+r[0]:''));}
+ body.push(hint.message);modal('LEARNING MODE','Tools for this step',body);
 }
 
 function proofInspectionBody(line,reference){

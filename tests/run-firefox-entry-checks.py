@@ -18,7 +18,7 @@ import uuid
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial','semicircle','book3','book3manual','book3view'],default='entry')
+parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial','semicircle','book3','book3manual','book3view','learningtools'],default='entry')
 parser.add_argument('--lesson',type=int,choices=range(1,8),default=1)
 parser.add_argument('--width',type=int,default=900)
 parser.add_argument('--height',type=int,default=600)
@@ -64,6 +64,8 @@ elif options.suite=='book3manual':
     tests='<script src="tests/book3-manual-tests.js"></script>'
 elif options.suite=='book3view':
     tests='<script>addEventListener("load",()=>{document.querySelector("#continue-menu").click();const node=document.createElement("pre");node.hidden=true;node.id="qa-result";node.textContent="ALL CHECKS PASSED";document.body.append(node)});</script>'
+elif options.suite=='learningtools':
+    tests='<script src="tests/learning-tool-preview-tests.js"></script>'
 else:
     tests='<script src="tests/tool-name-tests.js"></script><script src="tests/mobile-layout-tests.js"></script><script src="tests/feedback-tests.js"></script><script src="tests/proof-entry-tests.js"></script>'
 page.write_text(source.replace('<head>','<head>'+capture).replace('</body>',tests+'</body>'),encoding='utf-8')
@@ -234,6 +236,12 @@ try:
             assert evaluate('window.scheduledSounds') == number, statement
             assert evaluate('window.scheduledSoundTypes.at(-1)') == tone, statement
         report = report.replace('ALL CHECKS PASSED', 'PASS trusted Firefox proof submissions and edits schedule the correct confirmation or rejection sound\nALL CHECKS PASSED')
+    if options.suite=='learningtools' and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
+        evaluate("document.querySelector('#qa-result').hidden=true;Object.assign(settings,DEFAULT_SETTINGS,{learningMode:true,soundEffects:false});saved={};load(0);window.previewBefore=JSON.stringify(state);window.previewUndo=history.length")
+        rect=evaluate("(()=>{const r=document.querySelector('#learning-guidance').getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]})()")
+        command('WebDriver:PerformActions',{'actions':[{'type':'pointer','id':'preview-mouse','parameters':{'pointerType':'mouse'},'actions':[{'type':'pointerMove','duration':0,'x':round(rect[0]),'y':round(rect[1]),'origin':'viewport'},{'type':'pointerDown','button':2},{'type':'pointerUp','button':2}]}]})
+        assert evaluate("document.querySelector('#modal').open&&document.querySelector('#modalbody').textContent.includes('P3')&&JSON.stringify(state)===previewBefore&&history.length===previewUndo")
+        report=report.replace('ALL CHECKS PASSED','PASS A native Firefox right-click shows P3 without performing the construction\nALL CHECKS PASSED')
     if options.suite in ['book3','book3view'] and 'ALL CHECKS PASSED' in report and 'FAIL ' not in report:
         import base64
         evaluate('document.querySelector("#qa-result").hidden=true')
