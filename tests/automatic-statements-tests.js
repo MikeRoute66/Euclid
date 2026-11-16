@@ -5,6 +5,14 @@ addEventListener('load',async()=>{
  const justify=i=>{const step=LESSONS[index].proofGuide.find(step=>same(step.s,state.lines[i].s));selectReference(Object.values(REFERENCES).flat().find(r=>r[1]===step.j)||LOGIC_REFERENCE);$('#lines').children[i].click()};
  try{
   $('#continue-menu').click();
+  const specialKinds=new Set();let intermediates=0;
+  for(const lesson of LESSONS)for(const step of lesson.proofGuide||lesson.hintSteps||[]){
+   let ast=BookOneLogic.parse(step.s);while(ast?.kind==='conditional')ast=ast.body;
+   if(AutomaticStatements.special(step)){specialKinds.add(ast.kind);if(step.j!=='Logic')intermediates++}
+  }
+  check(intermediates===4,'All four special-format intermediate center statements are supplied, including earlier-proposition justifications');
+  check(specialKinds.size===8,'All special statement kinds currently used across the three books are covered');
+  check(!AutomaticStatements.special({s:'If J is the center of circle C1 then JA = JB',j:'D15'}),'A standard equality remains manual inside a hypothetical argument');
   for(const lesson of BOOK_THREE_LESSONS)for(let mask=0;mask<8;mask++)for(const learningMode of [false,true]){
    Object.assign(settings,DEFAULT_SETTINGS,{soundEffects:false,skipConstruction:!!(mask&1),skipProof:!!(mask&2),skipJustifications:!!(mask&4),learningMode});saved={};load(EuclidBooks.position(lesson.key));
    if(!settings.skipConstruction){Object.assign(state,suppliedConstruction(index));render()}
@@ -27,6 +35,7 @@ addEventListener('load',async()=>{
   check(cases===112,'All 112 practice/learning combinations exercised');
   Object.assign(settings,DEFAULT_SETTINGS,{skipConstruction:true,soundEffects:false});saved={};load(EuclidBooks.position('3.1'));
   const lesson=LESSONS[index],closing=lesson.proofGuide.find(step=>step.s==='H is the center of circle C1');
+  check([...lesson.givens,...lesson.proofGuide.map(step=>step.s)][14]===closing.s,'E3.1 source line 15 is the center statement');
   state.lines.push(...lesson.proofGuide.filter(step=>step!==closing).map(step=>({s:step.s,j:step.j})));
   const ready=structuredClone(state),historyBefore=history.length,events=[],record=Ranked.record;
   Ranked.record=event=>events.push(event);render();events.push({kind:'mutation-complete'});await settle();Ranked.record=record;
@@ -45,10 +54,11 @@ addEventListener('load',async()=>{
   check(state.lines.some(line=>line.s===closing.s),'Automatic wording resumes after an edit is canceled');
   state.lines=state.lines.filter(line=>line.s!==closing.s);const premise=state.lines.find(line=>line.s==='The center of circle C1 lies on DE');premise.j='P1';render();await settle();
   check(!state.lines.some(line=>line.s===closing.s),'An invalid supporting argument cannot produce a conclusion');
-  premise.j='Logic';state.lines.push({s:'not a proof statement',j:null});render();await settle();
-  check(!state.lines.some(line=>line.s===closing.s),'A pending invalid line blocks automatic conclusions');
-  deleteProofLine(state.lines.length-1);await settle();
-  check(state.lines.some(line=>line.s===closing.s),'Deleting an ordinary erroneous line allows the ready conclusion to appear');
+  premise.j='Logic';state.lines.push({s:'not a proof statement',j:null});$('#statement').value='my unfinished draft';render();await settle();
+  check(state.lines.some(line=>line.s===closing.s)&&state.lines.some(line=>line.s==='not a proof statement'&&!line.valid),'An unrelated invalid line cannot hide a proven special statement or become a premise');
+  check($('#statement').value==='my unfinished draft','Supplying a special statement preserves an unfinished input draft');$('#statement').value='';
+  deleteProofLine(state.lines.findIndex(line=>line.s==='not a proof statement'));await settle();
+  check(state.lines.filter(line=>line.s===closing.s).length===1,'Deleting an ordinary erroneous line does not duplicate supplied statements');
   check(PROOF_ENTRY_ERRORS.length===0,'No uncaught browser errors');
  }catch(error){check(false,error.stack||String(error))}
  const output=document.createElement('pre');output.id='qa-result';output.textContent=results.join('\n')+'\n'+(failures?'CHECKS FAILED':'ALL CHECKS PASSED');document.body.append(output);

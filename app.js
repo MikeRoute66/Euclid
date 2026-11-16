@@ -125,7 +125,7 @@ function showHowToPlay(){
  $('#modalbody').innerHTML=`
   <ol class="play-steps">
    <li><strong>Construct</strong><span>Open a tool menu below. Select a tool, then click its points in order. Two-point tools also accept a drag. Use the point tool to mark intersections.</span></li>
-   <li><strong>State</strong><span>Add a formal statement in the proof panel. Hypotheses are filled in. Special conclusions appear automatically when established.</span></li>
+   <li><strong>State</strong><span>Add a formal statement in the proof panel. Hypotheses are filled in. Statements with special wording appear automatically when established.</span></li>
    <li><strong>Justify</strong><span>Select a reference below, then click the proof line it supports. Establish premises before using them.</span></li>
   </ol>
   <p class="play-goal">Finish the construction and establish the conclusion with valid proof lines to clear the stage.</p>
