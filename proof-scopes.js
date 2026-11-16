@@ -15,7 +15,7 @@ const ProofScopes=(()=>{
   const result=[];let previous=(lesson.givens||[]).at(-1);
   for(const step of lesson.proofGuide||[]){
    const scope=split(step.s),last=result.at(-1);
-   if(scope){if(!last||last.condition!==scope.condition||!split(previous))result.push({condition:scope.condition,anchor:previous,end:step.s});else last.end=step.s}
+   if(scope){if(!last||last.condition!==scope.condition||!split(previous))result.push({condition:scope.condition,end:step.s});else last.end=step.s}
    previous=step.s;
   }
   return result;
@@ -24,15 +24,33 @@ const ProofScopes=(()=>{
   if(!enabled(lesson))return null;
   // An edit belongs to its original block, including after that block closes.
   if(editing!==null)return split(value.lines[editing]?.s)?.condition||null;
-  const copy=structuredClone(value),context=BookOneLogic.context(copy,lesson);
-  const keys=new Set(),written=new Set();
-  for(const line of copy.lines){if(!line.valid)continue;const ast=BookOneLogic.parse(line.s);if(ast){keys.add(context.key(ast));written.add(writtenKey(ast));context.accept(ast,line.j||line.autoJustification)}}
-  const has=s=>{const ast=BookOneLogic.parse(s||'');return ast&&keys.has(context.key(ast))};
-  return blocks(lesson).find(block=>(!block.anchor||has(block.anchor))&&!written.has(writtenKey(BookOneLogic.parse(block.end))))?.condition||null;
+  const written=new Set();
+  for(const line of value.lines){if(!line.valid)continue;const ast=BookOneLogic.parse(line.s);if(ast)written.add(writtenKey(ast))}
+  return blocks(lesson).find(block=>!written.has(writtenKey(BookOneLogic.parse(block.end))))?.condition||null;
  }
  function input(s,value,lesson,editing){
   if(!s||split(s)||!enabled(lesson))return s;
-  const condition=active(value,lesson,editing);
+  // Choosing the scope is a presentation concern, never a proof premise.
+  // Independent statements may be entered before, during, or after a case.
+  // Match equivalent figure names, not an ordinal position in the teaching route.
+  let condition=active(value,lesson,editing);
+  if(editing===null||!split(value.lines[editing]?.s)){
+   const prefix=editing===null?value:{...value,lines:value.lines.slice(0,editing)};
+   condition=active(prefix,lesson);
+   const context=BookOneLogic.context(structuredClone(prefix),lesson),ast=BookOneLogic.parse(s);
+   if(ast){
+    const key=context.key(ast),matches=(lesson.proofGuide||[]).filter(step=>context.key(BookOneLogic.parse(display(step.s,lesson)))===key);
+    if(matches.some(step=>!split(step.s)))return s;
+    if(matches.length){const scopes=matches.map(step=>split(step.s).condition);condition=scopes.includes(condition)?condition:scopes[0]}
+    else{
+     // Alternative arguments can introduce facts absent from the teaching route.
+     // Keep independently provable facts outside the hypothetical case as well.
+     for(const line of prefix.lines)if(line.valid){const premise=BookOneLogic.parse(line.s);if(premise)context.accept(premise,line.j||line.autoJustification)}
+     const references=['Given',...Object.values(REFERENCES).flat().map(r=>r[1]).filter(r=>!EuclidBooks.referenceLesson(r)||EuclidBooks.earlier(r,lesson)),'Logic'];
+     if(references.some(reference=>context.check(ast,reference,true).ok))return s;
+    }
+   }
+  }
   return condition?'If '+condition+' then '+s:s;
  }
  function guidance(s,lesson){

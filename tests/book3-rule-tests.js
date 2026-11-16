@@ -14,7 +14,11 @@ for(let n=1;n<=7;n++){
  if([1,5,6].includes(n)){
   const escaped=structuredClone(state),step=lesson.proofGuide.find(s=>s.s.startsWith('If ')&&s.j==='D15');escaped.lines.push({s:step.s.split(' then ')[1],j:'D15'});v.grade(escaped,lesson);check(!escaped.lines.at(-1).valid,key+' assumed radii are not available outside the implication');
  }
- if(n===1){const future=structuredClone(state);future.facts.push('center:'+JSON.stringify({rule:'E3.1',circle:'C1',inputs:['A','B','C'],output:'H'}));future.lines=[{s:'HA = HB',j:'D15'}];v.grade(future,lesson);check(!future.lines[0].valid,'E3.1 cannot borrow its own future construction tool')}
+ if(n===1){
+  const reordered=structuredClone(state),start=lesson.givens.length;[reordered.lines[start],reordered.lines[start+1]]=[reordered.lines[start+1],reordered.lines[start]];
+  check(v.grade(reordered,lesson).complete,'E3.1 ranked checker accepts the radius equality before the midpoint equality');
+  const future=structuredClone(state);future.facts.push('center:'+JSON.stringify({rule:'E3.1',circle:'C1',inputs:['A','B','C'],output:'H'}));future.lines=[{s:'HA = HB',j:'D15'}];v.grade(future,lesson);check(!future.lines[0].valid,'E3.1 cannot borrow its own future construction tool');
+ }
  if(n===2){const incomplete=structuredClone(state);incomplete.facts=incomplete.facts.filter(s=>!s.startsWith('center:'));check(!v.grade(incomplete,lesson).complete,'E3.2 requires the recorded center-finding operation')}
  if(n===3){const converse=structuredClone(state);converse.lines=converse.lines.filter(l=>!l.s.startsWith('If CD'));check(!v.grade(converse,lesson).complete,'E3.3 requires the converse separately');const reverse=structuredClone(state);reverse.lines.forEach(l=>l.s=l.s.replace('If AF = FB','If BF = FA'));check(v.grade(reverse,lesson).complete,'Reversed endpoint/equality spellings work inside conditionals')}
  if(n===5){const noMembership=structuredClone(state);for(const r of noMembership.topology.intersections)if(r.point==='F')r.supports=r.supports.filter(s=>s!=='given:C1');check(!v.grade(noMembership,lesson).complete,'An unrecorded point near a circle cannot be used as a radius endpoint')}

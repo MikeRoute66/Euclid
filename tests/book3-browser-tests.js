@@ -17,7 +17,25 @@ addEventListener('load',async()=>{
    check(state.lines[conditionalIndex].s===original&&state.lines[conditionalIndex].valid,lesson.key+' editing a closed block preserves its original assumption');
    if(lesson.proposition===1)check($('#lines').children[4].querySelector('strong').textContent==='JA = JB','E3.1 numbered line five is exactly JA = JB');
    const full=structuredClone(state),moved=structuredClone(state);for(const p of Object.values(moved.points)){p[0]=p[0]*1.17+43;p[1]=p[1]*.83-25}
+   const earlyCase=structuredClone(full);earlyCase.lines=earlyCase.lines.slice(0,lesson.givens.length);
+   const firstCase=ProofScopes.split(lesson.proofGuide.find(step=>ProofScopes.split(step.s)).s);
+   check(ProofScopes.input(firstCase.body,earlyCase,lesson,null)==='If '+firstCase.condition+' then '+firstCase.body,lesson.key+' hypothetical statements can precede independent earlier steps');
+   earlyCase.lines=full.lines.slice(0,conditionalIndex+1);
+   check(lesson.proofGuide.filter(step=>!ProofScopes.split(step.s)).every(step=>ProofScopes.input(step.s,earlyCase,lesson,null)===step.s),lesson.key+' independent steps stay unconditional when interleaved with a hypothetical block');
    if(lesson.proposition===1){
+    state.lines=state.lines.slice(0,3);render();
+    for(const [s,j] of [['ja = jb','D15'],['da = db','I10']]){
+     $('#statement').value=s;$('#lineform').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+     selectReference(Object.values(REFERENCES).flat().find(r=>r[1]===j));$('#lines').lastElementChild.click();
+     check(state.lines.at(-1).valid,'E3.1 accepts '+s+' in reversed order with '+j);
+    }
+    check(state.lines[3].s==='If J is the center of circle C1 then JA = JB'&&state.lines[4].s==='DA = DB','Reordered radius equality stays hypothetical and midpoint equality stays unconditional');
+    check(ProofScopes.input('AC = AC',state,lesson,null)==='AC = AC','An independent fact outside the teaching route stays unconditional within a case');
+    const legacy=structuredClone(state);legacy.lines[3]={s:'JA = JB',j:'D15',valid:false};
+    check(ProofScopes.input('JA = JB',legacy,lesson,3)==='If J is the center of circle C1 then JA = JB','Editing a formerly rejected bare radius equality repairs its missing scope');
+    const early=structuredClone(state);early.lines=early.lines.slice(0,4);early.facts=early.facts.filter(f=>!f.startsWith('book:')||JSON.parse(f.slice(5)).operation!=='midpoint');early.lines.push({s:'If J is the center of circle C1 then angle ADJ = angle JDB',j:'I8'});EuclidLogic.grade(early,lesson);
+    check(!early.lines.at(-1).valid,'Reordering does not let SSS omit the midpoint construction evidence');
+    state=structuredClone(full);
     state.lines=state.lines.slice(0,4);settings.learningMode=true;render();
     check($('#learning-instructions').textContent.includes('JA = JB')&&!$('#learning-instructions').textContent.includes('If '),'Learning guidance requests the plain radius equality');
     check($('#learning-instructions .proof-assumption').textContent==='Assume J is the center of circle C1.','Learning guidance shows the current assumption separately');
