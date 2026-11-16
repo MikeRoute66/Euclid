@@ -18,7 +18,7 @@ import uuid
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial','semicircle','book3','book3manual','book3view','learningtools'],default='entry')
+parser.add_argument('--suite',choices=['entry','ranked','leaderboard','tutorial','semicircle','book3','book3manual','book3view','learningtools','autoconclusions'],default='entry')
 parser.add_argument('--lesson',type=int,choices=range(1,8),default=1)
 parser.add_argument('--width',type=int,default=900)
 parser.add_argument('--height',type=int,default=600)
@@ -64,6 +64,8 @@ elif options.suite=='book3manual':
     tests='<script src="tests/book3-manual-tests.js"></script>'
 elif options.suite=='book3view':
     tests='<script>addEventListener("load",()=>{document.querySelector("#continue-menu").click();const node=document.createElement("pre");node.hidden=true;node.id="qa-result";node.textContent="ALL CHECKS PASSED";document.body.append(node)});</script>'
+elif options.suite=='autoconclusions':
+    tests='<script src="tests/automatic-statements-tests.js"></script>'
 elif options.suite=='learningtools':
     tests='<script src="tests/learning-tool-preview-tests.js"></script>'
 else:
@@ -176,7 +178,7 @@ try:
         if options.suite=='semicircle':evaluate("SEMICIRCLE_QA.check(EuclidCurves.valid(state)&&state.arcs.length===1&&state.arcs[0].points.includes('N'),'The manually drawn semicircle records the intersection N')")
         evaluate("SEMICIRCLE_QA.check(constructionProgress(state,LESSONS[index]).complete,'The entire construction is achievable through manual pointer input');state.lines=[...(LESSONS[index].givens||[]).map(s=>({s,j:'Given'})),...LESSONS[index].proofGuide.map(s=>({s:s.s,j:s.j}))];render();SEMICIRCLE_QA.check(state.completed&&state.lines.every(l=>l.valid),'The manual construction supports the complete source proof');SEMICIRCLE_QA.check(PROOF_ENTRY_ERRORS.length===0,'No uncaught errors in manual construction');SEMICIRCLE_QA.finish()")
     report = ''
-    for attempt in range(1800 if options.suite=='book3' else 900 if options.suite in ['ranked','tutorial'] else 100):
+    for attempt in range(1800 if options.suite in ['book3','autoconclusions'] else 900 if options.suite in ['ranked','tutorial'] else 100):
         result = command('WebDriver:ExecuteScript', {
             'script': 'return document.querySelector("#qa-result")?.textContent||""',
             'args': [], 'sandbox': None, 'newSandbox': False})
