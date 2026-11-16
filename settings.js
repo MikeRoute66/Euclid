@@ -193,9 +193,12 @@ function practiceInstruction(){
 }
 
 function updateLearningGuidance(){
+ ProofScopes.updateInputContext(state,LESSONS[index],editingLine);
  const panel=$('#learning-guidance');panel.hidden=!settings.learningMode;
  if(settings.learningMode){
-  AngleVisual.decorate($('#learning-instructions'),displayReference(nextHint()),LESSONS[index]);
+  const instructions=$('#learning-instructions'),assumption=ProofScopes.assumption(state,LESSONS[index],editingLine);
+  AngleVisual.decorate(instructions,displayReference(ProofScopes.guidance(nextHint(),LESSONS[index])),LESSONS[index]);
+  if(assumption){const context=document.createElement('span');context.className='proof-assumption';context.textContent=assumption;instructions.prepend(context)}
   panel.setAttribute('aria-disabled',String(!!state.completed));
   panel.title=state.completed?'Proposition complete':'Click to perform this step. Right-click to see which tool to use.';
   panel.onclick=performLearningStep;
@@ -233,7 +236,7 @@ function showLearningTools(event){
  event.preventDefault();event.stopPropagation();
  const hint=learningToolHint(),body=[];
  if(hint.reference){const r=Object.values(REFERENCES).flat().find(r=>r[1]===hint.reference);body.push(hint.reference==='Logic'?'Use Deduction (the button in the proof panel).':hint.reference==='Given'?'Use Given (the button in the proof panel).':'Use '+displayReference(hint.reference)+(r&&toolNamesVisible(r)?' - '+r[0]:''));}
- body.push(hint.message);modal('LEARNING MODE','Tools for this step',body);
+ const assumption=ProofScopes.assumption(state,LESSONS[index],editingLine);if(assumption)body.push(assumption);body.push(ProofScopes.guidance(hint.message,LESSONS[index]));modal('LEARNING MODE','Tools for this step',body);
 }
 
 function proofInspectionBody(line,reference){

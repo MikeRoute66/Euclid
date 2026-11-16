@@ -38,6 +38,8 @@ The main menu opens on startup and is available from Menu in the header. **Play*
 
 The book and proposition selectors and the searchable main-menu list cover E1.1-E1.48, E2.1-E2.14, and E3.1-E3.7. Earlier propositions are available as tools when studying a later proposition; current and later propositions cannot justify their own conclusions. Right-click a justified line to inspect its deduction or reference.
 
+Book III displays an assumption once above each hypothetical proof block. Enter ordinary statements within it, such as `JA = JB`; the checker retains the assumption internally. Editing a line keeps its original scope. Learning guidance, supplied proofs, and restored progress use the same compact display.
+
 
 Construction provenance is saved with each proposition. Tools record line incidence, point order and orientation, and circle membership when those relationships are constructed. The proof checker does not read drawing coordinates. Every theorem tool has a checked operation contract; its recorded properties can be unpacked with definitions (for example D20 for sides of an E.1 triangle, and D22 for square properties). Circle equality requires endpoints recorded on the same circle, not points that happen to look equidistant. Use D1 to mark an intersection or explicitly mark an existing point on a circle; P3 records its defining endpoint. Merely joining an unrelated point does not establish circle membership.
 

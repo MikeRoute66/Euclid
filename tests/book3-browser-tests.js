@@ -8,7 +8,24 @@ addEventListener('load',async()=>{
    const position=EuclidBooks.position(lesson.key);Object.assign(settings,DEFAULT_SETTINGS,{soundEffects:false});saved={};load(position);
    const built=suppliedConstruction(position);Object.assign(state,built);state.lines.push(...lesson.proofGuide.map(s=>({s:s.s,j:s.j})));render();
    check(state.completed&&state.lines.every(l=>l.valid),lesson.key+' source route validates with recorded construction');
+   check([...document.querySelectorAll('#lines .proofline strong')].every(node=>!/^If /i.test(node.textContent)),lesson.key+' displays plain statements in every hypothetical block');
+   check($('#lines .scope-start')?.dataset.assumption.startsWith('Assume '),lesson.key+' displays the assumption separately from numbered statements');
+   const conditionalIndex=state.lines.findIndex(l=>/^If /i.test(l.s));
+   beginEdit(conditionalIndex);const original=state.lines[conditionalIndex].s;
+   check($('#statement').value===ProofScopes.split(original).body,lesson.key+' edit field contains only the statement');
+   $('#lineform').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+   check(state.lines[conditionalIndex].s===original&&state.lines[conditionalIndex].valid,lesson.key+' editing a closed block preserves its original assumption');
+   if(lesson.proposition===1)check($('#lines').children[4].querySelector('strong').textContent==='JA = JB','E3.1 numbered line five is exactly JA = JB');
    const full=structuredClone(state),moved=structuredClone(state);for(const p of Object.values(moved.points)){p[0]=p[0]*1.17+43;p[1]=p[1]*.83-25}
+   if(lesson.proposition===1){
+    state.lines=state.lines.slice(0,4);settings.learningMode=true;render();
+    check($('#learning-instructions').textContent.includes('JA = JB')&&!$('#learning-instructions').textContent.includes('If '),'Learning guidance requests the plain radius equality');
+    check($('#learning-instructions .proof-assumption').textContent==='Assume J is the center of circle C1.','Learning guidance shows the current assumption separately');
+    $('#statement').value='JB = AJ';$('#lineform').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+    selectReference(REFERENCES.definitions.find(r=>r[1]==='D15'));$('#lines').lastElementChild.click();
+    check(state.lines.at(-1).valid&&state.lines.at(-1).s==='If J is the center of circle C1 then JB = AJ','Plain equality with reversed endpoints receives the correct scoped justification');
+    state=structuredClone(full);settings.learningMode=false;render();
+   }
    check(EuclidLogic.grade(moved,lesson).complete,lesson.key+' proof is invariant under moved drawing coordinates');
    const restored=saveDocument();restoreSave(restored);check(state.completed&&state.givenCircles.length===lesson.givenCircles.length,lesson.key+' circle identities and proof survive persistence');
    const noCenters=structuredClone(full);noCenters.facts=noCenters.facts.filter(s=>!s.startsWith('center:'));noCenters.lines=[];
@@ -25,8 +42,13 @@ addEventListener('load',async()=>{
     }else{
      if(!settings.skipConstruction){Object.assign(state,structuredClone(built));render()}
      if(settings.skipProof){for(let i=0;i<state.lines.length;i++){const line=state.lines[i];if(line.j==='Given'||settings.skipJustifications)continue;const step=lesson.proofGuide.find(s=>norm(s.s)===norm(line.s));selectReference(Object.values(REFERENCES).flat().find(r=>r[1]===step.j)||LOGIC_REFERENCE);$('#lines').children[i].click()}}
-     else for(const step of lesson.proofGuide){$('#statement').value=step.s;$('#lineform').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));if(!settings.skipJustifications){selectReference(Object.values(REFERENCES).flat().find(r=>r[1]===step.j)||LOGIC_REFERENCE);$('#lines').lastElementChild.click()}}
+     else for(const step of lesson.proofGuide){$('#statement').value=ProofScopes.display(step.s,lesson);
+      if(ProofScopes.split(step.s)){
+       check(ProofScopes.assumption(state,lesson)==='Assume '+ProofScopes.split(step.s).condition+'.',lesson.key+' current input has the correct active assumption');
+       check($('#proof-input-assumption').textContent==='Assume '+ProofScopes.split(step.s).condition+'.',lesson.key+' input shows its assumption without Learning mode');
+      }$('#lineform').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));if(!settings.skipJustifications){selectReference(Object.values(REFERENCES).flat().find(r=>r[1]===step.j)||LOGIC_REFERENCE);$('#lines').lastElementChild.click()}}
     }
+    check([...document.querySelectorAll('#lines .proofline strong')].every(node=>!/^If /i.test(node.textContent)),lesson.key+' mode '+mask+' learning '+learningMode+' plain proof display');
     check(state.completed&&state.lines.every(l=>l.valid),lesson.key+' mode '+mask+' learning '+learningMode+': '+(state.lines.find(l=>!l.valid)?.error||$('#instruction').textContent));cases++;await pause();
    }
   }
